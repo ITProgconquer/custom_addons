@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_annonce_form" model="ir.ui.view">
+        <field name="name">gespro.annonce.form</field>
+        <field name="model">gespro.annonce</field>
+        <field name="arch" type="xml">
+            <form string="Annonce">
+                <header>
+                    <button name="action_marquer_comme_lu"
+                            string="Marquer comme Lu"
+                            type="object"
+                            class="btn-primary"
+                            groups="GesPro.group_ceo"
+                            attrs="{'invisible': [('state', '=', 'lu')]}"
+                            confirm="Confirmer la lecture de cette annonce ?"/>
+                    <button name="action_marquer_comme_non_lu"
+                            string="Marquer comme Non Lu"
+                            type="object"
+                            class="btn-secondary"
+                            groups="GesPro.group_ceo"
+                            attrs="{'invisible': [('state', '!=', 'lu')]}"
+                            confirm="Marquer comme non lue ?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,lu,non_lu"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                        <h2 class="text-muted" attrs="{'invisible': [('state', '!=', 'non_lu')]}">
+                            Motif de non-lecture : <field name="note_refus"/>
+                        </h2>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_envoi" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                        </group>
+                        <group/>
+                    </group>
+                    <notebook>
+                        <page string="Pièces jointes">
+                            <group>
+                                <field name="capture" widget="image" class="oe_avatar"
+                                       options="{'preview_image': 'capture'}"
+                                       nolabel="1"
+                                       attrs="{'invisible': [('capture', '=', False)]}"/>
+                                <field name="capture_name" invisible="1"/>
+                                <label for="capture" string="Capture d'écran"/>
+                                <field name="capture" widget="binary" filename="capture_name"/>
+                            </group>
+                            <group>
+                                <field name="file" widget="binary" filename="file_name"/>
+                            </group>
+                        </page>
+                        <page string="Description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Réponses CEO" groups="GesPro.group_ceo">
+                            <field name="reponse_ceo_ids" widget="one2many_list">
+                                <tree editable="bottom">
+                                    <field name="name"/>
+                                    <field name="description"/>
+                                    <field name="state"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_annonce_tree" model="ir.ui.view">
+        <field name="name">gespro.annonce.list</field>
+        <field name="model">gespro.annonce</field>
+        <field name="arch" type="xml">
+            <tree decoration-muted="state == 'lu'">
+                <field name="name"/>
+                <field name="date_envoi"/>
+                <field name="user_id"/>
+                <field name="state" widget="badge" decoration-success="state=='lu'" decoration-warning="state=='non_lu'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_annonce_kanban" model="ir.ui.view">
+        <field name="name">gespro.annonce.kanban</field>
+        <field name="model">gespro.annonce</field>
+        <field name="arch" type="xml">
+            <kanban class="o_kanban_mobile" default_group_by="state">
+                <field name="name"/>
+                <field name="state"/>
+                <field name="capture"/>
+                <field name="user_id"/>
+                <field name="date_envoi"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click">
+                            <div class="o_kanban_card_content">
+                                <div class="o_kanban_card_header_title">
+                                    <field name="name"/>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="user_id"/>
+                                </div>
+                                <div class="text-muted">
+                                    <field name="date_envoi"/>
+                                </div>
+                                <field name="state" widget="badge"/>
+                                <t t-if="record.capture.raw_value">
+                                    <img t-attf-src="data:image/png;base64,#{record.capture.raw_value}" 
+                                         style="max-width:100px; max-height:100px;"/>
+                                </t>
+                            </div>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_annonce_search" model="ir.ui.view">
+        <field name="name">gespro.annonce.search</field>
+        <field name="model">gespro.annonce</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="description"/>
+                <filter string="Nouveau" name="filter_new" domain="[('state','=','new')]"/>
+                <filter string="Lu" name="filter_lu" domain="[('state','=','lu')]"/>
+                <filter string="Non lu" name="filter_non_lu" domain="[('state','=','non_lu')]"/>
+                <separator/>
+                <filter string="Créé par moi" name="filter_my" domain="[('user_id','=',uid)]"/>
+                <group expand="0" string="Grouper par">
+                    <filter string="Statut" name="group_state" domain="[]" context="{'group_by':'state'}"/>
+                    <filter string="Auteur" name="group_user" domain="[]" context="{'group_by':'user_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_ceo_response_form" model="ir.ui.view">
+        <field name="name">gespro.ceo.response.form</field>
+        <field name="model">gespro.ceo.response</field>
+        <field name="arch" type="xml">
+            <form string="Réponse CEO">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="lu,non_lu"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="annonce_id" readonly="1"/>
+                            <field name="user_id" readonly="1"/>
+                            <field name="date_envoi" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="capture" widget="image" class="oe_avatar"
+                                   options="{'preview_image': 'capture'}"
+                                   nolabel="1"
+                                   attrs="{'invisible': [('capture', '=', False)]}"/>
+                            <field name="capture_name" invisible="1"/>
+                            <label for="capture" string="Capture d'écran"/>
+                            <field name="capture" widget="binary" filename="capture_name"/>
+                        </group>
+                    </group>
+                    <field name="description"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_ceo_response_tree" model="ir.ui.view">
+        <field name="name">gespro.ceo.response.list</field>
+        <field name="model">gespro.ceo.response</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="annonce_id"/>
+                <field name="user_id"/>
+                <field name="date_envoi"/>
+                <field name="state" widget="badge"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_ceo_response_search" model="ir.ui.view">
+        <field name="name">gespro.ceo.response.search</field>
+        <field name="model">gespro.ceo.response</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="annonce_id"/>
+                <field name="user_id"/>
+                <filter string="Lu" domain="[('state','=','lu')]"/>
+                <filter string="Non lu" domain="[('state','=','non_lu')]"/>
+            </search>
+        </field>
+    </record>
+</odoo>
