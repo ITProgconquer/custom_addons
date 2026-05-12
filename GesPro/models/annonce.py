@@ -1,6 +1,5 @@
 from odoo import models, fields, api
 
-
 class Annonce(models.Model):
     _name = 'gespro.annonce'
     _description = 'Annonce '
@@ -14,11 +13,28 @@ class Annonce(models.Model):
     file_name = fields.Char(string="Nom du fichier")
     user_id= fields.Many2one('res.users', string='Auteur', default=lambda self: self.env.user)
     state = fields.Selection([
-        ('read', 'Lu'),
-        ('notRead', 'Non lu'),
-    ], string='Status', default='notRead')
+        ('new', 'Nouveau'),
+        ('lu', 'Lu'),
+        ('non_lu', 'Non lu')
+    ], string='Status', default='new', tracking=True)
     description = fields.Text(string='Description')
     date_envoi = fields.Date(string='Date Posted', default=fields.Date.today)
     note_refus = fields.Text(string='Motif de refus')
+    appel_id = fields.One2many('gespro.appel', 'annonce_id', string='Appel d\'offre')
 
-    
+    @api.model
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', ('Nouveau')) == 'Nouveau':
+                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.annonce') 
+
+        return super(Annonce, self).create(vals_list)
+
+    def action_marquer_comme_lu(self):
+        self.ensure_one() 
+        self.state = 'lu'
+        self.message_post(body=f"Annonce lue par {self.env.user.name}", message_type='notification', partner_ids=[(self.env.user.partner_id.id)])  
+
+    def action_marquer_comme_non_lu(self):
+        self.ensure_one() 
+        self.state = 'non_lu'
