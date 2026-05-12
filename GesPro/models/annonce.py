@@ -21,6 +21,7 @@ class Annonce(models.Model):
     date_envoi = fields.Date(string='Date Posted', default=fields.Date.today)
     note_refus = fields.Text(string='Motif de refus')
     appel_id = fields.One2many('gespro.appel', 'annonce_id', string='Appel d\'offre')
+    reponse_ceo_ids = fields.One2many('gespro.ceo.response', 'annonce_id', string='Réponses du CEO')
 
     @api.model
     def create(self, vals_list):
