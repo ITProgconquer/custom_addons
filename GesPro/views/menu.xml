@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="action_annonce" model="ir.actions.act_window">
+        <field name="name">Annonces</field>
+        <field name="res_model">gespro.annonce</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <record id="action_ceo_response" model="ir.actions.act_window">
+        <field name="name">Réponses CEO</field>
+        <field name="res_model">gespro.ceo.response</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_root"
+              name="IT Projet"
+              sequence="70"
+              web_icon="GesPro,static/description/icon.png"/>
+
+    <menuitem id="menu_annonce"
+              name="Annonces"
+              parent="menu_root"
+              sequence="10"
+              action="action_annonce"/>
+
+    <menuitem id="menu_ceo_response"
+              name="Réponses CEO"
+              parent="menu_root"
+              sequence="20"
+              action="action_ceo_response"
+              groups="GesPro.group_ceo"/>
+</odoo>
