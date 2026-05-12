@@ -26,14 +26,26 @@
         'views/menu.xml',
         'views/annonce_view.xml',
         'views/reponse_ceo.xml',
-        'views/appel_views.xml',
-        'views/checklist_views.xml',
-        'views/paiement_views.xml',
-        'views/dashboard_views.xml',
         'data/sequences.xml',
-        'data/cron_alerte.xml',
-        'data/mail_template.xml',
-        'data/checklist_templates.xml',
+
+
+        # sprint 2
+        # 'views/appel_views.xml',
+
+        #sprint 3
+        # 'views/checklist_views.xml',
+        #'views/paiement_views.xml',
+        #'data/checklist_templates.xml',
+
+        # sprint 4
+        # 'data/cron_alerte.xml',
+        # 'data/mail_template.xml',
+
+        #sprint 5
+        # 'views/dashboard_views.xml',
+        
+       
+        
     ],
     
     'installable': True,
