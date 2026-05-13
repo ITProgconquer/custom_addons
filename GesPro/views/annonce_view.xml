@@ -11,21 +11,21 @@
                             type="object"
                             class="btn-primary"
                             groups="GesPro.group_ceo"
-                            attrs="{'invisible': [('state', '=', 'lu')]}"
+                            invisible="state == 'lu'"
                             confirm="Confirmer la lecture de cette annonce ?"/>
                     <button name="action_marquer_comme_non_lu"
                             string="Marquer comme Non Lu"
                             type="object"
                             class="btn-secondary"
                             groups="GesPro.group_ceo"
-                            attrs="{'invisible': [('state', '!=', 'lu')]}"
+                            invisible="state != 'lu'"
                             confirm="Marquer comme non lue ?"/>
                     <field name="state" widget="statusbar" statusbar_visible="new,lu,non_lu"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
-                        <h2 class="text-muted" attrs="{'invisible': [('state', '!=', 'non_lu')]}">
+                        <h2 class="text-muted" invisible="state != 'non_lu'">
                             Motif de non-lecture : <field name="note_refus"/>
                         </h2>
                     </div>
@@ -42,7 +42,7 @@
                                 <field name="capture" widget="image" class="oe_avatar"
                                        options="{'preview_image': 'capture'}"
                                        nolabel="1"
-                                       attrs="{'invisible': [('capture', '=', False)]}"/>
+                                       invisible="capture == False"/>  
                                 <field name="capture_name" invisible="1"/>
                                 <label for="capture" string="Capture d'écran"/>
                                 <field name="capture" widget="binary" filename="capture_name"/>
@@ -56,11 +56,11 @@
                         </page>
                         <page string="Réponses CEO" groups="GesPro.group_ceo">
                             <field name="reponse_ceo_ids" widget="one2many_list">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="name"/>
                                     <field name="description"/>
                                     <field name="state"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -70,16 +70,16 @@
         </field>
     </record>
 
-    <record id="view_annonce_tree" model="ir.ui.view">
+    <record id="view_annonce_list" model="ir.ui.view">
         <field name="name">gespro.annonce.list</field>
         <field name="model">gespro.annonce</field>
         <field name="arch" type="xml">
-            <tree decoration-muted="state == 'lu'">
+            <list decoration-muted="state == 'lu'">
                 <field name="name"/>
                 <field name="date_envoi"/>
                 <field name="user_id"/>
                 <field name="state" widget="badge" decoration-success="state=='lu'" decoration-warning="state=='non_lu'"/>
-            </tree>
+            </list>
         </field>
     </record>
 

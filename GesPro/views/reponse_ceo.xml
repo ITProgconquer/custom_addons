@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_ceo_response_form" model="ir.ui.view">
-        <field name="name">gespro.ceo.response.form</field>
-        <field name="model">gespro.ceo.response</field>
+        <field name="name">gespro.reponse_ceo.form</field>
+        <field name="model">gespro.reponse_ceo</field>
         <field name="arch" type="xml">
             <form string="Réponse CEO">
                 <header>
@@ -20,7 +20,7 @@
                             <field name="capture" widget="image" class="oe_avatar"
                                    options="{'preview_image': 'capture'}"
                                    nolabel="1"
-                                   attrs="{'invisible': [('capture', '=', False)]}"/>
+                                   invisible="capture == False"/>
                             <field name="capture_name" invisible="1"/>
                             <label for="capture" string="Capture d'écran"/>
                             <field name="capture" widget="binary" filename="capture_name"/>
@@ -33,23 +33,23 @@
         </field>
     </record>
 
-    <record id="view_ceo_response_tree" model="ir.ui.view">
-        <field name="name">gespro.ceo.response.list</field>
-        <field name="model">gespro.ceo.response</field>
+    <record id="view_ceo_response_list" model="ir.ui.view">
+        <field name="name">gespro.reponse_ceo.list</field>
+        <field name="model">gespro.reponse_ceo</field>
         <field name="arch" type="xml">
-            <tree>
+            <list>
                 <field name="name"/>
                 <field name="annonce_id"/>
                 <field name="user_id"/>
                 <field name="date_envoi"/>
                 <field name="state" widget="badge"/>
-            </tree>
+            </list>
         </field>
     </record>
-
+    <!--
     <record id="view_ceo_response_search" model="ir.ui.view">
-        <field name="name">gespro.ceo.response.search</field>
-        <field name="model">gespro.ceo.response</field>
+        <field name="name">gespro.reponse_ceo.search</field>
+        <field name="model">gespro.reponse_ceo</field>
         <field name="arch" type="xml">
             <search>
                 <field name="name"/>
@@ -60,4 +60,5 @@
             </search>
         </field>
     </record>
+    -->
 </odoo>

@@ -8,7 +8,7 @@
 
     <record id="action_ceo_response" model="ir.actions.act_window">
         <field name="name">Réponses CEO</field>
-        <field name="res_model">gespro.ceo.response</field>
+        <field name="res_model">gespro.reponse_ceo</field>
         <field name="view_mode">tree,form</field>
     </record>
 

@@ -1,0 +1,6 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_annonce_ceo,gespro.annonce.ceo,model_gespro_annonce,group_ceo,1,1,1,1
+access_annonce_pm,gespro.annonce.pm,model_gespro_annonce,group_pm,1,1,1,0
+access_annonce_resadmin,gespro.annonce.resadmin,model_gespro_annonce,group_resadmin,1,0,1,0
+access_annonce_tech,gespro.annonce.tech,model_gespro_annonce,group_tech,1,0,0,0
+access_annonce_fin,gespro.annonce.fin,model_gespro_annonce,group_fin,1,0,0,0
