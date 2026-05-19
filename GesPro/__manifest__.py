@@ -9,7 +9,7 @@
         Détection → Préparation → Soumission → Résultats
     ''',
     'author': 'IT Projet',
-    'website': 'https://www.itprojet.com',
+    'website': 'https://www.it-projet.com',
     
     # Modules Odoo nécessaires
     'depends': [
@@ -17,36 +17,53 @@
         'mail',      # Chatter, notifications, emails
         'web',       # Interface web
         'board',     # Tableaux de bord
+        'web_responsive',  # Responsive design pour mobile
     ],
-    
+    'assets': {
+        'web.assets_backend': [
+            'GesPro/static/src/scss/gespro_theme.scss',
+        ],
+    },
+   
     # Fichiers chargés à l'installation
-    'data': [
-        'security/groups.xml',
-        'security/ir.model.access.csv',
-        'views/menu.xml',
-        'views/annonce_view.xml',
-        'views/reponse_ceo.xml',
-        'data/sequences.xml',
+   'data': [
+    # Sécurité
+    'security/groups.xml',
+    'security/ir.model.access.csv',
+    'security/record_rules.xml',
 
+    # Données initiales
+    'data/sequences.xml',
+    'data/checklist_templates.xml',
 
-        # sprint 2
-        # 'views/appel_views.xml',
+    # Vues (TOUTES avant le menu)
+    'views/annonce_views.xml',
+    'views/appel_views.xml',
+    'views/lot_views.xml',
+    'views/personnel_line_views.xml',
+    'views/material_line_views.xml',
+    'views/payment_views.xml',
+    'views/checklist_template_views.xml',
+    'views/checklist_line_views.xml',
+    'views/similar_contract_views.xml',
+    'views/cv_personnel_views.xml',
 
-        #sprint 3
-        # 'views/checklist_views.xml',
-        #'views/paiement_views.xml',
-        #'data/checklist_templates.xml',
+    # Dashboards
+    'views/dashboard_ceo.xml',
+    'views/dashboard_pm.xml',
+    'views/dashboard_resadmin.xml',
+    'views/dashboard_tech.xml',
+    'views/dashboard_fin.xml',
 
-        # sprint 4
-        # 'data/cron_alerte.xml',
-        # 'data/mail_template.xml',
+    # Menu EN DERNIER
+    'views/menu.xml',
 
-        #sprint 5
-        # 'views/dashboard_views.xml',
-        
-       
-        
-    ],
+    # Wizard
+    'wizard/ignore_wizard_views.xml',
+
+    # Rapports
+    'reports/ao_report.xml',
+],
     
     'installable': True,
     'application': True,

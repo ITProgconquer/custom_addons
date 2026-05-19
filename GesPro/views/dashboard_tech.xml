@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_dashboard_tech" model="ir.actions.act_window">
+            <field name="name">Dashboard TECH</field>
+            <field name="res_model">gespro.appel</field>
+            <field name="view_mode">kanban,list</field>
+            <field name="domain">[('state', '=', 'en_preparation')]</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,49 @@
+from odoo import models, fields
+
+
+class Payment(models.Model):
+    _name = "gespro.payment"
+    _description = "Paiement des frais d'accès au dossier"
+    _order = "payment_date desc"
+
+    annonce_id = fields.Many2one(
+        'gespro.annonce',
+        string="Annonce",
+        required=True,
+        ondelete='cascade'
+    )
+
+    amount = fields.Float(
+        string="Montant payé",
+        required=True,
+        digits=(16, 2)
+    )
+
+    currency_id = fields.Many2one(
+        'res.currency',
+        string="Devise",
+        default=lambda self: self.env.ref('base.XOF')
+    )
+
+    payment_date = fields.Date(
+        string="Date de paiement",
+        required=True,
+        default=fields.Date.today
+    )
+
+    proof = fields.Binary(string="Preuve de paiement")
+
+    proof_filename = fields.Char(string="Nom du fichier preuve")
+
+    state = fields.Selection([
+        ('pending', 'En attente'),
+        ('paid', 'Payé'),
+        ('rejected', 'Rejeté'),
+    ], string="Statut", default='pending', tracking=True)
+
+    document_files = fields.Many2many(
+        'ir.attachment',
+        string="Dossier complet acquis (PDF/Word)"
+    )
+
+    note = fields.Text(string="Commentaire")

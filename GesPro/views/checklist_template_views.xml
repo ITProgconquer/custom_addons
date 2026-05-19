@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_checklist_template_form" model="ir.ui.view">
+            <field name="name">gespro.checklist.template.form</field>
+            <field name="model">gespro.checklist.template</field>
+            <field name="arch" type="xml">
+                <form string="Modèle de Checklist">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="category"/>
+                            <field name="sequence"/>
+                            <field name="is_mandatory"/>
+                            <field name="active"/>
+                            <field name="description"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_checklist_template_list" model="ir.ui.view">
+            <field name="name">gespro.checklist.template.list</field>
+            <field name="model">gespro.checklist.template</field>
+            <field name="arch" type="xml">
+                <list string="Modèles de Checklists">
+                    <field name="name"/>
+                    <field name="category" widget="badge"/>
+                    <field name="sequence"/>
+                    <field name="is_mandatory"/>
+                </list>
+            </field>
+        </record>
+        <record id="action_checklist_template" model="ir.actions.act_window">
+            <field name="name">Modèles de Checklists</field>
+            <field name="res_model">gespro.checklist.template</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

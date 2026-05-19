@@ -1,0 +1,232 @@
+/* ============================================ */
+/* GESPRO - DESIGN PREMIUM                      */
+/* Rouge/Blanc/Noir - Moderne & Épuré           */
+/* ============================================ */
+
+// ─── VARIABLES ────────────────────────────────
+
+$primary: #c62828;
+$primary-dark: #8e0000;
+$primary-light: #ff5f52;
+$dark: #1a1a1a;
+$darker: #0d0d0d;
+$white: #ffffff;
+$light: #fafafa;
+$gray: #f5f5f5;
+$border: #e8e8e8;
+$shadow: 0 2px 12px rgba(0,0,0,0.08);
+$radius: 8px;
+
+// ─── BODY ─────────────────────────────────────
+
+body {
+    background: $gray !important;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+}
+
+// ─── NAVBAR ───────────────────────────────────
+
+.o_main_navbar {
+    background: linear-gradient(135deg, $dark 0%, $darker 100%) !important;
+    border-bottom: 3px solid $primary !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.15) !important;
+    height: 50px !important;
+}
+
+.o_main_navbar .o_menu_brand {
+    color: $white !important;
+    font-weight: 700 !important;
+    font-size: 20px !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    background: $primary !important;
+    padding: 6px 20px !important;
+    border-radius: 0 0 8px 0 !important;
+}
+
+// ─── BOUTONS ──────────────────────────────────
+
+.btn-primary {
+    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%) !important;
+    border: none !important;
+    color: $white !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    padding: 8px 20px !important;
+    box-shadow: 0 4px 12px rgba(198,40,40,0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 20px rgba(198,40,40,0.4) !important;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(46,125,50,0.3) !important;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%) !important;
+    border: none !important;
+    border-radius: 6px !important;
+    box-shadow: 0 4px 12px rgba(211,47,47,0.3) !important;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%) !important;
+    border: none !important;
+    color: $white !important;
+    border-radius: 6px !important;
+}
+
+// ─── CARDS ────────────────────────────────────
+
+.o_form_view {
+    background: $white !important;
+    border-radius: $radius !important;
+    box-shadow: $shadow !important;
+    margin: 16px !important;
+}
+
+.o_form_sheet_bg {
+    background: transparent !important;
+    padding: 24px !important;
+}
+
+// ─── KANBAN ───────────────────────────────────
+
+.o_kanban_view {
+    background: transparent !important;
+}
+
+.oe_kanban_card {
+    background: $white !important;
+    border-radius: 12px !important;
+    border: none !important;
+    border-left: 5px solid $primary !important;
+    box-shadow: $shadow !important;
+    transition: all 0.3s ease !important;
+    padding: 16px !important;
+}
+
+.oe_kanban_card:hover {
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+}
+
+// ─── LISTES ───────────────────────────────────
+
+.o_list_view {
+    background: $white !important;
+    border-radius: $radius !important;
+    box-shadow: $shadow !important;
+    overflow: hidden !important;
+}
+
+.o_list_table th {
+    background: $dark !important;
+    color: $white !important;
+    font-weight: 600 !important;
+    text-transform: uppercase !important;
+    font-size: 12px !important;
+    letter-spacing: 0.5px !important;
+    padding: 12px 16px !important;
+}
+
+.o_list_table td {
+    padding: 10px 16px !important;
+    border-bottom: 1px solid $border !important;
+}
+
+.o_list_table tr:hover td {
+    background: #fff5f5 !important;
+}
+
+// ─── STATUSBAR ────────────────────────────────
+
+.o_statusbar_buttons .btn {
+    border-radius: 20px !important;
+    font-weight: 600 !important;
+    font-size: 12px !important;
+    padding: 6px 16px !important;
+}
+
+// ─── TITRES ───────────────────────────────────
+
+.o_form_view .oe_title h1 {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: $dark !important;
+    border-bottom: 3px solid $primary !important;
+    padding-bottom: 12px !important;
+    margin-bottom: 20px !important;
+}
+
+// ─── NOTEBOOK / ONGLETS ───────────────────────
+
+.nav-tabs .nav-link.active {
+    border-bottom: 3px solid $primary !important;
+    color: $primary !important;
+    font-weight: 600 !important;
+}
+
+// ─── BADGES ───────────────────────────────────
+
+.badge {
+    border-radius: 12px !important;
+    padding: 4px 12px !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+}
+
+.badge-success {
+    background: #e8f5e9 !important;
+    color: #2e7d32 !important;
+}
+
+.badge-warning {
+    background: #fff3e0 !important;
+    color: #e65100 !important;
+}
+
+.badge-danger {
+    background: #ffebee !important;
+    color: #c62828 !important;
+}
+
+// ─── INPUTS ───────────────────────────────────
+
+.o_input {
+    border: 2px solid $border !important;
+    border-radius: 6px !important;
+    padding: 8px 12px !important;
+    transition: border 0.3s ease !important;
+}
+
+.o_input:focus {
+    border-color: $primary !important;
+    box-shadow: 0 0 0 3px rgba(198,40,40,0.1) !important;
+}
+
+// ─── SCROLLBAR ────────────────────────────────
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: $gray;
+}
+
+::-webkit-scrollbar-thumb {
+    background: $primary;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: $primary-dark;
+}

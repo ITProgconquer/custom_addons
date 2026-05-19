@@ -1,0 +1,56 @@
+/* ============================================ */
+/* GESPRO - Thème Rouge / Blanc / Noir          */
+/* ============================================ */
+
+:root {
+    --gespro-primary: #c62828;
+    --gespro-primary-dark: #8e0000;
+    --gespro-accent: #ffffff;
+    --gespro-dark: #1a1a1a;
+    --gespro-card: #ffffff;
+    --gespro-bg: #f5f5f5;
+}
+
+/* Navbar */
+.o_main_navbar {
+    background-color: var(--gespro-dark) !important;
+    border-bottom: 3px solid var(--gespro-primary) !important;
+}
+
+.o_main_navbar .o_menu_brand {
+    color: var(--gespro-accent) !important;
+    font-weight: bold;
+}
+
+/* Boutons primaires */
+.btn-primary {
+    background-color: var(--gespro-primary) !important;
+    border-color: var(--gespro-primary-dark) !important;
+    color: white !important;
+}
+
+.btn-primary:hover {
+    background-color: var(--gespro-primary-dark) !important;
+}
+
+/* Cartes Kanban */
+.oe_kanban_card {
+    border-left: 4px solid var(--gespro-primary) !important;
+    border-radius: 8px !important;
+}
+
+/* Titres */
+h1, h2, h3 {
+    color: var(--gespro-dark) !important;
+}
+
+/* Badges */
+.badge-success {
+    background-color: #2e7d32 !important;
+}
+.badge-warning {
+    background-color: #f57c00 !important;
+}
+.badge-danger {
+    background-color: var(--gespro-primary) !important;
+}

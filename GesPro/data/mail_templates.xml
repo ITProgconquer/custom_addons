@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="mail_template_alert_j5" model="mail.template">
+            <field name="name">Alerte J-5</field>
+            <field name="model_id" ref="model_gespro_appel"/>
+            <field name="subject">⚠️ [J-5] Deadline approche : {{ object.titre }}</field>
+            <field name="body_html">
+                <p>Bonjour,</p>
+                <p>L'appel à concurrence <strong>{{ object.name }}</strong> arrive à échéance dans 5 jours.</p>
+                <p>Date limite : {{ object.deadline }}</p>
+                <p>Merci de finaliser le dossier.</p>
+            </field>
+        </record>
+
+        <record id="mail_template_alert_j2" model="mail.template">
+            <field name="name">Alerte J-2</field>
+            <field name="model_id" ref="model_gespro_appel"/>
+            <field name="subject">🚨 [J-2] URGENT : {{ object.titre }}</field>
+            <field name="body_html">
+                <p>⚠️ Attention,</p>
+                <p>L'appel <strong>{{ object.name }}</strong> expire dans 2 jours.</p>
+                <p>Date limite : {{ object.deadline }}</p>
+                <p>Validation CEO obligatoire.</p>
+            </field>
+        </record>
+
+    </data>
+</odoo>

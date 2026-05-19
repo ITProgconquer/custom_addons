@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================ -->
+        <!-- CHECKLIST TECHNIQUE                          -->
+        <!-- ============================================ -->
+        <record id="checklist_tech_1" model="gespro.checklist.template">
+            <field name="name">Rédaction du canevas de l'offre</field>
+            <field name="category">tech</field>
+            <field name="sequence">1</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_tech_2" model="gespro.checklist.template">
+            <field name="name">Recherche des fiches techniques</field>
+            <field name="category">tech</field>
+            <field name="sequence">2</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_tech_3" model="gespro.checklist.template">
+            <field name="name">Rédaction CV dans le canevas</field>
+            <field name="category">tech</field>
+            <field name="sequence">3</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_tech_4" model="gespro.checklist.template">
+            <field name="name">Relecture complète, compilation et partage</field>
+            <field name="category">tech</field>
+            <field name="sequence">4</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CHECKLIST ADMINISTRATIVE                     -->
+        <!-- ============================================ -->
+        <record id="checklist_admin_1" model="gespro.checklist.template">
+            <field name="name">Consultation et achat des dossiers</field>
+            <field name="category">admin</field>
+            <field name="sequence">1</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_admin_2" model="gespro.checklist.template">
+            <field name="name">Recherche des pièces administratives</field>
+            <field name="category">admin</field>
+            <field name="sequence">2</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_admin_3" model="gespro.checklist.template">
+            <field name="name">Faire notarier le matériel si demandé</field>
+            <field name="category">admin</field>
+            <field name="sequence">3</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_admin_4" model="gespro.checklist.template">
+            <field name="name">Dépôt et partage des résultats du dépouillement</field>
+            <field name="category">admin</field>
+            <field name="sequence">4</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- CHECKLIST FINANCIÈRE                         -->
+        <!-- ============================================ -->
+        <record id="checklist_fin_1" model="gespro.checklist.template">
+            <field name="name">Lettre de soumission</field>
+            <field name="category">fin</field>
+            <field name="sequence">1</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_fin_2" model="gespro.checklist.template">
+            <field name="name">Bordereaux des prix unitaires</field>
+            <field name="category">fin</field>
+            <field name="sequence">2</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_fin_3" model="gespro.checklist.template">
+            <field name="name">Faire le devis</field>
+            <field name="category">fin</field>
+            <field name="sequence">3</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_fin_4" model="gespro.checklist.template">
+            <field name="name">Envoi fichier Excel au CEO</field>
+            <field name="category">fin</field>
+            <field name="sequence">4</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_fin_5" model="gespro.checklist.template">
+            <field name="name">Feedback du CEO</field>
+            <field name="category">fin</field>
+            <field name="sequence">5</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+        <record id="checklist_fin_6" model="gespro.checklist.template">
+            <field name="name">Document final</field>
+            <field name="category">fin</field>
+            <field name="sequence">6</field>
+            <field name="is_mandatory" eval="True"/>
+        </record>
+
+    </data>
+</odoo>

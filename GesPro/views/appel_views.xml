@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ============================================ -->
+        <!-- VUE FORMULAIRE                               -->
+        <!-- ============================================ -->
+        <record id="view_appel_form" model="ir.ui.view">
+            <field name="name">gespro.appel.form</field>
+            <field name="model">gespro.appel</field>
+            <field name="arch" type="xml">
+                <form string="Appel à Concurrence">
+                    <header>
+                        <button name="action_generate_lots" string="Générer les Lots" type="object"
+                                class="btn-primary"
+                                invisible="state != 'en_preparation'"/>
+                        <button name="action_generate_checklists" string="Générer les Checklists" type="object"
+                                class="btn-primary"
+                                invisible="state != 'en_preparation'"/>
+                        <button name="action_valider" string="Valider (Final)" type="object"
+                                class="btn-success"
+                                groups="gespro.group_ceo"
+                                invisible="state != 'en_preparation'"/>
+                        <button name="action_soumettre" string="Soumettre" type="object"
+                                class="btn-primary"
+                                groups="GesPro.group_pm,GesPro.group_resadmin"
+                                invisible="state != 'pret'"/>
+                        <button name="action_gagne" string="Gagné" type="object"
+                                class="btn-success"
+                                groups="GesPro.group_pm,GesPro.group_resadmin"
+                                invisible="state != 'soumis'"/>
+                        <button name="action_perdu" string="Perdu" type="object"
+                                class="btn-danger"
+                                groups="GesPro.group_pm,GesPro.group_resadmin"
+                                invisible="state != 'soumis'"/>
+                        <button name="action_annuler" string="Annuler" type="object"
+                                class="btn-secondary"
+                                groups="GesPro.group_ceo"
+                                invisible="state in ['gagne', 'perdu', 'annule']"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="annonce_id" invisible="1"/>
+                                <field name="pm_id" readonly="1"/>
+                                <field name="titre"/>
+                                <field name="type_appel"/>
+                                <field name="lot_count" invisible="type_appel != 'allotti'"/>
+                                <field name="procedure"/>
+                                <field name="source"/>
+                            </group>
+                            <group>
+                                <field name="date_publication"/>
+                                <field name="deadline"/>
+                                <field name="delai_restant" readonly="1"/>
+                                <field name="progression_generale" widget="progressbar"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lots">
+                                <field name="lot_ids">
+                                    <list editable="bottom">
+                                        <field name="lot_num"/>
+                                        <field name="titre"/>
+                                        <field name="is_ready" widget="boolean_toggle"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Checklists">
+                                <group>
+                                    <field name="progression_tech" widget="progressbar"/>
+                                    <field name="progression_admin" widget="progressbar"/>
+                                    <field name="progression_fin" widget="progressbar"/>
+                                </group>
+                                <field name="checklist_ids">
+                                    <list editable="bottom">
+                                        <field name="categorie" widget="badge"/>
+                                        <field name="libelle"/>
+                                        <field name="is_done"/>
+                                        <field name="responsible_id"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- VUE LISTE                                    -->
+        <!-- ============================================ -->
+        <record id="view_appel_list" model="ir.ui.view">
+            <field name="name">gespro.appel.list</field>
+            <field name="model">gespro.appel</field>
+            <field name="arch" type="xml">
+                <list string="Appels à Concurrence">
+                    <field name="name"/>
+                    <field name="titre"/>
+                    <field name="annonce_id"/>
+                    <field name="state" widget="badge"/>
+                    <field name="deadline"/>
+                    <field name="delai_restant"/>
+                    <field name="progression_generale" widget="progressbar"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- VUE KANBAN                                   -->
+        <!-- ============================================ -->
+        <record id="view_appel_kanban" model="ir.ui.view">
+            <field name="name">gespro.appel.kanban</field>
+            <field name="model">gespro.appel</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <h3><field name="name"/></h3>
+                                    <div><field name="titre"/></div>
+                                    <div>Deadline : <field name="deadline"/></div>
+                                    <div>Délai : <field name="delai_restant"/> jours</div>
+                                    <field name="progression_generale" widget="progressbar"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- VUE SEARCH                                   -->
+        <!-- ============================================ -->
+        <record id="view_appel_search" model="ir.ui.view">
+            <field name="name">gespro.appel.search</field>
+            <field name="model">gespro.appel</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="titre"/>
+                    <field name="annonce_id"/>
+                    <filter string="En préparation" name="filter_prep" domain="[('state','=','en_preparation')]"/>
+                    <filter string="Prêt" name="filter_pret" domain="[('state','=','pret')]"/>
+                    <filter string="Soumis" name="filter_soumis" domain="[('state','=','soumis')]"/>
+                    <filter string="Gagné" name="filter_gagne" domain="[('state','=','gagne')]"/>
+                    <filter string="Perdu" name="filter_perdu" domain="[('state','=','perdu')]"/>
+                    <separator/>
+                    <filter string="Mes appels" name="filter_my" domain="[('pm_id','=',uid)]"/>
+                    <filter string="Urgent (J-2)" name="filter_urgent" domain="[('delai_restant','&lt;=',2)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- ============================================ -->
+        <!-- ACTION                                       -->
+        <!-- ============================================ -->
+        <record id="action_appel" model="ir.actions.act_window">
+            <field name="name">Appels à Concurrence</field>
+            <field name="res_model">gespro.appel</field>
+            <field name="view_mode">list,kanban,form</field>
+        </record>
+
+    </data>
+</odoo>

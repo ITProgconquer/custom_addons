@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_material_line_form" model="ir.ui.view">
+            <field name="name">gespro.material_line.form</field>
+            <field name="model">gespro.material_line</field>
+            <field name="arch" type="xml">
+                <form string="Exigence Matériel">
+                    <sheet>
+                        <group>
+                            <field name="lot_id"/>
+                            <field name="designation"/>
+                            <field name="specifications"/>
+                            <field name="qty_required"/>
+                            <field name="qty_provided"/>
+                            <field name="is_satisfied"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

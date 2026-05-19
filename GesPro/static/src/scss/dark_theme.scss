@@ -1,0 +1,79 @@
+/* ============================================ */
+/* IT PROJET - DARK THEME                       */
+/* ============================================ */
+
+// Fond général
+body {
+    background-color: #1a1a2e !important;
+    color: #e0e0e0 !important;
+}
+
+// Barre du haut (navbar)
+.o_main_navbar {
+    background-color: #0f0f1a !important;
+    border-bottom: 2px solid #6c63ff !important;
+}
+
+// Menu latéral
+.o_menu_apps {
+    background-color: #16213e !important;
+}
+
+// Cartes et conteneurs
+.o_kanban_card, .o_form_view, .o_list_view {
+    background-color: #1e1e3a !important;
+    border: 1px solid #2a2a4a !important;
+    border-radius: 8px !important;
+}
+
+// Boutons
+.btn-primary {
+    background-color: #6c63ff !important;
+    border-color: #6c63ff !important;
+}
+
+// Tableaux
+.o_list_table {
+    background-color: #1e1e3a !important;
+    color: #e0e0e0 !important;
+}
+
+// Champs formulaire
+.o_input {
+    background-color: #2a2a4a !important;
+    color: #ffffff !important;
+    border: 1px solid #3a3a5a !important;
+}
+
+// Titres
+h1, h2, h3, h4 {
+    color: #ffffff !important;
+}
+
+// Badges statut
+.badge-success {
+    background-color: #00c853 !important;
+}
+.badge-warning {
+    background-color: #ff9100 !important;
+}
+.badge-danger {
+    background-color: #ff1744 !important;
+}
+
+// Chatter
+.o_Chatter {
+    background-color: #1a1a2e !important;
+}
+
+// Scrollbar
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #1a1a2e;
+}
+::-webkit-scrollbar-thumb {
+    background: #6c63ff;
+    border-radius: 4px;
+}

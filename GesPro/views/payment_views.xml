@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_payment_form" model="ir.ui.view">
+            <field name="name">gespro.payment.form</field>
+            <field name="model">gespro.payment</field>
+            <field name="arch" type="xml">
+                <form string="Paiement">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="annonce_id"/>
+                            <field name="amount" widget="monetary"/>
+                            <field name="currency_id"/>
+                            <field name="payment_date"/>
+                            <field name="proof" widget="binary" filename="proof_filename"/>
+                            <field name="document_files" widget="many2many_binary"/>
+                            <field name="note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_payment_list" model="ir.ui.view">
+            <field name="name">gespro.payment.list</field>
+            <field name="model">gespro.payment</field>
+            <field name="arch" type="xml">
+                <list string="Paiements">
+                    <field name="annonce_id"/>
+                    <field name="amount"/>
+                    <field name="state" widget="badge"/>
+                    <field name="payment_date"/>
+                </list>
+            </field>
+        </record>
+        <record id="action_payment" model="ir.actions.act_window">
+            <field name="name">Paiements</field>
+            <field name="res_model">gespro.payment</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

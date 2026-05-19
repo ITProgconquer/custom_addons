@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_checklist_line_form" model="ir.ui.view">
+            <field name="name">gespro.checklist.line.form</field>
+            <field name="model">gespro.checklist.line</field>
+            <field name="arch" type="xml">
+                <form string="Item Checklist">
+                    <sheet>
+                        <group>
+                            <field name="appel_id"/>
+                            <field name="template_id"/>
+                            <field name="categorie"/>
+                            <field name="libelle"/>
+                            <field name="is_done"/>
+                            <field name="is_mandatory"/>
+                            <field name="responsible_id"/>
+                            <field name="note"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

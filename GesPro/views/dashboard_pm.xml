@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_dashboard_pm" model="ir.actions.act_window">
+            <field name="name">Dashboard PM</field>
+            <field name="res_model">gespro.appel</field>
+            <field name="view_mode">kanban,list,pivot,graph</field>
+            <field name="domain">[('pm_id', '=', uid), ('state', '!=', 'perdu')]</field>
+        </record>
+    </data>
+</odoo>

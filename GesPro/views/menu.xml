@@ -1,32 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="action_annonce" model="ir.actions.act_window">
-        <field name="name">Annonces</field>
-        <field name="res_model">gespro.annonce</field>
-        <field name="view_mode">kanban,tree,form</field>
-    </record>
+    <data>
 
-    <record id="action_ceo_response" model="ir.actions.act_window">
-        <field name="name">Réponses CEO</field>
-        <field name="res_model">gespro.reponse_ceo</field>
-        <field name="view_mode">tree,form</field>
-    </record>
+        <!-- Menu principal GESPRO -->
+        <menuitem id="menu_gespro_root"
+                  name="GESPRO"
+                  sequence="10"
+                  web_icon="gespro,static/src/img/icon.png"/>
 
-    <menuitem id="menu_root"
-              name="IT Projet"
-              sequence="70"
-              web_icon="GesPro,static/description/icon.png"/>
+        <!-- Annonces -->
+        <menuitem id="menu_annonce"
+                  name="Annonces"
+                  parent="menu_gespro_root"
+                  action="action_annonce"
+                  sequence="10"/>
 
-    <menuitem id="menu_annonce"
-              name="Annonces"
-              parent="menu_root"
-              sequence="10"
-              action="action_annonce"/>
+        <!-- Appels à Concurrence -->
+        <menuitem id="menu_appel"
+                  name="Appels à Concurrence"
+                  parent="menu_gespro_root"
+                  action="action_appel"
+                  sequence="20"/>
 
-    <menuitem id="menu_ceo_response"
-              name="Réponses CEO"
-              parent="menu_root"
-              sequence="20"
-              action="action_ceo_response"
-              groups="GesPro.group_ceo"/>
+        <!-- Paiements -->
+        <menuitem id="menu_payment"
+                  name="Paiements"
+                  parent="menu_gespro_root"
+                  action="action_payment"
+                  sequence="30"/>
+
+        <!-- Checklists -->
+        <menuitem id="menu_checklist_template"
+                  name="Modèles de Checklists"
+                  parent="menu_gespro_root"
+                  action="action_checklist_template"
+                  sequence="40"
+                  groups="group_ceo,group_resadmin"/>
+
+        <!-- CV Personnel -->
+        <menuitem id="menu_cv_personnel"
+                  name="CV Personnel"
+                  parent="menu_gespro_root"
+                  action="action_cv_personnel"
+                  sequence="50"/>
+
+        <!-- Marchés Similaires -->
+        <menuitem id="menu_similar_contract"
+                  name="Marchés Similaires"
+                  parent="menu_gespro_root"
+                  action="action_similar_contract"
+                  sequence="60"/>
+
+        <!-- Dashboards -->
+        <menuitem id="menu_dashboard"
+                  name="Tableaux de Bord"
+                  parent="menu_gespro_root"
+                  sequence="70"/>
+
+        <menuitem id="menu_dashboard_ceo"
+                  name="Dashboard CEO"
+                  parent="menu_dashboard"
+                  action="action_dashboard_ceo"
+                  sequence="10"
+                  groups="group_ceo"/>
+
+        <menuitem id="menu_dashboard_pm"
+                  name="Dashboard PM"
+                  parent="menu_dashboard"
+                  action="action_dashboard_pm"
+                  sequence="20"
+                  groups="group_pm"/>
+
+        <menuitem id="menu_dashboard_resadmin"
+                  name="Dashboard RESADMIN"
+                  parent="menu_dashboard"
+                  action="action_dashboard_resadmin"
+                  sequence="30"
+                  groups="group_resadmin"/>
+
+        <menuitem id="menu_dashboard_tech"
+                  name="Dashboard TECH"
+                  parent="menu_dashboard"
+                  action="action_dashboard_tech"
+                  sequence="40"
+                  groups="group_tech"/>
+
+        <menuitem id="menu_dashboard_fin"
+                  name="Dashboard FIN"
+                  parent="menu_dashboard"
+                  action="action_dashboard_fin"
+                  sequence="50"
+                  groups="group_fin"/>
+
+    </data>
 </odoo>

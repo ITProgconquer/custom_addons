@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="action_dashboard_ceo" model="ir.actions.act_window">
+            <field name="name">Dashboard CEO</field>
+            <field name="res_model">gespro.appel</field>
+            <field name="view_mode">kanban,list,pivot,graph</field>
+            <field name="domain">[('state', 'not in', ['gagne', 'perdu', 'annule'])]</field>
+            <field name="context">{'search_default_filter_urgent': 1}</field>
+        </record>
+    </data>
+</odoo>

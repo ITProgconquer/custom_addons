@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_personnel_line_form" model="ir.ui.view">
+            <field name="name">gespro.personnel_line.form</field>
+            <field name="model">gespro.personnel_line</field>
+            <field name="arch" type="xml">
+                <form string="Exigence Personnel">
+                    <sheet>
+                        <group>
+                            <field name="lot_id"/>
+                            <field name="role"/>
+                            <field name="qualification_min"/>
+                            <field name="nb_exige"/>
+                            <field name="experience_years"/>
+                            <field name="experience_similar"/>
+                            <field name="certificates_required"/>
+                            <field name="is_satisfied"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_lot_form" model="ir.ui.view">
+            <field name="name">gespro.lot.form</field>
+            <field name="model">gespro.lot</field>
+            <field name="arch" type="xml">
+                <form string="Lot">
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="appel_id"/>
+                            <field name="lot_num"/>
+                            <field name="titre"/>
+                            <field name="is_ready" widget="boolean_toggle"/>
+                        </group>
+                        <notebook>
+                            <page string="Personnel">
+                                <field name="personnel_line_ids">
+                                    <list editable="bottom">
+                                        <field name="role"/>
+                                        <field name="nb_exige"/>
+                                        <field name="is_satisfied"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Matériel">
+                                <field name="material_line_ids">
+                                    <list editable="bottom">
+                                        <field name="designation"/>
+                                        <field name="qty_required"/>
+                                        <field name="is_satisfied"/>
+                                    </list>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

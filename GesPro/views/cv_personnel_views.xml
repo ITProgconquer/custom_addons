@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_cv_personnel_form" model="ir.ui.view">
+            <field name="name">gespro.cv_personnel.form</field>
+            <field name="model">gespro.cv_personnel</field>
+            <field name="arch" type="xml">
+                <form string="CV Personnel">
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="matricule"/>
+                            <field name="qualification"/>
+                            <field name="experience_years"/>
+                            <field name="cv_file" widget="binary" filename="cv_filename"/>
+                            <field name="specialties"/>
+                            <field name="active"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+        <record id="view_cv_personnel_list" model="ir.ui.view">
+            <field name="name">gespro.cv_personnel.list</field>
+            <field name="model">gespro.cv_personnel</field>
+            <field name="arch" type="xml">
+                <list string="CV Personnel">
+                    <field name="name"/>
+                    <field name="matricule"/>
+                    <field name="qualification"/>
+                    <field name="experience_years"/>
+                </list>
+            </field>
+        </record>
+        <record id="action_cv_personnel" model="ir.actions.act_window">
+            <field name="name">CV Personnel</field>
+            <field name="res_model">gespro.cv_personnel</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>
