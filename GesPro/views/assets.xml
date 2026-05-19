@@ -1,8 +1,0 @@
-<odoo>
-    <template id="assets_backend" inherit_id="web.assets_backend">
-        <xpath expr="." position="inside">
-            <link rel="stylesheet" 
-                  href="/GesPro/static/src/scss/dark_theme.scss"/>
-        </xpath>
-    </template>
-</odoo>

@@ -122,6 +122,8 @@ class Appel(models.Model):
         compute='_compute_color',
         store=True
     )
+    show_generate_lots = fields.Boolean(compute='_compute_show_buttons')
+    show_generate_checklists = fields.Boolean(compute='_compute_show_buttons')
 
     # ─── MÉTHODES ───────────────────────────────
 
@@ -287,3 +289,20 @@ class Appel(models.Model):
                     )
                     template.send_mail(appel.id, force_send=True)
                     appel.last_alert_sent = today
+    
+    def write(self, vals):
+        user = self.env.user
+        # TECH, FIN, RESADMIN ne peuvent modifier QUE via les checklists
+        if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin') or user.has_group('GesPro.group_resadmin'):
+            allowed_fields = ['checklist_ids']
+            for field in vals:
+                if field not in allowed_fields:
+                    raise fields.AccessError("Vous ne pouvez modifier que les checklists.")
+        return super().write(vals)
+    
+    
+    @api.depends('lot_ids', 'checklist_ids')
+    def _compute_show_buttons(self):
+        for record in self:
+            record.show_generate_lots = len(record.lot_ids) == 0
+            record.show_generate_checklists = len(record.checklist_ids) == 0

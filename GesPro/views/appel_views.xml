@@ -13,10 +13,12 @@
                     <header>
                         <button name="action_generate_lots" string="Générer les Lots" type="object"
                                 class="btn-primary"
-                                invisible="state != 'en_preparation'"/>
+                                groups="GesPro.group_pm"
+                                invisible="show_generate_lots == False"/>
                         <button name="action_generate_checklists" string="Générer les Checklists" type="object"
                                 class="btn-primary"
-                                invisible="state != 'en_preparation'"/>
+                                groups="GesPro.group_pm"
+                                invisible="show_generate_checklists == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
                                 groups="gespro.group_ceo"
@@ -64,26 +66,130 @@
                             <page string="Lots">
                                 <field name="lot_ids">
                                     <list editable="bottom">
-                                        <field name="lot_num"/>
-                                        <field name="titre"/>
-                                        <field name="is_ready" widget="boolean_toggle"/>
+                                        <field name="lot_num" string="N°"/>
+                                        <field name="titre" string="Lot"/>
+                                        <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
                                     </list>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <field name="lot_num"/>
+                                                <field name="titre"/>
+                                                <field name="is_ready" widget="boolean_toggle"/>
+                                            </group>
+                                            <notebook>
+                                                <page string="👥 Personnel">
+                                                    <field name="personnel_line_ids">
+                                                        <list editable="bottom">
+                                                            <field name="role" string="Poste"/>
+                                                            <field name="qualification_min" string="Qualification"/>
+                                                            <field name="nb_exige" string="Nb exigé"/>
+                                                            <field name="experience_years" string="Expérience"/>
+                                                            <field name="is_satisfied" string="✅" widget="boolean_toggle"/>
+                                                        </list>
+                                                    </field>
+                                                </page>
+                                                <page string="🔧 Matériel">
+                                                    <field name="material_line_ids">
+                                                        <list editable="bottom">
+                                                            <field name="designation" string="Désignation"/>
+                                                            <field name="qty_required" string="Qté exigée"/>
+                                                            <field name="qty_provided" string="Qté fournie"/>
+                                                            <field name="is_satisfied" string="✅" widget="boolean_toggle"/>
+                                                        </list>
+                                                    </field>
+                                                </page>
+                                            </notebook>
+                                        </sheet>
+                                    </form>
                                 </field>
                             </page>
-                            <page string="Checklists">
+                           <page string="Checklists">
+                                <!-- Barres de progression style JIRA -->
                                 <group>
-                                    <field name="progression_tech" widget="progressbar"/>
-                                    <field name="progression_admin" widget="progressbar"/>
-                                    <field name="progression_fin" widget="progressbar"/>
+                                    <div class="row g-3">
+                                        <div class="col-4">
+                                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                                                <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                    <i class="fa fa-code fa-2x text-white mb-2"></i>
+                                                    <h5 class="text-white fw-bold mb-0">🔧 Technique</h5>
+                                                </div>
+                                                <div class="card-footer bg-white border-0 px-4 py-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="text-muted small">Progression</span>
+                                                        <span class="fw-bold text-primary"><field name="progression_tech"/>%</span>
+                                                    </div>
+                                                    <field name="progression_tech" widget="progressbar" class="rounded-pill"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-4">
+                                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                                                <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                                    <i class="fa fa-folder-open fa-2x text-white mb-2"></i>
+                                                    <h5 class="text-white fw-bold mb-0">📋 Admin</h5>
+                                                </div>
+                                                <div class="card-footer bg-white border-0 px-4 py-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="text-muted small">Progression</span>
+                                                        <span class="fw-bold text-danger"><field name="progression_admin"/>%</span>
+                                                    </div>
+                                                    <field name="progression_admin" widget="progressbar" class="rounded-pill"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-4">
+                                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                                                <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                                                    <i class="fa fa-dollar fa-2x text-white mb-2"></i>
+                                                    <h5 class="text-white fw-bold mb-0">💰 Financier</h5>
+                                                </div>
+                                                <div class="card-footer bg-white border-0 px-4 py-3">
+                                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                                        <span class="text-muted small">Progression</span>
+                                                        <span class="fw-bold text-success"><field name="progression_fin"/>%</span>
+                                                    </div>
+                                                    <field name="progression_fin" widget="progressbar" class="rounded-pill"/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </group>
-                                <field name="checklist_ids">
-                                    <list editable="bottom">
-                                        <field name="categorie" widget="badge"/>
-                                        <field name="libelle"/>
-                                        <field name="is_done"/>
-                                        <field name="responsible_id"/>
-                                    </list>
-                                </field>
+
+                                <!-- Barre de filtres PM -->
+                                <div class="d-flex gap-2 my-3" groups="GesPro.group_pm">
+                                    <span class="btn btn-sm rounded-pill filter-btn active" data-category="all"
+                                        style="background:#1a1a1a; color:white; cursor:pointer;">
+                                        📋 Tous
+                                    </span>
+                                    <span class="btn btn-sm rounded-pill filter-btn" data-category="tech"
+                                        style="background:#667eea; color:white; cursor:pointer;">
+                                        🔧 Technique
+                                    </span>
+                                    <span class="btn btn-sm rounded-pill filter-btn" data-category="admin"
+                                        style="background:#f5576c; color:white; cursor:pointer;">
+                                        📋 Admin
+                                    </span>
+                                    <span class="btn btn-sm rounded-pill filter-btn" data-category="fin"
+                                        style="background:#43e97b; color:white; cursor:pointer;">
+                                        💰 Financier
+                                    </span>
+                                </div>
+
+                                <!-- Liste des checklists -->
+                                <div class="mt-3">
+                                    <field name="checklist_ids">
+                                        <list default_group_by="categorie" editable="bottom" class="o_list_jira">
+                                            <field name="categorie" widget="badge" column_invisible="1"/>
+                                            <field name="libelle" string="Tâche"/>
+                                            <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                            <field name="responsible_id" string="Assigné à"/>
+                                            <field name="note" string="Commentaire"/>
+                                        </list>
+                                    </field>
+                                </div>
                             </page>
                         </notebook>
                     </sheet>

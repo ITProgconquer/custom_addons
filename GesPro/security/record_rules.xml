@@ -30,15 +30,19 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- TECH : ne voit que ses checklists techniques -->
+        <!-- TECH : ne voit QUE ses checklists techniques + peut les modifier -->
         <record id="rule_checklist_tech" model="ir.rule">
             <field name="name">TECH : checklists techniques uniquement</field>
             <field name="model_id" ref="model_gespro_checklist_line"/>
             <field name="domain_force">[('categorie', '=', 'tech')]</field>
             <field name="groups" eval="[(4, ref('group_tech'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- FIN : lecture seule sur appels en préparation ou prêts -->
+         <!-- FIN : lecture seule sur appels en préparation ou prêts -->
         <record id="rule_appel_fin" model="ir.rule">
             <field name="name">FIN : lecture appels en préparation</field>
             <field name="model_id" ref="model_gespro_appel"/>
@@ -50,13 +54,18 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- FIN : ne voit que ses checklists financières -->
+       <!-- FIN : ne voit QUE ses checklists financières + peut les modifier -->
         <record id="rule_checklist_fin" model="ir.rule">
             <field name="name">FIN : checklists financières uniquement</field>
             <field name="model_id" ref="model_gespro_checklist_line"/>
             <field name="domain_force">[('categorie', '=', 'fin')]</field>
             <field name="groups" eval="[(4, ref('group_fin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
+
 
         <!-- RESADMIN : lecture seule sur appels en préparation -->
         <record id="rule_appel_resadmin" model="ir.rule">
@@ -70,12 +79,28 @@
             <field name="perm_unlink" eval="False"/>
         </record>
 
-        <!-- RESADMIN : ne voit que ses checklists admin -->
+        <!-- RESADMIN : ne voit QUE ses checklists admin + peut les modifier -->
         <record id="rule_checklist_resadmin" model="ir.rule">
             <field name="name">RESADMIN : checklists admin uniquement</field>
             <field name="model_id" ref="model_gespro_checklist_line"/>
             <field name="domain_force">[('categorie', '=', 'admin')]</field>
             <field name="groups" eval="[(4, ref('group_resadmin'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="True"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
+        </record>
+
+        <!-- PM : lecture seule sur toutes les checklists -->
+        <record id="rule_checklist_pm" model="ir.rule">
+            <field name="name">PM : lecture checklists</field>
+            <field name="model_id" ref="model_gespro_checklist_line"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_pm'))]"/>
+            <field name="perm_read" eval="True"/>
+            <field name="perm_write" eval="False"/>
+            <field name="perm_create" eval="False"/>
+            <field name="perm_unlink" eval="False"/>
         </record>
 
         <!-- CEO : accès complet (pas de règle = tout voir) -->

@@ -22,6 +22,7 @@
     'assets': {
         'web.assets_backend': [
             'GesPro/static/src/scss/gespro_theme.scss',
+            'GesPro/static/src/js/gespro_appel.js',
         ],
     },
    
@@ -57,6 +58,8 @@
 
     # Menu EN DERNIER
     'views/menu.xml',
+
+    
 
     # Wizard
     'wizard/ignore_wizard_views.xml',

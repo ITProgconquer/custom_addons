@@ -230,3 +230,112 @@ body {
 ::-webkit-scrollbar-thumb:hover {
     background: $primary-dark;
 }
+// Checklist style JIRA
+.o_list_jira {
+    border-collapse: separate !important;
+    border-spacing: 0 4px !important;
+}
+
+.o_list_jira tr {
+    background: white !important;
+    border-radius: 6px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    margin-bottom: 4px !important;
+    transition: all 0.2s ease !important;
+}
+
+.o_list_jira tr:hover {
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
+    transform: translateX(4px) !important;
+}
+
+.o_list_jira td {
+    padding: 10px 14px !important;
+    border: none !important;
+}
+// ─── CHECKLIST STYLE JIRA PREMIUM ──────────────
+
+.o_list_jira {
+    border-collapse: separate !important;
+    border-spacing: 0 6px !important;
+    background: transparent !important;
+}
+
+.o_list_jira thead th {
+    background: transparent !important;
+    color: #6b7280 !important;
+    font-weight: 600 !important;
+    font-size: 11px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    padding: 8px 16px !important;
+    border: none !important;
+}
+
+.o_list_jira tbody tr {
+    background: white !important;
+    border-radius: 12px !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    border-left: 4px solid transparent !important;
+}
+
+.o_list_jira tbody tr:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06) !important;
+    transform: translateX(6px) !important;
+    border-left-color: #667eea !important;
+}
+
+.o_list_jira tbody tr[data-group="tech"] {
+    border-left-color: #667eea !important;
+}
+
+.o_list_jira tbody tr[data-group="admin"] {
+    border-left-color: #f5576c !important;
+}
+
+.o_list_jira tbody tr[data-group="fin"] {
+    border-left-color: #43e97b !important;
+}
+
+.o_list_jira td {
+    padding: 12px 16px !important;
+    border: none !important;
+    vertical-align: middle !important;
+}
+
+.o_list_jira .o_field_boolean_toggle {
+    transform: scale(1.2) !important;
+}
+
+// Animation de cochage
+.o_list_jira .o_field_boolean_toggle[aria-checked="true"] {
+    animation: popCheck 0.3s ease !important;
+}
+
+@keyframes popCheck {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1.2); }
+}
+
+// Badges catégorie stylés
+.o_list_jira .badge {
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
+    padding: 4px 10px !important;
+    border-radius: 20px !important;
+}
+
+// Progressbar custom
+.o_progressbar {
+    height: 8px !important;
+    border-radius: 10px !important;
+    background: #e5e7eb !important;
+}
+
+.o_progressbar .o_progressbar_value {
+    border-radius: 10px !important;
+    transition: width 0.6s ease !important;
+}

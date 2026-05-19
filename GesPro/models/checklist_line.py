@@ -1,4 +1,5 @@
 from odoo import models, fields
+from odoo.exceptions import AccessError
 
 
 class ChecklistLine(models.Model):
@@ -46,3 +47,22 @@ class ChecklistLine(models.Model):
         string="Bloquant",
         default=True
     )
+    def write(self, vals):
+        for line in self:
+            user = self.env.user
+            # CEO peut tout faire
+            if user.has_group('GesPro.group_ceo'):
+                continue
+            # PM : interdit de modifier les checklists
+            if user.has_group('GesPro.group_pm'):
+                raise AccessError("Le PM ne peut pas modifier les checklists.")
+            # TECH : uniquement tech
+            if user.has_group('GesPro.group_tech') and line.categorie != 'tech':
+                raise AccessError("Vous ne pouvez modifier que les checklists techniques.")
+            # FIN : uniquement fin
+            if user.has_group('GesPro.group_fin') and line.categorie != 'fin':
+                raise AccessError("Vous ne pouvez modifier que les checklists financières.")
+            # RESADMIN : uniquement admin
+            if user.has_group('GesPro.group_resadmin') and line.categorie != 'admin':
+                raise AccessError("Vous ne pouvez modifier que les checklists administratives.")
+        return super().write(vals)
