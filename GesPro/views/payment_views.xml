@@ -7,6 +7,15 @@
             <field name="arch" type="xml">
                 <form string="Paiement">
                     <header>
+                        <button name="action_confirm_paid" string="Confirmer Payé" type="object"
+                                class="btn-success"
+                                invisible="state != 'pending'"/>
+                        <button name="action_reject" string="Rejeter" type="object"
+                                class="btn-danger"
+                                invisible="state != 'pending'"/>
+                        <button name="action_reset_pending" string="Remettre en attente" type="object"
+                                class="btn-warning"
+                                invisible="state == 'pending'"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>

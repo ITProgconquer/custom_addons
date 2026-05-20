@@ -10,6 +10,28 @@
             <field name="groups" eval="[(4, ref('group_pm'))]"/>
         </record>
 
+        <record id="gespro_attachment_rule" model="ir.rule">
+            <field name="name">Gespro Attachments Access</field>
+            <field name="model_id" ref="base.model_ir_attachment"/>
+
+            <field name="domain_force">
+                [('res_model', 'in', [
+                    'gespro.payment',
+                    'gespro.annonce',
+                    'gespro.appel',
+                    'gespro.lot'
+                ])]
+            </field>
+
+            <field name="groups" eval="[
+                (4, ref('group_ceo')),
+                (4, ref('group_pm')),
+                (4, ref('group_resadmin')),
+                (4, ref('group_tech')),
+                (4, ref('group_fin'))
+            ]"/>
+        </record>
+
         <!-- PM : ne voit que ses propres annonces -->
         <record id="rule_annonce_pm" model="ir.rule">
             <field name="name">PM : ses annonces uniquement</field>

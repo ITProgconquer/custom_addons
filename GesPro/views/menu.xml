@@ -6,8 +6,7 @@
         <menuitem id="menu_gespro_root"
                   name="GESPRO"
                   sequence="10"
-                  web_icon="gespro,static/src/img/icon.png"
-                  sequence="1"/>
+                  web_icon="gespro,static/src/img/icon.png"/>
 
         <!-- Annonces -->
         <menuitem id="menu_annonce"

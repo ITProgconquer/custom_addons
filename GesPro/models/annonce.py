@@ -80,6 +80,12 @@ class Annonce(models.Model):
         string="Appels à Concurrence"
     )
 
+    can_create_appel = fields.Boolean(
+        string="Peut créer un AC",
+        compute='_compute_can_create_appel'
+    )
+
+
     # ─── MÉTHODES ───────────────────────────────
 
     @api.model_create_multi
@@ -136,3 +142,28 @@ class Annonce(models.Model):
         """CEO ignore l'annonce"""
         self.ensure_one()
         self.state = 'ignore'
+
+    @api.depends('state', 'payment_ids.state')
+    def _compute_can_create_appel(self):
+        for record in self:
+            record.can_create_appel = (
+                record.state == 'go' and 
+                record.payment_ids and 
+                any(p.state == 'paid' for p in record.payment_ids)
+            )
+    
+
+    def action_create_appel(self):
+        """Ouvre le formulaire de création d'Appel avec l'Annonce pré-remplie"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Créer un Appel à Concurrence',
+            'res_model': 'gespro.appel',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_annonce_id': self.id,
+                'default_titre': self.description or '',
+            },
+        }

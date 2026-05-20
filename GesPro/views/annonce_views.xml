@@ -31,11 +31,21 @@
                                 class="btn-secondary"
                                 groups="GesPro.group_ceo"
                                 invisible="state not in ['new', 'lu']"/>
+                        <button name="action_create_appel" string="Créer AC" type="object"
+                                class="btn-primary"
+                                groups="GesPro.group_pm"
+                                invisible="can_create_appel == False"/>        
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                         <div class="oe_title">
                             <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <div class="alert alert-warning mt-2" 
+                            invisible="state != 'go' or can_create_appel == True" 
+                            groups="GesPro.group_pm">
+                            <i class="fa fa-info-circle"></i>
+                            En attente de paiement pour créer l'Appel à Concurrence.
                         </div>
                         <group>
                             <group>
@@ -50,7 +60,7 @@
                             <page string="Description">
                                 <field name="description"/>
                             </page>
-                            <page string="Décision CEO" groups="GesPro.group_ceo">
+                            <page string="Décision CEO" groups="GesPro.group_ceo,GesPro.group_resadmin">
                                 <group>
                                     <field name="ceo_capture_ids" widget="many2many_binary"/>
                                     <field name="ceo_decision_comment"
@@ -70,13 +80,23 @@
                                     </list>
                                 </field>
                             </page>
-                            <page string="Appels à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm" invisible="state != 'go'">
+                            <page string="Appels à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm" invisible="can_create_appel == False">
                                 <field name="appel_ids">
                                     <list>
                                         <field name="name"/>
                                         <field name="titre"/>
                                         <field name="state" widget="badge"/>
                                         <field name="deadline"/>
+                                    </list>
+                                </field>
+                            </page>
+                            <page string="Dossiers" groups="GesPro.group_pm,GesPro.group_ceo,GesPro.group_resadmin" 
+                                invisible="can_create_appel == False">
+                                <p class="text-muted">Dossiers complets acquis par le RESADMIN.</p>
+                                <field name="payment_ids">
+                                    <list>
+                                        <field name="state" widget="badge"/>
+                                        <field name="document_files" widget="many2many_binary"/>
                                     </list>
                                 </field>
                             </page>

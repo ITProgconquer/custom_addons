@@ -43,7 +43,23 @@ class Payment(models.Model):
 
     document_files = fields.Many2many(
         'ir.attachment',
-        string="Dossier complet acquis (PDF/Word)"
+        'gespro_payment_ir_attachments_rel',
+        'payment_id',
+        'attachment_id',
+        string="Dossier complet acquis",
+        domain="[('res_model', '=', 'gespro.payment')]"
     )
 
     note = fields.Text(string="Commentaire")
+
+    def action_confirm_paid(self):
+        self.ensure_one()
+        self.state = 'paid'
+
+    def action_reject(self):
+        self.ensure_one()
+        self.state = 'rejected'
+
+    def action_reset_pending(self):
+        self.ensure_one()
+        self.state = 'pending'

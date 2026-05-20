@@ -23,6 +23,9 @@ access_material_line_pm,material_line.pm,model_gespro_material_line,group_pm,1,1
 access_material_line_tech,material_line.tech,model_gespro_material_line,group_tech,1,1,1,1
 access_payment_ceo,payment.ceo,model_gespro_payment,group_ceo,1,1,1,1
 access_payment_resadmin,payment.resadmin,model_gespro_payment,group_resadmin,1,1,1,1
+access_payment_pm,payment.pm,model_gespro_payment,group_pm,1,0,0,0
+access_payment_tech,payment.tech,model_gespro_payment,group_tech,1,0,0,0
+access_payment_fin,payment.fin,model_gespro_payment,group_fin,1,0,0,0
 access_checklist_template_ceo,template.ceo,model_gespro_checklist_template,group_ceo,1,1,1,1
 access_checklist_template_resadmin,template.resadmin,model_gespro_checklist_template,group_resadmin,1,1,1,1
 access_checklist_template_pm,template.pm,model_gespro_checklist_template,group_pm,1,1,1,1
