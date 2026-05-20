@@ -55,3 +55,16 @@ class Lot(models.Model):
             pers_ok = all(record.personnel_line_ids.mapped('is_satisfied')) if record.personnel_line_ids else True
             mat_ok = all(record.material_line_ids.mapped('is_satisfied')) if record.material_line_ids else True
             record.is_ready = pers_ok and mat_ok
+
+    
+    def action_open_lot(self):
+        """Ouvre la fiche détaillée du lot avec Personnel et Matériel"""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': self.titre,
+            'res_model': 'gespro.lot',
+            'view_mode': 'form',
+            'res_id': self.id,
+            'target': 'current',
+        }

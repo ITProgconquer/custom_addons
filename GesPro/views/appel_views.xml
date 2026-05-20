@@ -64,45 +64,17 @@
                         </group>
                         <notebook>
                             <page string="Lots">
-                                <field name="lot_ids">
-                                    <list editable="bottom">
-                                        <field name="lot_num" string="N°"/>
-                                        <field name="titre" string="Lot"/>
-                                        <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
-                                    </list>
-                                    <form>
-                                        <sheet>
-                                            <group>
-                                                <field name="lot_num"/>
-                                                <field name="titre"/>
-                                                <field name="is_ready" widget="boolean_toggle"/>
-                                            </group>
-                                            <notebook>
-                                                <page string="👥 Personnel">
-                                                    <field name="personnel_line_ids">
-                                                        <list editable="bottom">
-                                                            <field name="role" string="Poste"/>
-                                                            <field name="qualification_min" string="Qualification"/>
-                                                            <field name="nb_exige" string="Nb exigé"/>
-                                                            <field name="experience_years" string="Expérience"/>
-                                                            <field name="is_satisfied" string="✅" widget="boolean_toggle"/>
-                                                        </list>
-                                                    </field>
-                                                </page>
-                                                <page string="🔧 Matériel">
-                                                    <field name="material_line_ids">
-                                                        <list editable="bottom">
-                                                            <field name="designation" string="Désignation"/>
-                                                            <field name="qty_required" string="Qté exigée"/>
-                                                            <field name="qty_provided" string="Qté fournie"/>
-                                                            <field name="is_satisfied" string="✅" widget="boolean_toggle"/>
-                                                        </list>
-                                                    </field>
-                                                </page>
-                                            </notebook>
-                                        </sheet>
-                                    </form>
-                                </field>
+                                <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
+                                    <field name="lot_ids">
+                                        <list editable="bottom" class="o_list_jira">
+                                            <field name="lot_num" string="N°"/>
+                                            <field name="titre" string="Lot"/>
+                                            <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
+                                            <button name="action_open_lot" string="📋 Détails" type="object" 
+                                                    class="btn btn-sm btn-primary"/>
+                                        </list>
+                                    </field>
+                                </div>
                             </page>
                            <page string="Checklists">
                                 <!-- Barres de progression style JIRA -->

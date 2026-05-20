@@ -1,36 +1,101 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
         <record id="view_lot_form" model="ir.ui.view">
             <field name="name">gespro.lot.form</field>
             <field name="model">gespro.lot</field>
             <field name="arch" type="xml">
                 <form string="Lot">
                     <sheet>
-                        <group>
-                            <field name="name" readonly="1"/>
-                            <field name="appel_id"/>
-                            <field name="lot_num"/>
-                            <field name="titre"/>
-                            <field name="is_ready" widget="boolean_toggle"/>
-                        </group>
+                        <!-- En-tête avec statut -->
+                        <div class="d-flex align-items-center justify-content-between mb-4">
+                            <h2 class="mb-0">
+                                <i class="fa fa-cubes text-primary me-2"></i>
+                                <field name="titre"/>
+                            </h2>
+                            <span class="badge fs-6 p-2">
+                                <field name="is_ready" widget="boolean_toggle"/>
+                                <label for="is_ready" class="ms-2">Lot prêt</label>
+                            </span>
+                        </div>
+
+                        <!-- Infos du lot -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-6">
+                                <div class="card border-0 shadow-sm rounded-3 p-3">
+                                    <span class="text-muted small">N° du lot</span>
+                                    <h4 class="mb-0 text-primary"><field name="lot_num"/></h4>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="card border-0 shadow-sm rounded-3 p-3">
+                                    <span class="text-muted small">Appel lié</span>
+                                    <h5 class="mb-0"><field name="appel_id" readonly="1"/></h5>
+                                </div>
+                            </div>
+                        </div>
+
+                        <field name="appel_id" invisible="1"/>
+
+                        <!-- Onglets Personnel / Matériel -->
                         <notebook>
-                            <page string="Personnel">
+                            <page string="👥 Personnel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0">
+                                        <i class="fa fa-users text-primary me-2"></i>
+                                        Personnel requis
+                                    </h4>
+                                </div>
                                 <field name="personnel_line_ids">
-                                    <list editable="bottom">
-                                        <field name="role"/>
-                                        <field name="nb_exige"/>
-                                        <field name="is_satisfied"/>
+                                    <list editable="bottom" class="o_list_jira">
+                                        <field name="role" string="Poste"/>
+                                        <field name="qualification_min" string="Qualification"/>
+                                        <field name="nb_exige" string="Nb exigé"/>
+                                        <field name="experience_years" string="Expérience"/>
+                                        <field name="is_satisfied" string="✅" widget="boolean_toggle"/>
                                     </list>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <field name="role"/>
+                                                <field name="qualification_min"/>
+                                                <field name="nb_exige"/>
+                                                <field name="experience_years"/>
+                                                <field name="experience_similar"/>
+                                                <field name="certificates_required"/>
+                                                <field name="is_satisfied"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
                                 </field>
                             </page>
-                            <page string="Matériel">
+
+                            <page string="🔧 Matériel">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0">
+                                        <i class="fa fa-wrench text-warning me-2"></i>
+                                        Matériel requis
+                                    </h4>
+                                </div>
                                 <field name="material_line_ids">
-                                    <list editable="bottom">
-                                        <field name="designation"/>
-                                        <field name="qty_required"/>
-                                        <field name="is_satisfied"/>
+                                    <list editable="bottom" class="o_list_jira">
+                                        <field name="designation" string="Désignation"/>
+                                        <field name="qty_required" string="Qté exigée"/>
+                                        <field name="qty_provided" string="Qté fournie"/>
+                                        <field name="is_satisfied" string="✅" widget="boolean_toggle"/>
                                     </list>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <field name="designation"/>
+                                                <field name="specifications"/>
+                                                <field name="qty_required"/>
+                                                <field name="qty_provided"/>
+                                                <field name="is_satisfied"/>
+                                            </group>
+                                        </sheet>
+                                    </form>
                                 </field>
                             </page>
                         </notebook>
@@ -38,5 +103,6 @@
                 </form>
             </field>
         </record>
+
     </data>
 </odoo>
