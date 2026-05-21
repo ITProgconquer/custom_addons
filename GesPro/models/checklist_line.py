@@ -30,8 +30,7 @@ class ChecklistLine(models.Model):
 
     is_done = fields.Boolean(
         string="Réalisé",
-        default=False,
-        tracking=True
+        default=False
     )
 
     responsible_id = fields.Many2one(

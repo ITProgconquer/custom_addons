@@ -6,10 +6,13 @@ class ChecklistTemplate(models.Model):
     _description = "Modèle de checklist"
     _order = "category, sequence"
 
+    _sql_constraints = [
+        ('name_unique', 'UNIQUE(name)', 'Ce libellé existe déjà. Il doit être unique.'),
+    ]
+
     name = fields.Char(
         string="Libellé",
-        required=True,
-        unique=True
+        required=True
     )
 
     category = fields.Selection([

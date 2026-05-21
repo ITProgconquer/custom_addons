@@ -24,4 +24,4 @@ class PersonnelLine(models.Model):
 
     certificates_required = fields.Text(string="Documents et certificats à fournir")
 
-    is_satisfied = fields.Boolean(string="Satisfait", default=False, tracking=True)
+    is_satisfied = fields.Boolean(string="Satisfait", default=False)

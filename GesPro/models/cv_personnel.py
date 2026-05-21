@@ -6,14 +6,17 @@ class CvPersonnel(models.Model):
     _description = "CV du personnel"
     _order = "name"
 
+    _sql_constraints = [
+        ('matricule_unique', 'UNIQUE(matricule)', 'Ce matricule existe déjà. Il doit être unique.'),
+    ]
+
     name = fields.Char(
         string="Nom et prénom",
         required=True
     )
 
     matricule = fields.Char(
-        string="Matricule interne",
-        unique=True
+        string="Matricule interne"
     )
 
     qualification = fields.Char(
