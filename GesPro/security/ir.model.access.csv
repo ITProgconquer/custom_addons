@@ -30,14 +30,11 @@ access_payment_resadmin,payment.resadmin,model_gespro_payment,group_resadmin,1,1
 access_payment_pm,payment.pm,model_gespro_payment,group_pm,1,0,0,0
 access_payment_tech,payment.tech,model_gespro_payment,group_tech,1,0,0,0
 access_payment_fin,payment.fin,model_gespro_payment,group_fin,1,0,0,0
-access_checklist_template_ceo,template.ceo,model_gespro_checklist_template,group_ceo,1,1,1,1
-access_checklist_template_resadmin,template.resadmin,model_gespro_checklist_template,group_resadmin,1,1,1,1
-access_checklist_template_pm,template.pm,model_gespro_checklist_template,group_pm,1,1,1,1
 access_checklist_line_ceo,line.ceo,model_gespro_checklist_line,group_ceo,1,1,1,1
 access_checklist_line_pm,line.pm,model_gespro_checklist_line,group_pm,1,1,1,1
 access_checklist_line_resadmin,line.resadmin,model_gespro_checklist_line,group_resadmin,1,1,1,1
-access_checklist_line_tech,line.tech,model_gespro_checklist_line,group_tech,1,1,0,0
-access_checklist_line_fin,line.fin,model_gespro_checklist_line,group_fin,1,1,0,0
+access_checklist_line_tech,line.tech,model_gespro_checklist_line,group_tech,1,1,1,0
+access_checklist_line_fin,line.fin,model_gespro_checklist_line,group_fin,1,1,1,0
 access_similar_ceo,similar.ceo,model_gespro_similar_contract,group_ceo,1,1,1,1
 access_similar_resadmin,similar.resadmin,model_gespro_similar_contract,group_resadmin,1,1,1,1
 access_similar_tech,similar.tech,model_gespro_similar_contract,group_tech,1,1,1,1

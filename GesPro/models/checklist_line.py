@@ -1,52 +1,24 @@
-from odoo import models, fields
+from odoo import api, models, fields
 from odoo.exceptions import AccessError
 
 
 class ChecklistLine(models.Model):
     _name = "gespro.checklist.line"
-    _description = "Item de checklist d'un appel"
+    _description = "Item de checklist"
     _order = "categorie, sequence"
 
-    appel_id = fields.Many2one(
-        'gespro.appel',
-        string="Appel à Concurrence",
-        required=True,
-        ondelete='cascade'
-    )
-
-    template_id = fields.Many2one(
-        'gespro.checklist.template',
-        string="Modèle source",
-        required=True
-    )
-
+    appel_id = fields.Many2one('gespro.appel', required=True, ondelete='cascade')
     categorie = fields.Selection([
         ('tech', 'Technique'),
         ('admin', 'Administratif'),
         ('fin', 'Financier'),
     ], string="Catégorie", required=True)
-
-    libelle = fields.Char(string="Description de l'item", required=True)
-
-    is_done = fields.Boolean(
-        string="Réalisé",
-        default=False,
-        tracking=True
-    )
-
-    responsible_id = fields.Many2one(
-        'res.users',
-        string="Responsable"
-    )
-
-    note = fields.Text(string="Observation")
-
-    sequence = fields.Integer(string="Ordre", default=10)
-
-    is_mandatory = fields.Boolean(
-        string="Bloquant",
-        default=True
-    )
+    libelle = fields.Char("Tâche", required=True)
+    is_done = fields.Boolean("Fait", default=False)
+    responsible_id = fields.Many2one('res.users', string="Assigné à")
+    note = fields.Text("Commentaire")
+    sequence = fields.Integer("Ordre", default=10)
+    
     def write(self, vals):
         for line in self:
             user = self.env.user
@@ -66,3 +38,16 @@ class ChecklistLine(models.Model):
             if user.has_group('GesPro.group_resadmin') and line.categorie != 'admin':
                 raise AccessError("Vous ne pouvez modifier que les checklists administratives.")
         return super().write(vals)
+    
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        user = self.env.user
+        for vals in vals_list:
+            if user.has_group('GesPro.group_tech') and vals.get('categorie') != 'tech':
+                raise AccessError("Vous ne pouvez créer que des tâches techniques.")
+            if user.has_group('GesPro.group_fin') and vals.get('categorie') != 'fin':
+                raise AccessError("Vous ne pouvez créer que des tâches financières.")
+            if user.has_group('GesPro.group_resadmin') and vals.get('categorie') != 'admin':
+                raise AccessError("Vous ne pouvez créer que des tâches administratives.")
+        return super().create(vals_list)

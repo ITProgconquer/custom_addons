@@ -125,6 +125,13 @@ class Appel(models.Model):
     show_generate_lots = fields.Boolean(compute='_compute_show_buttons')
     show_generate_checklists = fields.Boolean(compute='_compute_show_buttons')
 
+    checklist_tech_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'tech')], string="Checklist Technique")
+    checklist_admin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'admin')], string="Checklist Admin")
+    checklist_fin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'fin')], string="Checklist Financier")
+
     # ─── MÉTHODES ───────────────────────────────
 
     @api.model_create_multi
@@ -153,22 +160,18 @@ class Appel(models.Model):
             else:
                 record.color_kanban = 0   # Vert
 
-    @api.depends('checklist_ids.is_done', 'checklist_ids.categorie')
+    @api.depends('checklist_tech_ids.is_done', 'checklist_admin_ids.is_done', 'checklist_fin_ids.is_done')
     def _compute_progression(self):
         for record in self:
-            lines = record.checklist_ids
-            tech = lines.filtered(lambda l: l.categorie == 'tech')
-            admin = lines.filtered(lambda l: l.categorie == 'admin')
-            fin = lines.filtered(lambda l: l.categorie == 'fin')
-
-            record.progression_tech = self._calc_pct(tech)
-            record.progression_admin = self._calc_pct(admin)
-            record.progression_fin = self._calc_pct(fin)
+            record.progression_tech = self._calc_pct(record.checklist_tech_ids)
+            record.progression_admin = self._calc_pct(record.checklist_admin_ids)
+            record.progression_fin = self._calc_pct(record.checklist_fin_ids)
             record.progression_generale = (
                 record.progression_tech +
                 record.progression_admin +
                 record.progression_fin
             ) / 3
+
 
     def _calc_pct(self, lines):
         total = len(lines)
@@ -213,22 +216,19 @@ class Appel(models.Model):
 
         self.message_post(body="✅ Lots générés avec succès.")
 
-    def action_generate_checklists(self):
-        """Génère les checklists depuis les templates"""
+    def action_add_checklist_item(self):
         self.ensure_one()
-        templates = self.env['gespro.checklist.template'].search([
-            ('active', '=', True)
-        ])
-        for template in templates:
-            self.env['gespro.checklist.line'].create({
-                'appel_id': self.id,
-                'template_id': template.id,
-                'categorie': template.category,
-                'libelle': template.name,
-                'sequence': template.sequence,
-                'is_mandatory': template.is_mandatory,
-            })
-        self.message_post(body="✅ Checklists générées depuis les templates.")
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Ajouter une tâche',
+            'res_model': 'gespro.checklist.line',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_appel_id': self.id,
+                'default_categorie': self.env.context.get('default_categorie', 'tech'),
+            },
+        }
 
     def action_valider(self):
         self.ensure_one()

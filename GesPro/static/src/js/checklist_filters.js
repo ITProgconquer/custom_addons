@@ -1,33 +1,40 @@
-(function () {
-    "use strict";
+/** @odoo-module **/
 
-    document.addEventListener('click', function (ev) {
-        var btn = ev.target.closest('.filter-btn');
-        if (!btn) return;
+import { registry } from "@web/core/registry";
+import { ListRenderer } from "@web/views/list/list_renderer";
+import { patch } from "@web/core/utils/patch";
 
-        var category = btn.getAttribute('data-category');
-        
+patch(ListRenderer.prototype, {
+    setup() {
+        super.setup();
+        this.events = {
+            ...this.events,
+            "click .filter-btn": this._onFilterClick,
+        };
+    },
+
+    _onFilterClick(ev) {
+        const btn = ev.currentTarget;
+        const category = btn.dataset.category;
+
         // Activer le bouton
-        document.querySelectorAll('.filter-btn').forEach(function (b) {
-            b.classList.remove('active');
+        btn.closest(".d-flex").querySelectorAll(".filter-btn").forEach(b => {
+            b.classList.remove("active");
         });
-        btn.classList.add('active');
-        
-        // Trouver le tableau parent
-        var table = btn.closest('.o_notebook_content').querySelector('.o_list_table');
-        if (!table) return;
-        
-        var rows = table.querySelectorAll('tbody tr.o_data_row');
-        rows.forEach(function (row) {
-            if (category === 'all') {
-                row.style.display = '';
+        btn.classList.add("active");
+
+        // Filtrer les lignes
+        const rows = this.el.querySelectorAll("tbody tr.o_data_row");
+        rows.forEach(row => {
+            if (category === "all") {
+                row.style.display = "";
             } else {
-                var badge = row.querySelector('.badge');
+                const badge = row.querySelector(".badge");
                 if (badge) {
-                    var text = badge.textContent.toLowerCase();
-                    row.style.display = text.includes(category) ? '' : 'none';
+                    const text = badge.textContent.toLowerCase();
+                    row.style.display = text.includes(category) ? "" : "none";
                 }
             }
         });
-    });
-})();
+    },
+});

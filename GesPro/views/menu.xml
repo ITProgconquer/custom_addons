@@ -30,12 +30,7 @@
                   sequence="30"/>
 
         <!-- Checklists -->
-        <menuitem id="menu_checklist_template"
-                  name="Modèles de Checklists"
-                  parent="menu_gespro_root"
-                  action="action_checklist_template"
-                  sequence="40"
-                  groups="group_ceo,group_resadmin"/>
+        
 
         <!-- CV Personnel -->
         <menuitem id="menu_cv_personnel"
