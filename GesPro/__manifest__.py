@@ -22,7 +22,7 @@
     'assets': {
         'web.assets_backend': [
             'GesPro/static/src/scss/gespro_theme.scss',
-            'GesPro/static/src/js/gespro_appel.js',
+            'GesPro/static/src/js/checklist_filters.js',
         ],
     },
    

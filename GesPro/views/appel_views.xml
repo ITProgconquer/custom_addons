@@ -21,7 +21,7 @@
                                 invisible="show_generate_checklists == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
-                                groups="gespro.group_ceo"
+                                groups="GesPro.group_ceo"
                                 invisible="state != 'en_preparation'"/>
                         <button name="action_soumettre" string="Soumettre" type="object"
                                 class="btn-primary"
@@ -64,17 +64,21 @@
                         </group>
                         <notebook>
                             <page string="Lots">
-                                <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
-                                    <field name="lot_ids">
-                                        <list editable="bottom" class="o_list_jira">
-                                            <field name="lot_num" string="N°"/>
-                                            <field name="titre" string="Lot"/>
-                                            <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
-                                            <button name="action_open_lot" string="📋 Détails" type="object" 
-                                                    class="btn btn-sm btn-primary"/>
-                                        </list>
-                                    </field>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0">
+                                        <i class="fa fa-users text-primary me-2"></i>
+                                        Lots  
+                                    </h4>
                                 </div>
+                                <field name="lot_ids">
+                                    <list editable="bottom" class="o_list_jira">
+                                        <field name="lot_num" string="N°"/>
+                                        <field name="titre" string="Lot"/>
+                                        <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
+                                        <button name="action_open_lot" string="📋 Détails" type="object" 
+                                                class="btn btn-sm btn-primary"/>
+                                    </list>
+                                </field>
                             </page>
                            <page string="Checklists">
                                 <!-- Barres de progression style JIRA -->

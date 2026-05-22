@@ -18,9 +18,13 @@ access_lot_resadmin,lot.resadmin,model_gespro_lot,group_resadmin,1,0,0,0
 access_personnel_line_ceo,personnel_line.ceo,model_gespro_personnel_line,group_ceo,1,1,1,1
 access_personnel_line_pm,personnel_line.pm,model_gespro_personnel_line,group_pm,1,1,1,1
 access_personnel_line_tech,personnel_line.tech,model_gespro_personnel_line,group_tech,1,1,1,1
+access_personnel_line_resadmin,personnel.resadmin,model_gespro_personnel_line,group_resadmin,1,0,0,0
+access_personnel_line_fin,personnel.fin,model_gespro_personnel_line,group_fin,1,0,0,0
 access_material_line_ceo,material_line.ceo,model_gespro_material_line,group_ceo,1,1,1,1
 access_material_line_pm,material_line.pm,model_gespro_material_line,group_pm,1,1,1,1
 access_material_line_tech,material_line.tech,model_gespro_material_line,group_tech,1,1,1,1
+access_material_line_resadmin,material.resadmin,model_gespro_material_line,group_resadmin,1,0,0,0
+access_material_line_fin,material.fin,model_gespro_material_line,group_fin,1,0,0,0
 access_payment_ceo,payment.ceo,model_gespro_payment,group_ceo,1,1,1,1
 access_payment_resadmin,payment.resadmin,model_gespro_payment,group_resadmin,1,1,1,1
 access_payment_pm,payment.pm,model_gespro_payment,group_pm,1,0,0,0

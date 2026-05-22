@@ -1,39 +1,33 @@
-odoo.define('gespro.checklist_filters', function (require) {
+(function () {
     "use strict";
 
-    var ListRenderer = require('web.ListRenderer');
+    document.addEventListener('click', function (ev) {
+        var btn = ev.target.closest('.filter-btn');
+        if (!btn) return;
 
-    ListRenderer.include({
-        _renderBody: function () {
-            var $result = this._super.apply(this, arguments);
-            
-            // Ajouter les écouteurs après rendu
-            this.$el.on('click', '.filter-btn', function (ev) {
-                var $btn = $(ev.currentTarget);
-                var category = $btn.data('category');
-                
-                // Activer le bouton
-                $btn.siblings().removeClass('active');
-                $btn.addClass('active');
-                
-                // Filtrer les lignes
-                var $rows = $btn.closest('.o_list_view').find('tbody tr');
-                $rows.each(function () {
-                    var $row = $(this);
-                    if (category === 'all') {
-                        $row.show();
-                    } else {
-                        var badge = $row.find('.badge').text().toLowerCase();
-                        if (badge.includes(category)) {
-                            $row.show();
-                        } else {
-                            $row.hide();
-                        }
-                    }
-                });
-            });
-            
-            return $result;
-        },
+        var category = btn.getAttribute('data-category');
+        
+        // Activer le bouton
+        document.querySelectorAll('.filter-btn').forEach(function (b) {
+            b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        
+        // Trouver le tableau parent
+        var table = btn.closest('.o_notebook_content').querySelector('.o_list_table');
+        if (!table) return;
+        
+        var rows = table.querySelectorAll('tbody tr.o_data_row');
+        rows.forEach(function (row) {
+            if (category === 'all') {
+                row.style.display = '';
+            } else {
+                var badge = row.querySelector('.badge');
+                if (badge) {
+                    var text = badge.textContent.toLowerCase();
+                    row.style.display = text.includes(category) ? '' : 'none';
+                }
+            }
+        });
     });
-});
+})();

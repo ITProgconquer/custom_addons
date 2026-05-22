@@ -231,16 +231,24 @@ class Appel(models.Model):
         self.message_post(body="✅ Checklists générées depuis les templates.")
 
     def action_valider(self):
-        """CEO valide le dossier final"""
         self.ensure_one()
-        if not self.env.user.has_group('gespro.group_ceo'):
+        if not self.env.user.has_group('GesPro.group_ceo'):
             from odoo.exceptions import AccessError
             raise AccessError("Seul le CEO peut valider.")
+        
+        # Vérifier les checklists obligatoires
+        mandatory = self.checklist_ids.filtered('is_mandatory')
+        if not all(mandatory.mapped('is_done')):
+            from odoo.exceptions import UserError
+            raise UserError(
+                "Checklist incomplète. Tous les items obligatoires doivent être cochés."
+            )
+    
         self.state = 'pret'
-        self.message_post(
-            body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre",
-            message_type='notification'
-        )
+        self.message_post(body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre")
+
+
+
 
     def action_soumettre(self):
         """Soumettre le dossier (vérifie checklists)"""
@@ -292,12 +300,18 @@ class Appel(models.Model):
     
     def write(self, vals):
         user = self.env.user
-        # TECH, FIN, RESADMIN ne peuvent modifier QUE via les checklists
-        if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin') or user.has_group('GesPro.group_resadmin'):
+        # TECH et FIN : uniquement checklists
+        if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin'):
             allowed_fields = ['checklist_ids']
             for field in vals:
                 if field not in allowed_fields:
-                    raise fields.AccessError("Vous ne pouvez modifier que les checklists.")
+                    raise api.AccessError("Vous ne pouvez modifier que les checklists.")
+        # RESADMIN : uniquement state
+        if user.has_group('GesPro.group_resadmin'):
+            allowed_fields = ['state', 'checklist_ids']
+            for field in vals:
+                if field not in allowed_fields:
+                    raise fields.AccessError("Vous ne pouvez modifier que le statut et les checklists.")
         return super().write(vals)
     
     
