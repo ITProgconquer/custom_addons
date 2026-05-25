@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessError
 from datetime import date
 
 
@@ -281,6 +281,11 @@ class Appel(models.Model):
         self.ensure_one()
         self.state = 'annule'
 
+
+    def action_reouvrir(self):
+        self.ensure_one()
+        self.state = 'en_preparation'
+
     def _cron_check_deadlines(self):
         """Méthode appelée par le cron toutes les heures"""
         today = date.today()
@@ -302,16 +307,16 @@ class Appel(models.Model):
         user = self.env.user
         # TECH et FIN : uniquement checklists
         if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin'):
-            allowed_fields = ['checklist_ids']
+            allowed_fields = ['checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:
-                    raise api.AccessError("Vous ne pouvez modifier que les checklists.")
-        # RESADMIN : uniquement state
+                    raise AccessError("Vous ne pouvez modifier que les checklists.")
+        # RESADMIN : state + checklists
         if user.has_group('GesPro.group_resadmin'):
-            allowed_fields = ['state', 'checklist_ids']
+            allowed_fields = ['state', 'checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:
-                    raise fields.AccessError("Vous ne pouvez modifier que le statut et les checklists.")
+                    raise AccessError("Vous ne pouvez modifier que le statut et les checklists.")
         return super().write(vals)
     
     

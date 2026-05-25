@@ -35,6 +35,10 @@
                                 class="btn-secondary"
                                 groups="GesPro.group_ceo"
                                 invisible="state in ['gagne', 'perdu', 'annule']"/>
+                        <button name="action_reouvrir" string="Reprendre" type="object"
+                                class="btn-warning"
+                                groups="GesPro.group_ceo"
+                                invisible="state not in ['annule']"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -115,7 +119,7 @@
                                             <div class="card-body p-0">
                                                 <field name="checklist_tech_ids"
                                                     context="{'default_categorie': 'tech'}">
-                                                    <list editable="bottom" class="o_list_jira">
+                                                    <list class="o_list_jira">
                                                         <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
                                                         <field name="is_done" string="✅" widget="boolean_toggle"/>
                                                         <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
@@ -138,7 +142,7 @@
                                             <div class="card-body p-0">
                                                 <field name="checklist_admin_ids"
                                                     context="{'default_categorie': 'admin'}">
-                                                    <list editable="bottom" class="o_list_jira">
+                                                    <list class="o_list_jira">
                                                         <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
                                                         <field name="is_done" string="✅" widget="boolean_toggle"/>
                                                         <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
@@ -161,7 +165,7 @@
                                             <div class="card-body p-0">
                                                 <field name="checklist_fin_ids"
                                                     context="{'default_categorie': 'fin'}">
-                                                    <list editable="bottom" class="o_list_jira">
+                                                    <list class="o_list_jira">
                                                         <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
                                                         <field name="is_done" string="✅" widget="boolean_toggle"/>
                                                         <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>

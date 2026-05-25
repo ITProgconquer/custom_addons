@@ -22,7 +22,7 @@
                         <button name="action_go" string="GO" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_ceo"
-                                invisible="state not in ['lu', 'en_investigation']"/>
+                                invisible="state not in ['lu', 'en_investigation','no_go']"/>
                         <button name="action_no_go" string="NO GO" type="object"
                                 class="btn-danger"
                                 groups="GesPro.group_ceo"
