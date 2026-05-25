@@ -236,27 +236,27 @@ class Appel(models.Model):
             from odoo.exceptions import AccessError
             raise AccessError("Seul le CEO peut valider.")
         
-        # Vérifier les checklists obligatoires
-        mandatory = self.checklist_ids.filtered('is_mandatory')
-        if not all(mandatory.mapped('is_done')):
+        # Vérifier toutes les checklists
+        all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
+        incomplete = all_checklists.filtered(lambda l: not l.is_done)
+        if incomplete:
             from odoo.exceptions import UserError
             raise UserError(
-                "Checklist incomplète. Tous les items obligatoires doivent être cochés."
+                f"Checklist incomplète : {len(incomplete)} tâche(s) non cochée(s)."
             )
-    
+        
         self.state = 'pret'
         self.message_post(body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre")
 
 
 
-
     def action_soumettre(self):
-        """Soumettre le dossier (vérifie checklists)"""
         self.ensure_one()
-        mandatory = self.checklist_ids.filtered('is_mandatory')
-        if not all(mandatory.mapped('is_done')):
+        all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
+        if not all(all_checklists.mapped('is_done')):
+            from odoo.exceptions import UserError
             raise UserError(
-                "Checklist incomplète. Tous les items obligatoires doivent être cochés."
+                "Checklist incomplète. Toutes les tâches doivent être cochées."
             )
         self.state = 'soumis'
         self.message_post(body="📦 Dossier soumis")
