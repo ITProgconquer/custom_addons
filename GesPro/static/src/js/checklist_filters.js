@@ -1,39 +1,40 @@
-odoo.define('gespro.checklist_filters', function (require) {
-    "use strict";
+/** @odoo-module **/
 
-    var ListRenderer = require('web.ListRenderer');
+import { registry } from "@web/core/registry";
+import { ListRenderer } from "@web/views/list/list_renderer";
+import { patch } from "@web/core/utils/patch";
 
-    ListRenderer.include({
-        _renderBody: function () {
-            var $result = this._super.apply(this, arguments);
-            
-            // Ajouter les écouteurs après rendu
-            this.$el.on('click', '.filter-btn', function (ev) {
-                var $btn = $(ev.currentTarget);
-                var category = $btn.data('category');
-                
-                // Activer le bouton
-                $btn.siblings().removeClass('active');
-                $btn.addClass('active');
-                
-                // Filtrer les lignes
-                var $rows = $btn.closest('.o_list_view').find('tbody tr');
-                $rows.each(function () {
-                    var $row = $(this);
-                    if (category === 'all') {
-                        $row.show();
-                    } else {
-                        var badge = $row.find('.badge').text().toLowerCase();
-                        if (badge.includes(category)) {
-                            $row.show();
-                        } else {
-                            $row.hide();
-                        }
-                    }
-                });
-            });
-            
-            return $result;
-        },
-    });
+patch(ListRenderer.prototype, {
+    setup() {
+        super.setup();
+        this.events = {
+            ...this.events,
+            "click .filter-btn": this._onFilterClick,
+        };
+    },
+
+    _onFilterClick(ev) {
+        const btn = ev.currentTarget;
+        const category = btn.dataset.category;
+
+        // Activer le bouton
+        btn.closest(".d-flex").querySelectorAll(".filter-btn").forEach(b => {
+            b.classList.remove("active");
+        });
+        btn.classList.add("active");
+
+        // Filtrer les lignes
+        const rows = this.el.querySelectorAll("tbody tr.o_data_row");
+        rows.forEach(row => {
+            if (category === "all") {
+                row.style.display = "";
+            } else {
+                const badge = row.querySelector(".badge");
+                if (badge) {
+                    const text = badge.textContent.toLowerCase();
+                    row.style.display = text.includes(category) ? "" : "none";
+                }
+            }
+        });
+    },
 });

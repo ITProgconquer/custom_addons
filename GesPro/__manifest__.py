@@ -22,7 +22,7 @@
     'assets': {
         'web.assets_backend': [
             'GesPro/static/src/scss/gespro_theme.scss',
-            'GesPro/static/src/js/gespro_appel.js',
+            'GesPro/static/src/js/checklist_filters.js',
         ],
     },
    
@@ -35,7 +35,6 @@
 
     # Données initiales
     'data/sequences.xml',
-    'data/checklist_templates.xml',
 
     # Vues (TOUTES avant le menu)
     'views/annonce_views.xml',
@@ -44,7 +43,6 @@
     'views/personnel_line_views.xml',
     'views/material_line_views.xml',
     'views/payment_views.xml',
-    'views/checklist_template_views.xml',
     'views/checklist_line_views.xml',
     'views/similar_contract_views.xml',
     'views/cv_personnel_views.xml',

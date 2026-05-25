@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, AccessError
 from datetime import date
 
 
@@ -125,6 +125,13 @@ class Appel(models.Model):
     show_generate_lots = fields.Boolean(compute='_compute_show_buttons')
     show_generate_checklists = fields.Boolean(compute='_compute_show_buttons')
 
+    checklist_tech_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'tech')], string="Checklist Technique")
+    checklist_admin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'admin')], string="Checklist Admin")
+    checklist_fin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'fin')], string="Checklist Financier")
+
     # ─── MÉTHODES ───────────────────────────────
 
     @api.model_create_multi
@@ -153,22 +160,18 @@ class Appel(models.Model):
             else:
                 record.color_kanban = 0   # Vert
 
-    @api.depends('checklist_ids.is_done', 'checklist_ids.categorie')
+    @api.depends('checklist_tech_ids.is_done', 'checklist_admin_ids.is_done', 'checklist_fin_ids.is_done')
     def _compute_progression(self):
         for record in self:
-            lines = record.checklist_ids
-            tech = lines.filtered(lambda l: l.categorie == 'tech')
-            admin = lines.filtered(lambda l: l.categorie == 'admin')
-            fin = lines.filtered(lambda l: l.categorie == 'fin')
-
-            record.progression_tech = self._calc_pct(tech)
-            record.progression_admin = self._calc_pct(admin)
-            record.progression_fin = self._calc_pct(fin)
+            record.progression_tech = self._calc_pct(record.checklist_tech_ids)
+            record.progression_admin = self._calc_pct(record.checklist_admin_ids)
+            record.progression_fin = self._calc_pct(record.checklist_fin_ids)
             record.progression_generale = (
                 record.progression_tech +
                 record.progression_admin +
                 record.progression_fin
             ) / 3
+
 
     def _calc_pct(self, lines):
         total = len(lines)
@@ -213,42 +216,47 @@ class Appel(models.Model):
 
         self.message_post(body="✅ Lots générés avec succès.")
 
-    def action_generate_checklists(self):
-        """Génère les checklists depuis les templates"""
+    def action_add_checklist_item(self):
         self.ensure_one()
-        templates = self.env['gespro.checklist.template'].search([
-            ('active', '=', True)
-        ])
-        for template in templates:
-            self.env['gespro.checklist.line'].create({
-                'appel_id': self.id,
-                'template_id': template.id,
-                'categorie': template.category,
-                'libelle': template.name,
-                'sequence': template.sequence,
-                'is_mandatory': template.is_mandatory,
-            })
-        self.message_post(body="✅ Checklists générées depuis les templates.")
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Ajouter une tâche',
+            'res_model': 'gespro.checklist.line',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_appel_id': self.id,
+                'default_categorie': self.env.context.get('default_categorie', 'tech'),
+            },
+        }
 
     def action_valider(self):
-        """CEO valide le dossier final"""
         self.ensure_one()
-        if not self.env.user.has_group('gespro.group_ceo'):
+        if not self.env.user.has_group('GesPro.group_ceo'):
             from odoo.exceptions import AccessError
             raise AccessError("Seul le CEO peut valider.")
+        
+        # Vérifier toutes les checklists
+        all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
+        incomplete = all_checklists.filtered(lambda l: not l.is_done)
+        if incomplete:
+            from odoo.exceptions import UserError
+            raise UserError(
+                f"Checklist incomplète : {len(incomplete)} tâche(s) non cochée(s)."
+            )
+        
         self.state = 'pret'
-        self.message_post(
-            body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre",
-            message_type='notification'
-        )
+        self.message_post(body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre")
+
+
 
     def action_soumettre(self):
-        """Soumettre le dossier (vérifie checklists)"""
         self.ensure_one()
-        mandatory = self.checklist_ids.filtered('is_mandatory')
-        if not all(mandatory.mapped('is_done')):
+        all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
+        if not all(all_checklists.mapped('is_done')):
+            from odoo.exceptions import UserError
             raise UserError(
-                "Checklist incomplète. Tous les items obligatoires doivent être cochés."
+                "Checklist incomplète. Toutes les tâches doivent être cochées."
             )
         self.state = 'soumis'
         self.message_post(body="📦 Dossier soumis")
@@ -273,6 +281,11 @@ class Appel(models.Model):
         self.ensure_one()
         self.state = 'annule'
 
+
+    def action_reouvrir(self):
+        self.ensure_one()
+        self.state = 'en_preparation'
+
     def _cron_check_deadlines(self):
         """Méthode appelée par le cron toutes les heures"""
         today = date.today()
@@ -292,12 +305,18 @@ class Appel(models.Model):
     
     def write(self, vals):
         user = self.env.user
-        # TECH, FIN, RESADMIN ne peuvent modifier QUE via les checklists
-        if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin') or user.has_group('GesPro.group_resadmin'):
-            allowed_fields = ['checklist_ids']
+        # TECH et FIN : uniquement checklists
+        if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin'):
+            allowed_fields = ['checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:
-                    raise fields.AccessError("Vous ne pouvez modifier que les checklists.")
+                    raise AccessError("Vous ne pouvez modifier que les checklists.")
+        # RESADMIN : state + checklists
+        if user.has_group('GesPro.group_resadmin'):
+            allowed_fields = ['state', 'checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
+            for field in vals:
+                if field not in allowed_fields:
+                    raise AccessError("Vous ne pouvez modifier que le statut et les checklists.")
         return super().write(vals)
     
     

@@ -22,7 +22,7 @@
                         <button name="action_go" string="GO" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_ceo"
-                                invisible="state not in ['lu', 'en_investigation']"/>
+                                invisible="state not in ['lu', 'en_investigation','no_go']"/>
                         <button name="action_no_go" string="NO GO" type="object"
                                 class="btn-danger"
                                 groups="GesPro.group_ceo"
@@ -67,13 +67,13 @@
                                            invisible="state not in ['go', 'no_go']"/>
                                 </group>
                             </page>
-                            <page string="Investigation" groups="GesPro.group_ceo,GesPro.group_resadmin">
+                            <page string="Investigation" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'en_investigation'">
                                 <field name="investigation_result"
                                        groups="GesPro.group_resadmin"/>
                             </page>
                             <page string="Paiements" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'go'">
                                 <field name="payment_ids">
-                                    <list>
+                                    <list editable="bottom" class="o_list_jira">
                                         <field name="amount"/>
                                         <field name="state" widget="badge"/>
                                         <field name="payment_date"/>
@@ -82,7 +82,7 @@
                             </page>
                             <page string="Appels à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm" invisible="can_create_appel == False">
                                 <field name="appel_ids">
-                                    <list>
+                                    <list class="o_list_jira">
                                         <field name="name"/>
                                         <field name="titre"/>
                                         <field name="state" widget="badge"/>
@@ -94,7 +94,7 @@
                                 invisible="can_create_appel == False">
                                 <p class="text-muted">Dossiers complets acquis par le RESADMIN.</p>
                                 <field name="payment_ids">
-                                    <list>
+                                    <list editable="bottom" class="o_list_jira">
                                         <field name="state" widget="badge"/>
                                         <field name="document_files" widget="many2many_binary"/>
                                     </list>

@@ -15,13 +15,9 @@
                                 class="btn-primary"
                                 groups="GesPro.group_pm"
                                 invisible="show_generate_lots == False"/>
-                        <button name="action_generate_checklists" string="Générer les Checklists" type="object"
-                                class="btn-primary"
-                                groups="GesPro.group_pm"
-                                invisible="show_generate_checklists == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
-                                groups="gespro.group_ceo"
+                                groups="GesPro.group_ceo"
                                 invisible="state != 'en_preparation'"/>
                         <button name="action_soumettre" string="Soumettre" type="object"
                                 class="btn-primary"
@@ -39,6 +35,10 @@
                                 class="btn-secondary"
                                 groups="GesPro.group_ceo"
                                 invisible="state in ['gagne', 'perdu', 'annule']"/>
+                        <button name="action_reouvrir" string="Reprendre" type="object"
+                                class="btn-warning"
+                                groups="GesPro.group_ceo"
+                                invisible="state not in ['annule']"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -64,105 +64,118 @@
                         </group>
                         <notebook>
                             <page string="Lots">
-                                <div class="p-3 bg-white rounded-3 shadow-sm mb-3">
-                                    <field name="lot_ids">
-                                        <list editable="bottom" class="o_list_jira">
-                                            <field name="lot_num" string="N°"/>
-                                            <field name="titre" string="Lot"/>
-                                            <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
-                                            <button name="action_open_lot" string="📋 Détails" type="object" 
-                                                    class="btn btn-sm btn-primary"/>
-                                        </list>
-                                    </field>
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h4 class="mb-0">
+                                        <i class="fa fa-users text-primary me-2"></i>
+                                        Lots  
+                                    </h4>
                                 </div>
+                                <field name="lot_ids">
+                                    <list editable="bottom" class="o_list_jira">
+                                        <field name="lot_num" string="N°"/>
+                                        <field name="titre" string="Lot"/>
+                                        <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
+                                        <button name="action_open_lot" string="📋 Détails" type="object" 
+                                                class="btn btn-sm btn-primary"/>
+                                    </list>
+                                </field>               
                             </page>
                            <page string="Checklists">
-                                <!-- Barres de progression style JIRA -->
-                                <group>
-                                    <div class="row g-3">
-                                        <div class="col-4">
-                                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
-                                                    <i class="fa fa-code fa-2x text-white mb-2"></i>
-                                                    <h5 class="text-white fw-bold mb-0">🔧 Technique</h5>
-                                                </div>
-                                                <div class="card-footer bg-white border-0 px-4 py-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="text-muted small">Progression</span>
-                                                        <span class="fw-bold text-primary"><field name="progression_tech"/>%</span>
-                                                    </div>
-                                                    <field name="progression_tech" widget="progressbar" class="rounded-pill"/>
-                                                </div>
-                                            </div>
+                                <!-- Barres de progression simples -->
+                                <div class="row g-3 mb-4">
+                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_tech">
+                                        <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+                                            <span class="fw-bold">🔧 Technique</span>
+                                            <h2 class="my-2" style="color: #667eea;"><field name="progression_tech"/>%</h2>
+                                            <field name="progression_tech" widget="progressbar"/>
                                         </div>
-                                        
-                                        <div class="col-4">
-                                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
-                                                    <i class="fa fa-folder-open fa-2x text-white mb-2"></i>
-                                                    <h5 class="text-white fw-bold mb-0">📋 Admin</h5>
-                                                </div>
-                                                <div class="card-footer bg-white border-0 px-4 py-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="text-muted small">Progression</span>
-                                                        <span class="fw-bold text-danger"><field name="progression_admin"/>%</span>
-                                                    </div>
-                                                    <field name="progression_admin" widget="progressbar" class="rounded-pill"/>
-                                                </div>
-                                            </div>
+                                    </div>
+                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin">
+                                        <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+                                            <span class="fw-bold">📋 Admin</span>
+                                            <h2 class="my-2" style="color: #f5576c;"><field name="progression_admin"/>%</h2>
+                                            <field name="progression_admin" widget="progressbar"/>
                                         </div>
-                                        
-                                        <div class="col-4">
-                                            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
-                                                <div class="card-body text-center py-4" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-                                                    <i class="fa fa-dollar fa-2x text-white mb-2"></i>
-                                                    <h5 class="text-white fw-bold mb-0">💰 Financier</h5>
-                                                </div>
-                                                <div class="card-footer bg-white border-0 px-4 py-3">
-                                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                                        <span class="text-muted small">Progression</span>
-                                                        <span class="fw-bold text-success"><field name="progression_fin"/>%</span>
-                                                    </div>
-                                                    <field name="progression_fin" widget="progressbar" class="rounded-pill"/>
-                                                </div>
+                                    </div>
+                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_fin">
+                                        <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
+                                            <span class="fw-bold">💰 Financier</span>
+                                            <h2 class="my-2" style="color: #38f9d7;"><field name="progression_fin"/>%</h2>
+                                            <field name="progression_fin" widget="progressbar"/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row g-3">
+                                    <!-- Technique -->
+                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_tech">
+                                        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                                            <div class="card-header text-white d-flex justify-content-between align-items-center py-3" 
+                                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                <h5 class="mb-0 fw-bold">🔧 Technique</h5>
+                                                <button name="action_add_checklist_item" type="object"
+                                                        context="{'default_categorie': 'tech'}"
+                                                        class="btn btn-sm btn-light rounded-pill fw-bold">+</button>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <field name="checklist_tech_ids"
+                                                    context="{'default_categorie': 'tech'}">
+                                                    <list class="o_list_jira">
+                                                        <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
+                                                        <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                                        <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
+                                                    </list>
+                                                </field>
                                             </div>
                                         </div>
                                     </div>
-                                </group>
 
-                                <!-- Barre de filtres PM -->
-                                <div class="d-flex gap-2 my-3" groups="GesPro.group_pm">
-                                    <span class="btn btn-sm rounded-pill filter-btn active" data-category="all"
-                                        style="background:#1a1a1a; color:white; cursor:pointer;">
-                                        📋 Tous
-                                    </span>
-                                    <span class="btn btn-sm rounded-pill filter-btn" data-category="tech"
-                                        style="background:#667eea; color:white; cursor:pointer;">
-                                        🔧 Technique
-                                    </span>
-                                    <span class="btn btn-sm rounded-pill filter-btn" data-category="admin"
-                                        style="background:#f5576c; color:white; cursor:pointer;">
-                                        📋 Admin
-                                    </span>
-                                    <span class="btn btn-sm rounded-pill filter-btn" data-category="fin"
-                                        style="background:#43e97b; color:white; cursor:pointer;">
-                                        💰 Financier
-                                    </span>
-                                </div>
+                                    <!-- Admin -->
+                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin">
+                                        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                                            <div class="card-header text-white d-flex justify-content-between align-items-center py-3" 
+                                                style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                                <h5 class="mb-0 fw-bold">📋 Admin</h5>
+                                                <button name="action_add_checklist_item" type="object"
+                                                        context="{'default_categorie': 'admin'}"
+                                                        class="btn btn-sm btn-light rounded-pill fw-bold">+</button>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <field name="checklist_admin_ids"
+                                                    context="{'default_categorie': 'admin'}">
+                                                    <list class="o_list_jira">
+                                                        <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
+                                                        <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                                        <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
+                                                    </list>
+                                                </field>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                <!-- Liste des checklists -->
-                                <div class="mt-3">
-                                    <field name="checklist_ids">
-                                        <list default_group_by="categorie" editable="bottom" class="o_list_jira">
-                                            <field name="categorie" widget="badge" column_invisible="1"/>
-                                            <field name="libelle" string="Tâche"/>
-                                            <field name="is_done" string="✅" widget="boolean_toggle"/>
-                                            <field name="responsible_id" string="Assigné à"/>
-                                            <field name="note" string="Commentaire"/>
-                                        </list>
-                                    </field>
+                                    <!-- Financier -->
+                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_fin">
+                                        <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+                                            <div class="card-header text-white d-flex justify-content-between align-items-center py-3" 
+                                                style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+                                                <h5 class="mb-0 fw-bold">💰 Financier</h5>
+                                                <button name="action_add_checklist_item" type="object"
+                                                        context="{'default_categorie': 'fin'}"
+                                                        class="btn btn-sm btn-light rounded-pill fw-bold">+</button>
+                                            </div>
+                                            <div class="card-body p-0">
+                                                <field name="checklist_fin_ids"
+                                                    context="{'default_categorie': 'fin'}">
+                                                    <list class="o_list_jira">
+                                                        <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
+                                                        <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                                        <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
+                                                    </list>
+                                                </field>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </page>
+                            </page> 
                         </notebook>
                     </sheet>
                     <chatter/>

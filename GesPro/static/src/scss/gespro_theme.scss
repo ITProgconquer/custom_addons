@@ -332,10 +332,18 @@ body {
 .o_progressbar {
     height: 8px !important;
     border-radius: 10px !important;
-    background: #e5e7eb !important;
 }
 
 .o_progressbar .o_progressbar_value {
     border-radius: 10px !important;
     transition: width 0.6s ease !important;
+}
+// Ajustement des colonnes checklists
+.o_notebook .tab-pane .row.g-3 > [class*="col-"] {
+    min-width: 0;
+    flex: 1;
+}
+
+.o_notebook .card-body {
+    overflow-x: auto;
 }
