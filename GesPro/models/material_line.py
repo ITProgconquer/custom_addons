@@ -20,4 +20,4 @@ class MaterialLine(models.Model):
 
     qty_provided = fields.Integer(string="Quantité fournie")
 
-    is_satisfied = fields.Boolean(string="Conformité validée", default=False, tracking=True)
+    is_satisfied = fields.Boolean(string="Conformité validée", default=False)

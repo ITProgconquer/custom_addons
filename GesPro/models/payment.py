@@ -39,7 +39,7 @@ class Payment(models.Model):
         ('pending', 'En attente'),
         ('paid', 'Payé'),
         ('rejected', 'Rejeté'),
-    ], string="Statut", default='pending', tracking=True)
+    ], string="Statut", default='pending')
 
     document_files = fields.Many2many(
         'ir.attachment',

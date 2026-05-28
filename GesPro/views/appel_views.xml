@@ -80,8 +80,8 @@
                                     </list>
                                 </field>               
                             </page>
-                           <page string="Checklists">
-                                <!-- Barres de progression simples -->
+                            <page string="Checklists">
+                                <!-- Barres de progression (inchangées) -->
                                 <div class="row g-3 mb-4">
                                     <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_tech">
                                         <div class="card border-0 shadow-sm rounded-4 p-3 text-center">
@@ -105,9 +105,31 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Champ de filtre (invisible) -->
+                                <field name="active_checklist_filter" invisible="1"/>
+
+                                <!-- Boutons de filtre -->
+                                <div class="btn-group mb-3" role="group">
+                                    <button name="set_checklist_filter" type="object" string="Tous"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            context="{'filter': 'all'}"/>
+                                    <button name="set_checklist_filter" type="object" string="🔧 Technique"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            context="{'filter': 'tech'}"/>
+                                    <button name="set_checklist_filter" type="object" string="📋 Admin"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            context="{'filter': 'admin'}"/>
+                                    <button name="set_checklist_filter" type="object" string="💰 Financier"
+                                            class="btn btn-sm btn-outline-secondary"
+                                            context="{'filter': 'fin'}"/>
+                                </div>
+
+                                <!-- Colonnes conditionnelles -->
                                 <div class="row g-3">
                                     <!-- Technique -->
-                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_tech">
+                                    <div class="col-4" invisible="active_checklist_filter not in ('all', 'tech')"
+                                        groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_tech">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
                                             <div class="card-header text-white d-flex justify-content-between align-items-center py-3" 
                                                 style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -130,7 +152,8 @@
                                     </div>
 
                                     <!-- Admin -->
-                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin">
+                                    <div class="col-4" invisible="active_checklist_filter not in ('all', 'admin')"
+                                        groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
                                             <div class="card-header text-white d-flex justify-content-between align-items-center py-3" 
                                                 style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
@@ -153,7 +176,8 @@
                                     </div>
 
                                     <!-- Financier -->
-                                    <div class="col-4" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_fin">
+                                    <div class="col-4" invisible="active_checklist_filter not in ('all', 'fin')"
+                                        groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_fin">
                                         <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
                                             <div class="card-header text-white d-flex justify-content-between align-items-center py-3" 
                                                 style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
@@ -175,7 +199,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </page> 
+                            </page>
                         </notebook>
                     </sheet>
                     <chatter/>

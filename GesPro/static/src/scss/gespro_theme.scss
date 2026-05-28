@@ -1,349 +1,642 @@
-/* ============================================ */
-/* GESPRO - DESIGN PREMIUM                      */
-/* Rouge/Blanc/Noir - Moderne & Épuré           */
-/* ============================================ */
+/* ============================================
+   GESPRO ENTERPRISE DESIGN SYSTEM
+   Luxury SaaS UI – Noir / Blanc / Rouge
+   Odoo 18 – Module GesPro
+   ============================================
+   Organisation :
+   1. Variables
+   2. Global
+   3. Navbar (phase 1)
+   4. Tables (phase 2)
+   5. Forms
+   6. Dashboard & KPI cards
+   7. Components (buttons, badges, tabs, modals, avatars, progress, notifications)
+   8. Animations
+   9. Responsive
+   ============================================ */
 
-// ─── VARIABLES ────────────────────────────────
+// ======================
+// 1. VARIABLES
+// ======================
+:root {
+  /* Palette principale */
+  --gespro-black: #0a0a0a;
+  --gespro-dark: #141414;
+  --gespro-red: #c62828;
+  --gespro-red-hover: #b71c1c;
+  --gespro-red-light: rgba(198, 40, 40, 0.08);
+  --gespro-white: #ffffff;
+  --gespro-gray-50: #fafafa;
+  --gespro-gray-100: #f5f5f5;
+  --gespro-gray-200: #eaeaea;
+  --gespro-gray-300: #d5d5d5;
+  --gespro-gray-600: #666666;
+  --gespro-gray-900: #111111;
 
-$primary: #c62828;
-$primary-dark: #8e0000;
-$primary-light: #ff5f52;
-$dark: #1a1a1a;
-$darker: #0d0d0d;
-$white: #ffffff;
-$light: #fafafa;
-$gray: #f5f5f5;
-$border: #e8e8e8;
-$shadow: 0 2px 12px rgba(0,0,0,0.08);
-$radius: 8px;
+  /* Sémantique */
+  --gespro-success: #2e7d32;
+  --gespro-warning: #ef6c00;
+  --gespro-info: #1565c0;
 
-// ─── BODY ─────────────────────────────────────
+  /* Effets */
+  --gespro-shadow-xs: 0 1px 2px rgba(0,0,0,0.04);
+  --gespro-shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+  --gespro-shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+  --gespro-shadow-lg: 0 8px 24px rgba(0,0,0,0.08);
 
+  /* Rayons */
+  --gespro-radius-sm: 6px;
+  --gespro-radius: 8px;
+  --gespro-radius-lg: 12px;
+  --gespro-radius-xl: 16px;
+
+  /* Transitions */
+  --gespro-transition: all 0.2s ease;
+  --gespro-transition-slow: all 0.3s ease;
+
+  /* Typographie */
+  --gespro-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+  --gespro-font-size-xs: 0.7rem;
+  --gespro-font-size-sm: 0.85rem;
+  --gespro-font-size-base: 0.9rem;
+  --gespro-font-size-md: 1rem;
+  --gespro-font-size-lg: 1.2rem;
+  --gespro-font-size-xl: 1.5rem;
+}
+
+// ======================
+// 2. GLOBAL
+// ======================
 body {
-    background: $gray !important;
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif !important;
+  font-family: var(--gespro-font-family);
+  background-color: var(--gespro-gray-50) !important;
+  color: var(--gespro-gray-900);
 }
 
-// ─── NAVBAR ───────────────────────────────────
+.o_web_client {
+  background-color: var(--gespro-gray-50) !important;
+}
 
+// Suppression des styles cyberpunk résiduels (pour tout le module)
+.o_web_client,
+.o_main_navbar,
+.o_form_view,
+.o_list_view,
+.oe_kanban_card,
+.o_searchview,
+.o_menu_systray {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+// Réinitialisation des ombres et bordures néon partout
+* {
+  box-shadow: none; // on redéfinit proprement après
+}
+
+// ======================
+// 3. NAVBAR (phase 1 intégrée)
+// ======================
 .o_main_navbar {
-    background: linear-gradient(135deg, $dark 0%, $darker 100%) !important;
-    border-bottom: 3px solid $primary !important;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.15) !important;
-    height: 50px !important;
+  background: var(--gespro-black) !important;
+  border-bottom: 2px solid var(--gespro-red) !important;
+  box-shadow: var(--gespro-shadow-md) !important;
+  height: auto !important;
+  padding: 6px 0;
 }
 
+// --- Branding GESPRO (logo image) ---
 .o_main_navbar .o_menu_brand {
-    color: $white !important;
-    font-weight: 700 !important;
-    font-size: 20px !important;
-    letter-spacing: 1px !important;
-    text-transform: uppercase !important;
-    background: $primary !important;
-    padding: 6px 20px !important;
-    border-radius: 0 0 8px 0 !important;
+  background: var(--gespro-black) !important;
+  padding: 8px 20px !important;
+  border-radius: 0 var(--gespro-radius) var(--gespro-radius) 0 !important;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+  transition: background 0.2s ease !important;
+  margin-right: 8px;
+  /* Cache le texte et affiche l'image en fond */
+  font-size: 0 !important;               // supprime la taille du texte
+  color: transparent !important;         // rend le texte invisible
+  background-image: url('/GesPro/static/src/img/logo.png') !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 140px;                          // ajuste selon la largeur de ton logo
+  height: 40px;                          // ajuste selon la hauteur de ton logo
+}
+.o_main_navbar .o_menu_brand:hover {
+  background: var(--gespro-black) !important;
+  opacity: 0.9;
 }
 
-// ─── BOUTONS ──────────────────────────────────
-
-.btn-primary {
-    background: linear-gradient(135deg, $primary 0%, $primary-dark 100%) !important;
-    border: none !important;
-    color: $white !important;
-    border-radius: 6px !important;
-    font-weight: 600 !important;
-    padding: 8px 20px !important;
-    box-shadow: 0 4px 12px rgba(198,40,40,0.3) !important;
-    transition: all 0.3s ease !important;
+.o_main_navbar .o_nav_entry,
+.o_main_navbar .dropdown-toggle,
+.o_main_navbar .nav-link {
+  background: transparent !important;
+  border: none !important;
+  color: #ffffff !important;
+  font-weight: 500 !important;
+  font-size: var(--gespro-font-size-sm) !important;
+  padding: 10px 16px !important;
+  border-radius: var(--gespro-radius) !important;
+  transition: var(--gespro-transition) !important;
+  margin: 0 2px;
 }
 
-.btn-primary:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 6px 20px rgba(198,40,40,0.4) !important;
+/* Force le blanc sur les onglets de navigation (surcharge supplémentaire) */
+.o_main_navbar .o_menu_sections .dropdown-toggle,
+.o_main_navbar .o_menu_sections .o_nav_entry,
+.o_main_navbar .o_menu_sections .nav-link,
+.o_main_navbar .o_nav_entry,
+.o_main_navbar .dropdown-toggle,
+.o_main_navbar .nav-link {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.o_main_navbar .o_nav_entry:hover,
+.o_main_navbar .dropdown-toggle:hover,
+.o_main_navbar .nav-link:hover {
+  background: rgba(255,255,255,0.08) !important;
+  color: var(--gespro-white) !important;
+}
+.o_main_navbar .o_nav_entry.active,
+.o_main_navbar .nav-link.active {
+  background: var(--gespro-red-light) !important;
+  color: var(--gespro-red) !important;
+  font-weight: 600 !important;
+  box-shadow: inset 0 -3px 0 0 var(--gespro-red) !important;
 }
 
-.btn-success {
-    background: linear-gradient(135deg, #2e7d32 0%, #1b5e20 100%) !important;
-    border: none !important;
-    border-radius: 6px !important;
-    box-shadow: 0 4px 12px rgba(46,125,50,0.3) !important;
+// Dropdowns
+.o_main_navbar .dropdown-menu,
+.o_menu_secondary .dropdown-menu {
+  background: var(--gespro-white) !important;
+  border: 1px solid var(--gespro-gray-200) !important;
+  border-radius: var(--gespro-radius) !important;
+  box-shadow: var(--gespro-shadow-lg) !important;
+  padding: 8px !important;
+  margin-top: 8px !important;
+  min-width: 240px;
+}
+.o_main_navbar .dropdown-item,
+.o_menu_secondary .dropdown-item {
+  color: var(--gespro-gray-900) !important;
+  font-weight: 500 !important;
+  font-size: var(--gespro-font-size-base) !important;
+  padding: 10px 14px !important;
+  border-radius: var(--gespro-radius-sm) !important;
+  transition: var(--gespro-transition) !important;
+}
+.o_main_navbar .dropdown-item:hover,
+.o_menu_secondary .dropdown-item:hover {
+  background: var(--gespro-gray-100) !important;
+  color: var(--gespro-red) !important;
+  padding-left: 18px !important;
+}
+.o_main_navbar .dropdown-item.active,
+.o_menu_secondary .dropdown-item.active {
+  background: var(--gespro-red-light) !important;
+  color: var(--gespro-red) !important;
+  font-weight: 600 !important;
 }
 
-.btn-danger {
-    background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%) !important;
-    border: none !important;
-    border-radius: 6px !important;
-    box-shadow: 0 4px 12px rgba(211,47,47,0.3) !important;
+// Séparateurs
+.o_main_navbar .dropdown-divider,
+.o_menu_secondary .dropdown-divider {
+  border-top: 1px solid var(--gespro-gray-200) !important;
+  margin: 6px 0 !important;
 }
 
-.btn-warning {
-    background: linear-gradient(135deg, #f57c00 0%, #e65100 100%) !important;
-    border: none !important;
-    color: $white !important;
-    border-radius: 6px !important;
+// Search bar
+.o_searchview {
+  background: var(--gespro-white) !important;
+  border: 1px solid var(--gespro-gray-200) !important;
+  border-radius: var(--gespro-radius) !important;
+  padding: 6px 12px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.o_searchview:focus-within {
+  border-color: var(--gespro-red) !important;
+  box-shadow: 0 0 0 3px rgba(198,40,40,0.1) !important;
+}
+.o_searchview_input {
+  color: var(--gespro-gray-900) !important;
+  font-size: var(--gespro-font-size-base) !important;
+}
+.o_searchview_input::placeholder {
+  color: var(--gespro-gray-600) !important;
+}
+.o_searchview .o_searchview_icon {
+  color: var(--gespro-gray-600) !important;
 }
 
-// ─── CARDS ────────────────────────────────────
+// Systray icons
+.o_menu_systray .dropdown-toggle {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 50% !important;
+  padding: 6px !important;
+  color: var(--gespro-white) !important;
+  transition: var(--gespro-transition) !important;
+}
+.o_menu_systray .dropdown-toggle:hover {
+  background: rgba(255,255,255,0.1) !important;
+}
 
+// ajout
+/* Surcharge ABSOLUE pour fond noir */
+html .o_main_navbar .dropdown-menu,
+html .o_menu_secondary .dropdown-menu,
+html body .o_main_navbar .dropdown-menu.show,
+html body .o_menu_secondary .dropdown-menu.show {
+    background-color: #0a0a0a !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    border: 1px solid #c62828 !important;
+}
+
+html .o_main_navbar .dropdown-item,
+html .o_menu_secondary .dropdown-item {
+    color: #ffffff !important;
+    background-color: transparent !important;
+}
+
+html .o_main_navbar .dropdown-item:hover,
+html .o_menu_secondary .dropdown-item:hover {
+    background-color: rgba(198,40,40,0.15) !important;
+    color: #ffffff !important;
+}
+
+// ======================
+// 4. TABLES (phase 2 intégrée)
+// ======================
+.gespro-list-annonce .o_list_table,
+.o_list_view .o_list_table {
+  background-color: var(--gespro-white);
+  border-radius: var(--gespro-radius);
+  box-shadow: var(--gespro-shadow-md);
+  overflow: hidden;
+  border: 1px solid var(--gespro-gray-200);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.gespro-list-annonce thead th,
+.o_list_view thead th {
+  background-color: var(--gespro-black);
+  color: var(--gespro-white);
+  font-weight: 600;
+  font-size: var(--gespro-font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 14px 16px;
+  border-bottom: 2px solid var(--gespro-red);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  &:last-child { border-right: none; }
+}
+
+.gespro-list-annonce tbody td,
+.o_list_view tbody td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--gespro-gray-200);
+  color: var(--gespro-gray-900);
+  font-size: var(--gespro-font-size-base);
+  vertical-align: middle;
+  transition: background-color 0.15s ease;
+}
+
+.gespro-list-annonce tbody tr:nth-child(even) td,
+.o_list_view tbody tr:nth-child(even) td {
+  background-color: rgba(0,0,0,0.01);
+}
+
+.gespro-list-annonce tbody tr:hover td,
+.o_list_view tbody tr:hover td {
+  background-color: var(--gespro-red-light);
+}
+
+// Badges dans les tableaux
+.gespro-list-annonce .badge,
+.o_list_view .badge {
+  font-size: var(--gespro-font-size-xs);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  background-color: var(--gespro-gray-100);
+  color: var(--gespro-gray-600);
+  border: 1px solid var(--gespro-gray-200);
+  &.badge-success { background-color: #e8f5e9; color: var(--gespro-success); border-color: #c8e6c9; }
+  &.badge-warning { background-color: #fff3e0; color: var(--gespro-warning); border-color: #ffe0b2; }
+  &.badge-danger  { background-color: var(--gespro-red-light); color: var(--gespro-red); border-color: var(--gespro-red); }
+}
+
+// Boutons d'action dans les lignes
+.o_list_view .btn-link, .o_list_view .btn-sm {
+  color: var(--gespro-gray-600);
+  &:hover { color: var(--gespro-red); }
+}
+
+// Pagination
+.o_pager {
+  color: var(--gespro-gray-600);
+  .o_pager_previous, .o_pager_next {
+    border-radius: var(--gespro-radius);
+    &:hover { background-color: var(--gespro-red-light); }
+  }
+}
+
+// ======================
+// 5. FORMULAIRES
+// ======================
 .o_form_view {
-    background: $white !important;
-    border-radius: $radius !important;
-    box-shadow: $shadow !important;
-    margin: 16px !important;
+  background: var(--gespro-white) !important;
+  border-radius: var(--gespro-radius-lg) !important;
+  box-shadow: var(--gespro-shadow-sm) !important;
+  margin: 16px !important;
+  border: 1px solid var(--gespro-gray-200) !important;
+  backdrop-filter: none !important;
 }
 
 .o_form_sheet_bg {
-    background: transparent !important;
-    padding: 24px !important;
+  background: transparent !important;
+  padding: 24px !important;
 }
 
-// ─── KANBAN ───────────────────────────────────
-
-.o_kanban_view {
-    background: transparent !important;
+// Labels
+.o_form_label {
+  font-weight: 600;
+  color: var(--gespro-gray-900);
 }
 
-.oe_kanban_card {
-    background: $white !important;
-    border-radius: 12px !important;
-    border: none !important;
-    border-left: 5px solid $primary !important;
-    box-shadow: $shadow !important;
-    transition: all 0.3s ease !important;
-    padding: 16px !important;
+// Champs de saisie
+.o_input,
+.o_field_widget input:not([type="checkbox"]):not([type="radio"]),
+.o_field_widget textarea,
+.o_field_widget .o_input {
+  background-color: var(--gespro-white);
+  border: 1px solid var(--gespro-gray-300);
+  border-radius: var(--gespro-radius-sm);
+  color: var(--gespro-gray-900);
+  padding: 8px 12px;
+  font-size: var(--gespro-font-size-base);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  &:focus {
+    border-color: var(--gespro-red);
+    box-shadow: 0 0 0 3px rgba(198,40,40,0.1);
+    outline: none;
+  }
 }
 
-.oe_kanban_card:hover {
-    transform: translateY(-4px) !important;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15) !important;
+// Groupes de champs
+.o_group {
+  margin-bottom: 16px;
 }
 
-// ─── LISTES ───────────────────────────────────
-
-.o_list_view {
-    background: $white !important;
-    border-radius: $radius !important;
-    box-shadow: $shadow !important;
-    overflow: hidden !important;
+// Séparateurs
+.o_horizontal_separator {
+  border-top: 1px solid var(--gespro-gray-200) !important;
+  margin: 20px 0 !important;
 }
 
-.o_list_table th {
-    background: $dark !important;
-    color: $white !important;
-    font-weight: 600 !important;
-    text-transform: uppercase !important;
-    font-size: 12px !important;
-    letter-spacing: 0.5px !important;
-    padding: 12px 16px !important;
+// ======================
+// 6. DASHBOARD & CARDS KPI
+// ======================
+// Cartes des dashboards (vues graph, pivot)
+.o_dashboard .o_dashboards,
+.o_dashboard .o_graph,
+.o_dashboard .o_pivot {
+  background: var(--gespro-white);
+  border-radius: var(--gespro-radius-lg);
+  box-shadow: var(--gespro-shadow-sm);
+  border: 1px solid var(--gespro-gray-200);
+  padding: 20px;
+  margin-bottom: 16px;
 }
 
-.o_list_table td {
-    padding: 10px 16px !important;
-    border-bottom: 1px solid $border !important;
+// Cartes KPI génériques (comme dans les checklists)
+.card {
+  background: var(--gespro-white);
+  border: 1px solid var(--gespro-gray-200);
+  border-radius: var(--gespro-radius-lg);
+  box-shadow: var(--gespro-shadow-xs);
+  transition: var(--gespro-transition);
+  overflow: hidden;
+  &.shadow-sm {
+    box-shadow: var(--gespro-shadow-sm);
+  }
 }
 
-.o_list_table tr:hover td {
-    background: #fff5f5 !important;
+.card-header {
+  background-color: var(--gespro-black);
+  color: var(--gespro-white);
+  font-weight: 600;
+  padding: 14px 20px;
+  border-bottom: none;
 }
 
-// ─── STATUSBAR ────────────────────────────────
-
-.o_statusbar_buttons .btn {
-    border-radius: 20px !important;
-    font-weight: 600 !important;
-    font-size: 12px !important;
-    padding: 6px 16px !important;
+.card-body {
+  padding: 20px;
 }
 
-// ─── TITRES ───────────────────────────────────
-
-.o_form_view .oe_title h1 {
-    font-size: 24px !important;
-    font-weight: 700 !important;
-    color: $dark !important;
-    border-bottom: 3px solid $primary !important;
-    padding-bottom: 12px !important;
-    margin-bottom: 20px !important;
-}
-
-// ─── NOTEBOOK / ONGLETS ───────────────────────
-
-.nav-tabs .nav-link.active {
-    border-bottom: 3px solid $primary !important;
-    color: $primary !important;
-    font-weight: 600 !important;
-}
-
-// ─── BADGES ───────────────────────────────────
-
-.badge {
-    border-radius: 12px !important;
-    padding: 4px 12px !important;
-    font-weight: 600 !important;
-    font-size: 11px !important;
-}
-
-.badge-success {
-    background: #e8f5e9 !important;
-    color: #2e7d32 !important;
-}
-
-.badge-warning {
-    background: #fff3e0 !important;
-    color: #e65100 !important;
-}
-
-.badge-danger {
-    background: #ffebee !important;
-    color: #c62828 !important;
-}
-
-// ─── INPUTS ───────────────────────────────────
-
-.o_input {
-    border: 2px solid $border !important;
-    border-radius: 6px !important;
-    padding: 8px 12px !important;
-    transition: border 0.3s ease !important;
-}
-
-.o_input:focus {
-    border-color: $primary !important;
-    box-shadow: 0 0 0 3px rgba(198,40,40,0.1) !important;
-}
-
-// ─── SCROLLBAR ────────────────────────────────
-
-::-webkit-scrollbar {
-    width: 8px;
-}
-
-::-webkit-scrollbar-track {
-    background: $gray;
-}
-
-::-webkit-scrollbar-thumb {
-    background: $primary;
-    border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: $primary-dark;
-}
-// Checklist style JIRA
-.o_list_jira {
-    border-collapse: separate !important;
-    border-spacing: 0 4px !important;
-}
-
-.o_list_jira tr {
-    background: white !important;
-    border-radius: 6px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
-    margin-bottom: 4px !important;
-    transition: all 0.2s ease !important;
-}
-
-.o_list_jira tr:hover {
-    box-shadow: 0 3px 8px rgba(0,0,0,0.15) !important;
-    transform: translateX(4px) !important;
-}
-
-.o_list_jira td {
-    padding: 10px 14px !important;
-    border: none !important;
-}
-// ─── CHECKLIST STYLE JIRA PREMIUM ──────────────
-
-.o_list_jira {
-    border-collapse: separate !important;
-    border-spacing: 0 6px !important;
-    background: transparent !important;
-}
-
-.o_list_jira thead th {
-    background: transparent !important;
-    color: #6b7280 !important;
-    font-weight: 600 !important;
-    font-size: 11px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 1px !important;
-    padding: 8px 16px !important;
-    border: none !important;
-}
-
-.o_list_jira tbody tr {
-    background: white !important;
-    border-radius: 12px !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04) !important;
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    border-left: 4px solid transparent !important;
-}
-
-.o_list_jira tbody tr:hover {
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 4px 10px rgba(0,0,0,0.06) !important;
-    transform: translateX(6px) !important;
-    border-left-color: #667eea !important;
-}
-
-.o_list_jira tbody tr[data-group="tech"] {
-    border-left-color: #667eea !important;
-}
-
-.o_list_jira tbody tr[data-group="admin"] {
-    border-left-color: #f5576c !important;
-}
-
-.o_list_jira tbody tr[data-group="fin"] {
-    border-left-color: #43e97b !important;
-}
-
-.o_list_jira td {
-    padding: 12px 16px !important;
-    border: none !important;
-    vertical-align: middle !important;
-}
-
-.o_list_jira .o_field_boolean_toggle {
-    transform: scale(1.2) !important;
-}
-
-// Animation de cochage
-.o_list_jira .o_field_boolean_toggle[aria-checked="true"] {
-    animation: popCheck 0.3s ease !important;
-}
-
-@keyframes popCheck {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.4); }
-    100% { transform: scale(1.2); }
-}
-
-// Badges catégorie stylés
-.o_list_jira .badge {
-    font-size: 10px !important;
-    font-weight: 700 !important;
-    letter-spacing: 0.5px !important;
-    padding: 4px 10px !important;
-    border-radius: 20px !important;
-}
-
-// Progressbar custom
+// Widget progression (barre)
+.o_progress,
 .o_progressbar {
-    height: 8px !important;
-    border-radius: 10px !important;
+  background-color: var(--gespro-gray-200);
+  border-radius: 10px;
+  height: 8px;
+  overflow: hidden;
+}
+.o_progress-bar,
+.o_progressbar_value {
+  background: var(--gespro-red) !important;
+  border-radius: 10px;
+  transition: width 0.6s ease;
 }
 
-.o_progressbar .o_progressbar_value {
-    border-radius: 10px !important;
-    transition: width 0.6s ease !important;
-}
-// Ajustement des colonnes checklists
-.o_notebook .tab-pane .row.g-3 > [class*="col-"] {
-    min-width: 0;
-    flex: 1;
+// ======================
+// 7. COMPONENTS
+// ======================
+
+// ----- Boutons (hors navbar) -----
+.btn {
+  font-weight: 600;
+  border-radius: var(--gespro-radius);
+  padding: 8px 18px;
+  font-size: var(--gespro-font-size-sm);
+  transition: var(--gespro-transition);
+  border: 1px solid transparent;
+
+  &.btn-primary {
+    background-color: var(--gespro-red);
+    color: var(--gespro-white);
+    border-color: var(--gespro-red);
+    &:hover {
+      background-color: var(--gespro-red-hover);
+      border-color: var(--gespro-red-hover);
+    }
+  }
+  &.btn-success {
+    background-color: var(--gespro-success);
+    color: var(--gespro-white);
+    border-color: var(--gespro-success);
+  }
+  &.btn-warning {
+    background-color: var(--gespro-warning);
+    color: var(--gespro-white);
+    border-color: var(--gespro-warning);
+  }
+  &.btn-danger {
+    background-color: var(--gespro-red);
+    color: var(--gespro-white);
+    border-color: var(--gespro-red);
+  }
+  &.btn-secondary, &.btn-light {
+    background-color: var(--gespro-white);
+    color: var(--gespro-gray-900);
+    border: 1px solid var(--gespro-gray-300);
+    &:hover {
+      background-color: var(--gespro-gray-100);
+      border-color: var(--gespro-gray-300);
+    }
+  }
 }
 
-.o_notebook .card-body {
-    overflow-x: auto;
+// ----- Badges (hors tableaux) -----
+.badge {
+  font-size: var(--gespro-font-size-xs);
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+  background-color: var(--gespro-gray-100);
+  color: var(--gespro-gray-600);
+  border: 1px solid var(--gespro-gray-200);
+  &.badge-primary { background-color: var(--gespro-red-light); color: var(--gespro-red); border-color: var(--gespro-red); }
+  &.badge-success { background-color: #e8f5e9; color: var(--gespro-success); border-color: #c8e6c9; }
+  &.badge-warning { background-color: #fff3e0; color: var(--gespro-warning); border-color: #ffe0b2; }
+  &.badge-danger  { background-color: var(--gespro-red-light); color: var(--gespro-red); border-color: var(--gespro-red); }
 }
+
+// ----- Kanban -----
+.oe_kanban_card {
+  background: var(--gespro-white) !important;
+  border-radius: var(--gespro-radius-lg) !important;
+  border: 1px solid var(--gespro-gray-200) !important;
+  box-shadow: var(--gespro-shadow-xs) !important;
+  transition: var(--gespro-transition) !important;
+  padding: 20px !important;
+  border-left: 4px solid var(--gespro-red) !important;
+  &:hover {
+    box-shadow: var(--gespro-shadow-md) !important;
+    transform: translateY(-2px);
+  }
+}
+
+// ----- Onglets (notebook) -----
+.nav-tabs {
+  border-bottom: 1px solid var(--gespro-gray-200) !important;
+}
+.nav-tabs .nav-link {
+  color: var(--gespro-gray-600) !important;
+  font-weight: 500 !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  padding: 12px 20px !important;
+  background: transparent !important;
+  transition: var(--gespro-transition) !important;
+  &:hover {
+    color: var(--gespro-red) !important;
+    border-bottom-color: var(--gespro-red-light);
+  }
+  &.active {
+    color: var(--gespro-red) !important;
+    border-bottom-color: var(--gespro-red) !important;
+    font-weight: 600 !important;
+  }
+}
+
+// ----- Modales -----
+.modal-content {
+  background: var(--gespro-white);
+  border-radius: var(--gespro-radius-xl);
+  box-shadow: var(--gespro-shadow-lg);
+  border: none;
+}
+.modal-header {
+  border-bottom: 1px solid var(--gespro-gray-200);
+  padding: 20px 24px;
+}
+.modal-footer {
+  border-top: 1px solid var(--gespro-gray-200);
+  padding: 16px 24px;
+}
+
+// ----- Notifications (toasts) -----
+.o_notification {
+  border-radius: var(--gespro-radius);
+  box-shadow: var(--gespro-shadow-md);
+  border: 1px solid var(--gespro-gray-200);
+  background: var(--gespro-white);
+  color: var(--gespro-gray-900);
+}
+
+// ----- Avatars -----
+.o_avatar {
+  border-radius: 50%;
+  border: 2px solid var(--gespro-white);
+  box-shadow: var(--gespro-shadow-xs);
+}
+
+// ----- Dropdowns internes (hors navbar) -----
+.dropdown-menu:not(.o_main_navbar .dropdown-menu):not(.o_menu_secondary .dropdown-menu) {
+  background: var(--gespro-white);
+  border: 1px solid var(--gespro-gray-200);
+  border-radius: var(--gespro-radius);
+  box-shadow: var(--gespro-shadow-md);
+  padding: 4px;
+  .dropdown-item {
+    border-radius: var(--gespro-radius-sm);
+    &:hover {
+      background: var(--gespro-gray-100);
+    }
+  }
+}
+
+// ======================
+// 8. ANIMATIONS
+// ======================
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.o_list_view tbody tr,
+.oe_kanban_card {
+  animation: fadeInUp 0.3s ease both;
+}
+
+// Animation légère pour le check des checklists
+@keyframes checkPop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+.o_list_jira .o_field_boolean_toggle[aria-checked="true"] {
+  animation: checkPop 0.2s ease;
+}
+
+// ======================
+// 9. RESPONSIVE
+// ======================
+@media (max-width: 991.98px) {
+  .o_main_navbar {
+    background: var(--gespro-black) !important;
+    border-bottom: 2px solid var(--gespro-red) !important;
+  }
+  .o_form_view {
+    margin: 8px !important;
+  }
+  .card {
+    margin-bottom: 16px;
+  }
+}
+
