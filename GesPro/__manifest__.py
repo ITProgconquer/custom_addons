@@ -35,6 +35,7 @@
 
     # Données initiales
     'data/sequences.xml',
+    'data/cron_alertes.xml',
 
     # Vues (TOUTES avant le menu)
     'views/annonce_views.xml',
