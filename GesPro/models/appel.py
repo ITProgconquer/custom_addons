@@ -125,7 +125,6 @@ class Appel(models.Model):
         store=True
     )
     show_generate_lots = fields.Boolean(compute='_compute_show_buttons')
-    show_generate_checklists = fields.Boolean(compute='_compute_show_buttons')
 
     # ⭐ CHAMP DE FILTRE DYNAMIQUE (ajouté ici)
     active_checklist_filter = fields.Selection([
@@ -143,7 +142,7 @@ class Appel(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel')
         return super().create(vals_list)
 
-    @api.depends('deadline')
+    @api.depends('deadline','state')
     def _compute_delai_restant(self):
         for record in self:
             if record.deadline:
@@ -311,9 +310,16 @@ class Appel(models.Model):
                 if field not in allowed_fields:
                     raise AccessError("Vous ne pouvez modifier que le statut et les checklists.")
         return super().write(vals)
-
-    @api.depends('lot_ids', 'checklist_ids')
+    
+    
+    @api.depends('lot_ids')
     def _compute_show_buttons(self):
         for record in self:
             record.show_generate_lots = len(record.lot_ids) == 0
-            record.show_generate_checklists = len(record.checklist_ids) == 0
+
+    
+    def _cron_update_delai(self):
+        """Mis à jour quotidienne des délais restants"""
+        appels = self.search([('state', 'in', ['en_preparation', 'pret'])])
+        for appel in appels:
+            appel._compute_delai_restant()
