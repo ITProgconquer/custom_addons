@@ -2,90 +2,103 @@
 <odoo>
     <data>
 
-        <!-- Menu principal GESPRO -->
+        <!-- Menu racine avec icône du module -->
         <menuitem id="menu_gespro_root"
                   name="GESPRO"
                   sequence="10"
-                  web_icon="gespro,static/src/img/icon.png"/>
+                  web_icon="GesPro,static/src/img/icon.png"/>
 
-        <!-- Annonces -->
+        <!-- ============================================ -->
+        <!-- GROUPE 1 : GESTION DES OFFRES                -->
+        <!-- ============================================ -->
+        <menuitem id="menu_gestion_offres"
+                  name="Gestion des offres"
+                  parent="menu_gespro_root"
+                  sequence="10"/>
+
         <menuitem id="menu_annonce"
                   name="Annonces"
-                  parent="menu_gespro_root"
+                  parent="menu_gestion_offres"
                   action="action_annonce"
                   sequence="10"/>
 
-        <!-- Appels à Concurrence -->
         <menuitem id="menu_appel"
                   name="Appels à Concurrence"
-                  parent="menu_gespro_root"
+                  parent="menu_gestion_offres"
                   action="action_appel"
                   sequence="20"/>
 
-        <!-- Paiements -->
-        <menuitem id="menu_payment"
-                  name="Paiements"
-                  parent="menu_gespro_root"
-                  action="action_payment"
-                  sequence="30"/>
-
-        <!-- Checklists -->
-        
-
-        <!-- CV Personnel -->
-        <menuitem id="menu_cv_personnel"
-                  name="CV Personnel"
-                  parent="menu_gespro_root"
-                  action="action_cv_personnel"
-                  sequence="50"/>
-
-        <!-- Marchés Similaires -->
         <menuitem id="menu_similar_contract"
                   name="Marchés Similaires"
-                  parent="menu_gespro_root"
+                  parent="menu_gestion_offres"
                   action="action_similar_contract"
-                  sequence="60"/>
+                  sequence="30"/>
 
-        <!-- Dashboards -->
-        <menuitem id="menu_dashboard"
-                  name="Tableaux de Bord"
+        <!-- ============================================ -->
+        <!-- GROUPE 2 : SUIVI & ADMINISTRATION            -->
+        <!-- ============================================ -->
+        <menuitem id="menu_suivi_admin"
+                  name="Suivi &amp; Administration"
                   parent="menu_gespro_root"
-                  sequence="70"/>
+                  sequence="20"/>
 
+        <menuitem id="menu_payment"
+                  name="Paiements"
+                  parent="menu_suivi_admin"
+                  action="action_payment"
+                  sequence="10"/>
+
+        <menuitem id="menu_cv_personnel"
+                  name="CV Personnel"
+                  parent="menu_suivi_admin"
+                  action="action_cv_personnel"
+                  sequence="20"
+                  />
+
+        <!-- ============================================ -->
+        <!-- TABLEAU DE BORD (indépendant)                -->
+        <!-- ============================================ -->
+        <menuitem id="menu_dashboard"
+                  name="Tableau de bord"
+                  parent="menu_gespro_root"
+                  sequence="30"
+                 />
+
+        <!-- Sous-menus par rôle -->
         <menuitem id="menu_dashboard_ceo"
                   name="Dashboard CEO"
                   parent="menu_dashboard"
                   action="action_dashboard_ceo"
                   sequence="10"
-                  groups="group_ceo"/>
+                  groups="GesPro.group_ceo"/>
 
         <menuitem id="menu_dashboard_pm"
                   name="Dashboard PM"
                   parent="menu_dashboard"
                   action="action_dashboard_pm"
                   sequence="20"
-                  groups="group_pm"/>
+                  groups="GesPro.group_pm"/>
 
         <menuitem id="menu_dashboard_resadmin"
                   name="Dashboard RESADMIN"
                   parent="menu_dashboard"
                   action="action_dashboard_resadmin"
                   sequence="30"
-                  groups="group_resadmin"/>
+                  groups="GesPro.group_resadmin"/>
 
         <menuitem id="menu_dashboard_tech"
                   name="Dashboard TECH"
                   parent="menu_dashboard"
                   action="action_dashboard_tech"
                   sequence="40"
-                  groups="group_tech"/>
+                  groups="GesPro.group_tech"/>
 
         <menuitem id="menu_dashboard_fin"
                   name="Dashboard FIN"
                   parent="menu_dashboard"
                   action="action_dashboard_fin"
                   sequence="50"
-                  groups="group_fin"/>
+                  groups="GesPro.group_fin"/>
 
     </data>
 </odoo>

@@ -1,4 +1,5 @@
 from odoo import models, fields, api
+from odoo.exceptions import AccessError
 
 
 class Annonce(models.Model):
@@ -20,7 +21,6 @@ class Annonce(models.Model):
     # ─── DOCUMENTS ──────────────────────────────
 
     source_file = fields.Binary(string="Fichier source (PDF/DOCX)")
-
     source_filename = fields.Char(string="Nom du fichier source")
 
     # ─── INFORMATIONS ───────────────────────────
@@ -57,34 +57,40 @@ class Annonce(models.Model):
         'ir.attachment',
         string="Captures d'écran CEO"
     )
-
-    ceo_decision_comment = fields.Text(
-        string="Commentaire décision CEO"
-    )
-
-    investigation_result = fields.Text(
-        string="Résultat investigation (RESADMIN)"
-    )
+    ceo_decision_comment = fields.Text(string="Commentaire décision CEO")
+    investigation_result = fields.Text(string="Résultat investigation (RESADMIN)")
 
     # ─── RELATIONS ──────────────────────────────
 
-    payment_ids = fields.One2many(
-        'gespro.payment',
-        'annonce_id',
-        string="Paiements"
-    )
-
-    appel_ids = fields.One2many(
-        'gespro.appel',
-        'annonce_id',
-        string="Appels à Concurrence"
-    )
+    payment_ids = fields.One2many('gespro.payment', 'annonce_id', string="Paiements")
+    appel_ids = fields.One2many('gespro.appel', 'annonce_id', string="Appels à Concurrence")
 
     can_create_appel = fields.Boolean(
         string="Peut créer un AC",
         compute='_compute_can_create_appel'
     )
 
+    # ─── CHAMPS D'AFFICHAGE AVEC ÉMOJIS (pour la vue liste) ─────────
+    display_reference = fields.Char(
+        string="Référence",
+        compute='_compute_display_reference',
+        store=False
+    )
+    display_author = fields.Char(
+        string="Auteur",
+        compute='_compute_display_author',
+        store=False
+    )
+    display_state = fields.Char(
+        string="Statut",
+        compute='_compute_display_state',
+        store=False
+    )
+    display_date = fields.Char(
+        string="Date d'envoi",
+        compute='_compute_display_date',
+        store=False
+    )
 
     # ─── MÉTHODES ───────────────────────────────
 
@@ -118,7 +124,6 @@ class Annonce(models.Model):
         """CEO valide le GO"""
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
-            from odoo.exceptions import AccessError
             raise AccessError("Seul le CEO peut donner le GO.")
         self.state = 'go'
         self.message_post(
@@ -151,7 +156,6 @@ class Annonce(models.Model):
                 record.payment_ids and 
                 any(p.state == 'paid' for p in record.payment_ids)
             )
-    
 
     def action_create_appel(self):
         """Ouvre le formulaire de création d'Appel avec l'Annonce pré-remplie"""
@@ -167,3 +171,25 @@ class Annonce(models.Model):
                 'default_titre': self.description or '',
             },
         }
+
+    # ─── COMPUTE POUR LES CHAMPS D'AFFICHAGE (émoji + texte ensemble) ────
+    @api.depends('name')
+    def _compute_display_reference(self):
+        for record in self:
+            record.display_reference = f"📄 {record.name}" if record.name else ""
+
+    @api.depends('user_id')
+    def _compute_display_author(self):
+        for record in self:
+            record.display_author = f"👤 {record.user_id.name}" if record.user_id else ""
+
+    @api.depends('state')
+    def _compute_display_state(self):
+        for record in self:
+            state_label = dict(self._fields['state'].selection).get(record.state, record.state)
+            record.display_state = f"🏷 {state_label}" if record.state else ""
+
+    @api.depends('date_envoi')
+    def _compute_display_date(self):
+        for record in self:
+            record.display_date = f"📅 {record.date_envoi.strftime('%Y-%m-%d')}" if record.date_envoi else ""
