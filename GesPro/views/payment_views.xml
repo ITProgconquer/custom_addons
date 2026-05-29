@@ -21,7 +21,7 @@
                     <sheet>
                         <group>
                             <field name="annonce_id"/>
-                            <field name="amount" widget="monetary"/>
+                            <field name="amount"/>
                             <field name="currency_id"/>
                             <field name="payment_date"/>
                             <field name="proof" widget="binary" filename="proof_filename"/>

@@ -48,7 +48,7 @@
                                     </h4>
                                 </div>
                                 <field name="personnel_line_ids">
-                                    <list editable="bottom" class="o_list_jira">
+                                    <list class="o_list_jira">
                                         <field name="role" string="Poste"/>
                                         <field name="qualification_min" string="Qualification"/>
                                         <field name="nb_exige" string="Nb exigé"/>
@@ -79,7 +79,7 @@
                                     </h4>
                                 </div>
                                 <field name="material_line_ids">
-                                    <list editable="bottom" class="o_list_jira">
+                                    <list class="o_list_jira">
                                         <field name="designation" string="Désignation"/>
                                         <field name="qty_required" string="Qté exigée"/>
                                         <field name="qty_provided" string="Qté fournie"/>

@@ -330,10 +330,22 @@ html .o_menu_secondary .dropdown-item:hover {
   &.badge-danger  { background-color: var(--gespro-red-light); color: var(--gespro-red); border-color: var(--gespro-red); }
 }
 
+// Première colonne en rouge
+.o_list_table thead th:first-child,
+.o_list_table tbody td:first-child {
+    color: #c62828 !important;
+    font-weight: 700 !important;
+}
 // Boutons d'action dans les lignes
 .o_list_view .btn-link, .o_list_view .btn-sm {
   color: var(--gespro-gray-600);
   &:hover { color: var(--gespro-red); }
+}
+.o_list_table thead th:first-child,
+.o_list_table thead th:nth-child(2),
+.o_list_table thead th:nth-child(3),
+.o_list_table thead th:nth-child(4) {
+    font-family: "FontAwesome", "Segoe UI", sans-serif !important;
 }
 
 // Pagination
@@ -441,16 +453,14 @@ html .o_menu_secondary .dropdown-item:hover {
 // Widget progression (barre)
 .o_progress,
 .o_progressbar {
-  background-color: var(--gespro-gray-200);
-  border-radius: 10px;
-  height: 8px;
-  overflow: hidden;
+    height: 10px !important;
+    border-radius: 12px !important;
 }
+
 .o_progress-bar,
 .o_progressbar_value {
-  background: var(--gespro-red) !important;
-  border-radius: 10px;
-  transition: width 0.6s ease;
+    border-radius: 10px !important;
+    transition: width 0.6s ease !important;
 }
 
 // ======================
