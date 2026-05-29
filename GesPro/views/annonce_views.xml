@@ -67,12 +67,11 @@
                             </group>
                         </page>
                         <page string="Investigation" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'en_investigation'">
-                            <field name="investigation_result"
-                                groups="GesPro.group_resadmin"/>
+                            <field name="investigation_result"/>
                         </page>
                         <page string="Paiements" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'go'">
                             <field name="payment_ids">
-                                <list editable="bottom" class="o_list_jira">
+                                <list class="o_list_jira">
                                     <field name="amount"/>
                                     <field name="state" widget="badge"/>
                                     <field name="payment_date"/>
