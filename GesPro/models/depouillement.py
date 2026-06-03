@@ -1,0 +1,26 @@
+from odoo import models, fields, api
+
+class Depouillement(models.Model):
+    _name = "gespro.depouillement"
+    _description = "Dépouillement d'un appel d'offre"
+    _order = "ordre"
+
+    offre_id = fields.Many2one(
+        'gespro.appel.offre',
+        string="Appel d'offre",
+        required=True,
+        ondelete='cascade'
+    )
+    ordre = fields.Integer(string="Ordre", default=1)
+    soumissionnaires = fields.Many2many(
+        'res.partner',
+        string="Soumissionnaires"
+    )
+    lot_ids = fields.Many2many(
+        'gespro.lot',
+        string="Lots concernés",
+        domain="[('appel_id.offre_id', '=', offre_id)]"
+    )
+    montant_min_ttc = fields.Float(string="Montant minimum TTC")
+    montant_max_ttc = fields.Float(string="Montant maximum TTC")
+    observation = fields.Text(string="Observation")

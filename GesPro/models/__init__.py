@@ -5,6 +5,7 @@ from . import lot
 from . import personnel_line
 from . import material_line
 from . import payment
+from . import depouillement
 from . import checklist_line
 from . import similar_contract
 from . import cv_personnel

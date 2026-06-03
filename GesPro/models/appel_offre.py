@@ -58,6 +58,12 @@ class AppelOffre(models.Model):
         string="Paiements"
     )
 
+    depouillement_ids = fields.One2many(
+        'gespro.depouillement', 
+        'offre_id', 
+        string="Dépouillements"
+    )
+
     # ─── WORKFLOW (anciens états réintégrés) ────
     state = fields.Selection([
         ('nouveau', 'Nouveau'),
@@ -122,6 +128,19 @@ class AppelOffre(models.Model):
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut ignorer l'appel d'offre.")
         self.state = 'ignore'
+
+    def action_create_payment(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Enregistrer un paiement',
+            'res_model': 'gespro.payment',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_offre_id': self.id,
+            },
+        }
 
     # --- Création d'un Appel à Concurrence (PM) ---
     def action_create_appel_concurrence(self):
