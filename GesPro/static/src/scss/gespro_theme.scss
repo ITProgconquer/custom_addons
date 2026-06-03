@@ -330,12 +330,6 @@ html .o_menu_secondary .dropdown-item:hover {
   &.badge-danger  { background-color: var(--gespro-red-light); color: var(--gespro-red); border-color: var(--gespro-red); }
 }
 
-// Première colonne en rouge
-.o_list_table thead th:first-child,
-.o_list_table tbody td:first-child {
-    color: #c62828 !important;
-    font-weight: 700 !important;
-}
 // Boutons d'action dans les lignes
 .o_list_view .btn-link, .o_list_view .btn-sm {
   color: var(--gespro-gray-600);

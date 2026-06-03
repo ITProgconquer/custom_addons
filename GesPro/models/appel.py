@@ -304,6 +304,11 @@ class Appel(models.Model):
                 template = self.env.ref(template_xmlid, raise_if_not_found=False)
                 if template:
                     template.send_mail(appel.id, force_send=True)
+                # Notification chatter en plus
+                appel.message_post(
+                    body=f"⚠️ Alerte : {days_left} jours restants pour {appel.name}",
+                    message_type='notification'
+                )
                 appel.write({'last_alert_sent': today})
 
     def write(self, vals):

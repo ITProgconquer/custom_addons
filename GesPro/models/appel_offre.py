@@ -22,6 +22,8 @@ class AppelOffre(models.Model):
     date_butoire = fields.Date(string="Date butoire", required=True)
     garantie_soumission = fields.Float(string="Garantie de soumission")
     autorite_contractante = fields.Char(string="Autorité contractante")
+
+
     capture_ids = fields.Many2many(
         'ir.attachment',
         'gespro_offre_ir_attachments_rel',
