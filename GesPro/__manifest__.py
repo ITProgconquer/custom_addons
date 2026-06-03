@@ -41,6 +41,7 @@
 
     # Vues (TOUTES avant le menu)
     'views/annonce_views.xml',
+    'views/appel_offre_views.xml',
     'views/appel_views.xml',
     'views/lot_views.xml',
     'views/personnel_line_views.xml',

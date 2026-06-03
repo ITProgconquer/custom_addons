@@ -50,11 +50,25 @@ class Appel(models.Model):
 
     last_alert_sent = fields.Date(string="Dernière alerte envoyée")
 
+    # ─── NOUVEAUX CHAMPS ────────────────────────
+    garantie_soumission = fields.Float(string="Garantie de soumission")
+    autorite_contractante = fields.Char(string="Autorité contractante")
+
     # ─── RELATIONS ──────────────────────────────
+    offre_id = fields.Many2one(
+        'gespro.appel.offre',
+        string="Appel d'offre source",
+        required=True,
+        ondelete='restrict'
+    )
+
+    # Le lien vers l'annonce est automatiquement hérité de l'appel d'offre
     annonce_id = fields.Many2one(
         'gespro.annonce',
         string="Annonce source",
-        required=True,
+        related='offre_id.annonce_id',
+        store=True,
+        readonly=True,
         ondelete='restrict'
     )
 
@@ -65,73 +79,56 @@ class Appel(models.Model):
         required=True
     )
 
-    lot_ids = fields.One2many(
-        'gespro.lot',
-        'appel_id',
-        string="Lots"
-    )
+    lot_ids = fields.One2many('gespro.lot', 'appel_id', string="Lots")
+    checklist_ids = fields.One2many('gespro.checklist.line', 'appel_id', string="Checklists")
 
-    checklist_ids = fields.One2many(
-        'gespro.checklist.line',
-        'appel_id',
-        string="Toutes les checklists"
+    # ─── CHECKLISTS PAR CATÉGORIE (Many2many calculés) ────
+    checklist_tech_ids = fields.Many2many(
+        'gespro.checklist.line', string="Checklist Technique",
+        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
+        relation='gespro_appel_checklist_tech_rel', column1='appel_id', column2='line_id',
+        domain=[('categorie', '=', 'tech')]
     )
-
-    # ─── CHECKLISTS PAR CATÉGORIE (actuellement One2many, seront corrigés plus tard) ────
-    checklist_tech_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
-        domain=[('categorie', '=', 'tech')], string="Checklist Technique")
-    checklist_admin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
-        domain=[('categorie', '=', 'admin')], string="Checklist Admin")
-    checklist_fin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
-        domain=[('categorie', '=', 'fin')], string="Checklist Financier")
+    checklist_admin_ids = fields.Many2many(
+        'gespro.checklist.line', string="Checklist Admin",
+        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
+        relation='gespro_appel_checklist_admin_rel', column1='appel_id', column2='line_id',
+        domain=[('categorie', '=', 'admin')]
+    )
+    checklist_fin_ids = fields.Many2many(
+        'gespro.checklist.line', string="Checklist Financier",
+        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
+        relation='gespro_appel_checklist_fin_rel', column1='appel_id', column2='line_id',
+        domain=[('categorie', '=', 'fin')]
+    )
 
     # ─── PROGRESSION ────────────────────────────
-    progression_tech = fields.Float(
-        string="Progression Technique (%)",
-        compute='_compute_progression',
-        store=True
-    )
-    progression_admin = fields.Float(
-        string="Progression Admin (%)",
-        compute='_compute_progression',
-        store=True
-    )
-    progression_fin = fields.Float(
-        string="Progression Financière (%)",
-        compute='_compute_progression',
-        store=True
-    )
-    progression_generale = fields.Float(
-        string="Progression Générale (%)",
-        compute='_compute_progression',
-        store=True
-    )
+    progression_tech = fields.Float(compute='_compute_progression', store=True)
+    progression_admin = fields.Float(compute='_compute_progression', store=True)
+    progression_fin = fields.Float(compute='_compute_progression', store=True)
+    progression_generale = fields.Float(compute='_compute_progression', store=True)
 
     # ─── WORKFLOW ───────────────────────────────
     state = fields.Selection([
+        ('nouveau', 'Nouveau'),
+        ('go', 'GO'),
+        ('no_go', 'NO GO'),
         ('en_preparation', 'En préparation'),
         ('pret', 'Prêt à soumettre'),
         ('soumis', 'Soumis'),
         ('gagne', 'Gagné'),
         ('perdu', 'Perdu'),
         ('annule', 'Annulé'),
-    ], string="Statut", default='en_preparation', tracking=True)
+    ], string="Statut", default='nouveau', tracking=True)
 
     active = fields.Boolean(string="Actif", default=True)
-
-    color_kanban = fields.Integer(
-        string="Couleur Kanban",
-        compute='_compute_color',
-        store=True
-    )
+    color_kanban = fields.Integer(compute='_compute_color', store=True)
     show_generate_lots = fields.Boolean(compute='_compute_show_buttons')
+    show_generate_checklists = fields.Boolean(compute='_compute_show_buttons')
 
-    # ⭐ CHAMP DE FILTRE DYNAMIQUE (ajouté ici)
+    # ─── FILTRE DYNAMIQUE ───────────────────────
     active_checklist_filter = fields.Selection([
-        ('all', 'Toutes'),
-        ('tech', 'Technique'),
-        ('admin', 'Administratif'),
-        ('fin', 'Financier'),
+        ('all', 'Toutes'), ('tech', 'Technique'), ('admin', 'Administratif'), ('fin', 'Financier'),
     ], string="Filtre checklists", default='all')
 
     # ─── MÉTHODES ───────────────────────────────
@@ -140,14 +137,20 @@ class Appel(models.Model):
         for vals in vals_list:
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel')
-        return super().create(vals_list)
+        records = super().create(vals_list)
+        for record in records:
+            # Template de notification de création (inchangé)
+            template = self.env.ref('GesPro.mail_template_appel_creation', raise_if_not_found=False)
+            if template:
+                # Le CC sera automatiquement le CEO auteur de l'annonce, via annonce_id.user_id.email
+                template.send_mail(record.id, force_send=True)
+        return records
 
-    @api.depends('deadline','state')
+    @api.depends('deadline')
     def _compute_delai_restant(self):
         for record in self:
             if record.deadline:
-                delta = record.deadline - date.today()
-                record.delai_restant = delta.days
+                record.delai_restant = (record.deadline - date.today()).days
             else:
                 record.delai_restant = 0
 
@@ -167,11 +170,9 @@ class Appel(models.Model):
             record.progression_tech = self._calc_pct(record.checklist_tech_ids)
             record.progression_admin = self._calc_pct(record.checklist_admin_ids)
             record.progression_fin = self._calc_pct(record.checklist_fin_ids)
-            record.progression_generale = (
-                record.progression_tech +
-                record.progression_admin +
-                record.progression_fin
-            ) / 3
+            categories = [record.progression_tech, record.progression_admin, record.progression_fin]
+            non_zero = [p for p in categories if p > 0] or [0]
+            record.progression_generale = sum(non_zero) / len(non_zero)
 
     def _calc_pct(self, lines):
         total = len(lines)
@@ -180,36 +181,39 @@ class Appel(models.Model):
         done = len(lines.filtered('is_done'))
         return (done / total) * 100
 
+    @api.depends('checklist_ids')
+    def _compute_checklist_categories(self):
+        for record in self:
+            record.checklist_tech_ids = record.checklist_ids.filtered(lambda l: l.categorie == 'tech')
+            record.checklist_admin_ids = record.checklist_ids.filtered(lambda l: l.categorie == 'admin')
+            record.checklist_fin_ids = record.checklist_ids.filtered(lambda l: l.categorie == 'fin')
+
+    def _inverse_checklist_categories(self):
+        pass
+
     @api.constrains('deadline', 'date_publication')
     def _check_dates(self):
         for record in self:
-            if record.deadline and record.date_publication:
-                if record.deadline < record.date_publication:
-                    raise UserError(
-                        "La date limite ne peut pas être antérieure "
-                        "à la date de publication."
-                    )
+            if record.deadline and record.date_publication and record.deadline < record.date_publication:
+                raise UserError("La date limite ne peut pas être antérieure à la date de publication.")
 
     @api.onchange('type_appel')
     def _onchange_type_appel(self):
         if self.type_appel == 'unique':
             self.lot_count = 1
 
+    # --- Actions métier ---
     def action_generate_lots(self):
         self.ensure_one()
         self.lot_ids.unlink()
         if self.type_appel == 'unique':
             self.env['gespro.lot'].create({
-                'appel_id': self.id,
-                'lot_num': 1,
-                'titre': self.titre or 'Lot unique',
+                'appel_id': self.id, 'lot_num': 1, 'titre': self.titre or 'Lot unique',
             })
         else:
             for i in range(1, self.lot_count + 1):
                 self.env['gespro.lot'].create({
-                    'appel_id': self.id,
-                    'lot_num': i,
-                    'titre': f'Lot {i}',
+                    'appel_id': self.id, 'lot_num': i, 'titre': f'Lot {i}',
                 })
         self.message_post(body="✅ Lots générés avec succès.")
 
@@ -227,6 +231,22 @@ class Appel(models.Model):
             },
         }
 
+    # --- Décision CEO sur l'Appel ---
+    def action_go(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut donner le GO.")
+        self.state = 'go'
+        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
+
+    def action_no_go(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut donner le NO GO.")
+        self.state = 'no_go'
+        self.message_post(body=f"🔴 NO GO donné par {self.env.user.name}")
+
+    # --- Validation et soumission ---
     def action_valider(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
@@ -234,9 +254,7 @@ class Appel(models.Model):
         all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
         incomplete = all_checklists.filtered(lambda l: not l.is_done)
         if incomplete:
-            raise UserError(
-                f"Checklist incomplète : {len(incomplete)} tâche(s) non cochée(s)."
-            )
+            raise UserError(f"Checklist incomplète : {len(incomplete)} tâche(s) non cochée(s).")
         self.state = 'pret'
         self.message_post(body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre")
 
@@ -244,27 +262,19 @@ class Appel(models.Model):
         self.ensure_one()
         all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
         if not all(all_checklists.mapped('is_done')):
-            raise UserError(
-                "Checklist incomplète. Toutes les tâches doivent être cochées."
-            )
+            raise UserError("Checklist incomplète. Toutes les tâches doivent être cochées.")
         self.state = 'soumis'
         self.message_post(body="📦 Dossier soumis")
 
     def action_gagne(self):
         self.ensure_one()
         self.state = 'gagne'
-        self.message_post(
-            body="🎉 Félicitations ! Dossier gagné !",
-            message_type='notification'
-        )
+        self.message_post(body="🎉 Félicitations ! Dossier gagné !", message_type='notification')
 
     def action_perdu(self):
         self.ensure_one()
         self.state = 'perdu'
-        self.message_post(
-            body="Dossier non retenu",
-            message_type='notification'
-        )
+        self.message_post(body="Dossier non retenu", message_type='notification')
 
     def action_annuler(self):
         self.ensure_one()
@@ -272,13 +282,15 @@ class Appel(models.Model):
 
     def action_reouvrir(self):
         self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut rouvrir un dossier.")
         self.state = 'en_preparation'
 
-    # ⭐ Méthode pour les boutons de filtre
     def set_checklist_filter(self):
         self.ensure_one()
         self.active_checklist_filter = self.env.context.get('filter', 'all')
 
+    # --- Cron d'alertes ---
     def _cron_check_deadlines(self):
         today = date.today()
         appels = self.search([
@@ -288,10 +300,8 @@ class Appel(models.Model):
         for appel in appels:
             days_left = (appel.deadline - today).days
             if days_left in (5, 2, 1, 0) and appel.last_alert_sent != today:
-                template = self.env.ref(
-                    'gespro.mail_template_alert_j5' if days_left > 2
-                    else 'gespro.mail_template_alert_j2', raise_if_not_found=False
-                )
+                template_xmlid = 'gespro.mail_template_alert_j5' if days_left > 2 else 'gespro.mail_template_alert_j2'
+                template = self.env.ref(template_xmlid, raise_if_not_found=False)
                 if template:
                     template.send_mail(appel.id, force_send=True)
                 # Notification chatter en plus
@@ -314,16 +324,9 @@ class Appel(models.Model):
                 if field not in allowed_fields:
                     raise AccessError("Vous ne pouvez modifier que le statut et les checklists.")
         return super().write(vals)
-    
-    
-    @api.depends('lot_ids')
+
+    @api.depends('lot_ids', 'checklist_ids')
     def _compute_show_buttons(self):
         for record in self:
             record.show_generate_lots = len(record.lot_ids) == 0
-
-    
-    def _cron_update_delai(self):
-        """Mis à jour quotidienne des délais restants"""
-        appels = self.search([('state', 'in', ['en_preparation', 'pret'])])
-        for appel in appels:
-            appel._compute_delai_restant()
+            record.show_generate_checklists = len(record.checklist_ids) == 0

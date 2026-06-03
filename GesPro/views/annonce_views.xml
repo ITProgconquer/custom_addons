@@ -1,50 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- ============================================ -->
-    <!-- VUE FORMULAIRE                               -->
-    <!-- ============================================ -->
     <record id="view_annonce_form" model="ir.ui.view">
         <field name="name">gespro.annonce.form</field>
         <field name="model">gespro.annonce</field>
         <field name="arch" type="xml">
             <form string="Annonce">
                 <header>
-                    <button name="action_mark_lu" string="Marquer Lu" type="object"
+                    <button name="action_create_appel_offre" string="Créer Appel d'offre" type="object"
                             class="btn-primary"
-                            groups="GesPro.group_ceo"
-                            invisible="state != 'new'"/>
-                    <button name="action_investigation" string="Demander Investigation" type="object"
-                            class="btn-warning"
-                            groups="GesPro.group_ceo"
-                            invisible="state != 'lu'"/>
-                    <button name="action_go" string="GO" type="object"
-                            class="btn-success"
-                            groups="GesPro.group_ceo"
-                            invisible="state not in ['lu', 'en_investigation','no_go']"/>
-                    <button name="action_no_go" string="NO GO" type="object"
-                            class="btn-danger"
-                            groups="GesPro.group_ceo"
-                            invisible="state not in ['lu', 'en_investigation']"/>
-                    <button name="action_ignore" string="Ignorer" type="object"
-                            class="btn-secondary"
-                            groups="GesPro.group_ceo"
-                            invisible="state not in ['new', 'lu']"/>
-                    <button name="action_create_appel" string="Créer AC" type="object"
-                            class="btn-primary"
-                            groups="GesPro.group_pm"
-                            invisible="can_create_appel == False"/>
-                    <field name="state" widget="statusbar" string="🏷 Statut"/>
+                            groups="GesPro.group_pm"/>
                 </header>
                 <sheet>
                     <div class="oe_title">
-                        <h1><field name="name" readonly="1" string="📄 Référence"/></h1>
-                    </div>
-                    <div class="alert alert-warning mt-2" 
-                        invisible="state != 'go' or can_create_appel == True" 
-                        groups="GesPro.group_pm">
-                        <i class="fa fa-info-circle"></i>
-                        En attente de paiement pour créer l'Appel à Concurrence.
+                        <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
                         <group>
@@ -59,42 +28,15 @@
                         <page string="Description">
                             <field name="description"/>
                         </page>
-                        <page string="Décision CEO" groups="GesPro.group_ceo,GesPro.group_resadmin">
-                            <group>
-                                <field name="ceo_capture_ids" widget="many2many_binary"/>
-                                <field name="ceo_decision_comment"
-                                    invisible="state not in ['go', 'no_go']"/>
-                            </group>
-                        </page>
-                        <page string="Investigation" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'en_investigation'">
-                            <field name="investigation_result"/>
-                        </page>
-                        <page string="Paiements" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'go'">
-                            <field name="payment_ids">
-                                <list class="o_list_jira">
-                                    <field name="amount"/>
-                                    <field name="state" widget="badge"/>
-                                    <field name="payment_date"/>
-                                </list>
-                            </field>
-                        </page>
-                        <page string="Appels à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm" invisible="can_create_appel == False">
-                            <field name="appel_ids">
+                        <page string="Appels d'offre" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm">
+                            <field name="appel_offre_ids">
                                 <list class="o_list_jira">
                                     <field name="name"/>
                                     <field name="titre"/>
+                                    <field name="date_butoire"/>
+                                    <field name="garantie_soumission"/>
+                                    <field name="autorite_contractante"/>
                                     <field name="state" widget="badge"/>
-                                    <field name="deadline"/>
-                                </list>
-                            </field>
-                        </page>
-                        <page string="Dossiers" groups="GesPro.group_pm,GesPro.group_ceo,GesPro.group_resadmin" 
-                            invisible="can_create_appel == False">
-                            <p class="text-muted">Dossiers complets acquis par le RESADMIN.</p>
-                            <field name="payment_ids">
-                                <list editable="bottom" class="o_list_jira">
-                                    <field name="state" widget="badge"/>
-                                    <field name="document_files" widget="many2many_binary"/>
                                 </list>
                             </field>
                         </page>
@@ -105,9 +47,7 @@
         </field>
     </record>
 
-    <!-- ============================================ -->
-    <!-- VUE LISTE                                    -->
-    <!-- ============================================ -->
+    <!-- Vue liste, kanban, search inchangées (mais il faut retirer la colonne state si elle existait) -->
     <record id="view_annonce_list" model="ir.ui.view">
         <field name="name">gespro.annonce.list</field>
         <field name="model">gespro.annonce</field>
@@ -115,20 +55,18 @@
             <list string="Annonces">
                 <field name="display_reference" string="📄 Référence"/>
                 <field name="display_author" string="👤 Auteur"/>
-                <field name="display_state" string="🏷 Statut"/>
                 <field name="display_date" string="📅 Date d'envoi"/>
+                <button name="open_appel_offre_list" string="📋 Appels d'offre" type="object"
+                        class="btn btn-sm btn-primary"/>
             </list>
         </field>
     </record>
 
-    <!-- ============================================ -->
-    <!-- VUE KANBAN                                   -->
-    <!-- ============================================ -->
     <record id="view_annonce_kanban" model="ir.ui.view">
         <field name="name">gespro.annonce.kanban</field>
         <field name="model">gespro.annonce</field>
         <field name="arch" type="xml">
-            <kanban default_group_by="state" class="o_kanban_small">
+            <kanban default_group_by="user_id" class="o_kanban_small">
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_card">
@@ -144,9 +82,6 @@
         </field>
     </record>
 
-    <!-- ============================================ -->
-    <!-- VUE SEARCH                                   -->
-    <!-- ============================================ -->
     <record id="view_annonce_search" model="ir.ui.view">
         <field name="name">gespro.annonce.search</field>
         <field name="model">gespro.annonce</field>
@@ -154,20 +89,11 @@
             <search>
                 <field name="name"/>
                 <field name="user_id"/>
-                <filter string="Nouveau" name="filter_new" domain="[('state','=','new')]"/>
-                <filter string="Lu" name="filter_lu" domain="[('state','=','lu')]"/>
-                <filter string="En investigation" name="filter_inv" domain="[('state','=','en_investigation')]"/>
-                <filter string="GO" name="filter_go" domain="[('state','=','go')]"/>
-                <filter string="NO GO" name="filter_nogo" domain="[('state','=','no_go')]"/>
-                <separator/>
                 <filter string="Mes annonces" name="filter_my" domain="[('user_id','=',uid)]"/>
             </search>
         </field>
     </record>
 
-    <!-- ============================================ -->
-    <!-- ACTION                                       -->
-    <!-- ============================================ -->
     <record id="action_annonce" model="ir.actions.act_window">
         <field name="name">Annonces</field>
         <field name="res_model">gespro.annonce</field>

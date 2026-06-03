@@ -6,9 +6,9 @@ class Payment(models.Model):
     _description = "Paiement des frais d'accès au dossier"
     _order = "payment_date desc"
 
-    annonce_id = fields.Many2one(
-        'gespro.annonce',
-        string="Annonce",
+    offre_id = fields.Many2one(
+        'gespro.appel.offre',
+        string="Appel d'offre",
         required=True,
         ondelete='cascade'
     )

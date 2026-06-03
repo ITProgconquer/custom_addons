@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
 
         <record id="mail_template_alert_j5" model="mail.template">
             <field name="name">Alerte J-5</field>

@@ -1,53 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data>
+
         <record id="view_payment_form" model="ir.ui.view">
             <field name="name">gespro.payment.form</field>
             <field name="model">gespro.payment</field>
             <field name="arch" type="xml">
                 <form string="Paiement">
                     <header>
-                        <button name="action_confirm_paid" string="Confirmer Payé" type="object"
-                                class="btn-success"
-                                invisible="state != 'pending'"/>
-                        <button name="action_reject" string="Rejeter" type="object"
-                                class="btn-danger"
-                                invisible="state != 'pending'"/>
-                        <button name="action_reset_pending" string="Remettre en attente" type="object"
-                                class="btn-warning"
-                                invisible="state == 'pending'"/>
+                        <button name="action_confirm_paid" string="Confirmer paiement" type="object" class="btn-success" invisible="state != 'pending'"/>
+                        <button name="action_reject" string="Rejeter" type="object" class="btn-danger" invisible="state != 'pending'"/>
+                        <button name="action_reset_pending" string="Remettre en attente" type="object" class="btn-secondary" invisible="state != 'paid' and state != 'rejected'"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                         <group>
-                            <field name="annonce_id"/>
+                            <field name="offre_id"/>
                             <field name="amount"/>
                             <field name="currency_id"/>
                             <field name="payment_date"/>
+                        </group>
+                        <group>
                             <field name="proof" widget="binary" filename="proof_filename"/>
+                            <field name="proof_filename" invisible="1"/>
+                        </group>
+                        <group>
                             <field name="document_files" widget="many2many_binary"/>
+                        </group>
+                        <group>
                             <field name="note"/>
                         </group>
                     </sheet>
                 </form>
             </field>
         </record>
+
         <record id="view_payment_list" model="ir.ui.view">
             <field name="name">gespro.payment.list</field>
             <field name="model">gespro.payment</field>
             <field name="arch" type="xml">
                 <list string="Paiements">
-                    <field name="annonce_id"/>
+                    <field name="offre_id"/>
                     <field name="amount"/>
+                    <field name="currency_id"/>
                     <field name="state" widget="badge"/>
                     <field name="payment_date"/>
                 </list>
             </field>
         </record>
+
+        <record id="view_payment_kanban" model="ir.ui.view">
+            <field name="name">gespro.payment.kanban</field>
+            <field name="model">gespro.payment</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <h3><field name="offre_id"/></h3>
+                                    <div><field name="amount"/> <field name="currency_id"/></div>
+                                    <div><field name="payment_date"/></div>
+                                    <field name="state" widget="badge"/>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_payment_search" model="ir.ui.view">
+            <field name="name">gespro.payment.search</field>
+            <field name="model">gespro.payment</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="offre_id"/>
+                    <field name="amount"/>
+                    <filter string="En attente" name="filter_pending" domain="[('state','=','pending')]"/>
+                    <filter string="Payé" name="filter_paid" domain="[('state','=','paid')]"/>
+                    <filter string="Rejeté" name="filter_rejected" domain="[('state','=','rejected')]"/>
+                </search>
+            </field>
+        </record>
+
         <record id="action_payment" model="ir.actions.act_window">
             <field name="name">Paiements</field>
             <field name="res_model">gespro.payment</field>
-            <field name="view_mode">list,form</field>
+            <field name="view_mode">list,kanban,form</field>
         </record>
+
     </data>
 </odoo>
