@@ -24,6 +24,9 @@ class AppelOffre(models.Model):
     autorite_contractante = fields.Char(string="Autorité contractante")
     capture_ids = fields.Many2many(
         'ir.attachment',
+        'gespro_offre_ir_attachments_rel',
+        'offre_id',
+        'attachment_id',
         string="Captures d'écran",
         help="Ajoutez des captures d'écran ou d'autres documents"
     )
