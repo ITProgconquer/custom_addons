@@ -286,7 +286,6 @@ class Appel(models.Model):
             ('deadline', '>=', today),
         ])
         for appel in appels:
-            # Correction : calcul direct au lieu du champ stocké
             days_left = (appel.deadline - today).days
             if days_left in (5, 2, 1, 0) and appel.last_alert_sent != today:
                 template = self.env.ref(
@@ -295,6 +294,11 @@ class Appel(models.Model):
                 )
                 if template:
                     template.send_mail(appel.id, force_send=True)
+                # Notification chatter en plus
+                appel.message_post(
+                    body=f"⚠️ Alerte : {days_left} jours restants pour {appel.name}",
+                    message_type='notification'
+                )
                 appel.write({'last_alert_sent': today})
 
     def write(self, vals):
