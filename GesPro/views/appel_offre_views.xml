@@ -37,6 +37,10 @@
                                 class="btn-primary"
                                 groups="GesPro.group_pm"
                                 invisible="state != 'go'"/>
+                        <button name="action_create_payment" string="Enregistrer paiement" type="object"
+                                class="btn-primary"
+                                groups="GesPro.group_resadmin"
+                                invisible="state != 'go'"/>
                         <field name="state" widget="statusbar"/>
                     </header>
                 <sheet>
@@ -54,8 +58,11 @@
                         </group>
                     </group>
                     <notebook>
+                        <page string="Captures">
+                            <field name="capture_ids" widget="many2many_binary"/>
+                        </page>
                         <page string="Appels à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm" invisible="state != 'go'">
-                            <field name="appel_concurrence_ids">
+                            <field name="appel_concurrence_ids" string="Ajouter un appel à concurrence">
                                 <list class="o_list_jira">
                                     <field name="name"/>
                                     <field name="titre"/>
@@ -64,15 +71,24 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Captures">
-                            <field name="capture_ids" widget="many2many_binary"/>
-                        </page>
-                        <page string="Paiements" groups="GesPro.group_ceo,GesPro.group_resadmin">
+                        <page string="Paiements" groups="GesPro.group_ceo,GesPro.group_resadmin" >
                             <field name="payment_ids">
-                                <list editable="bottom" class="o_list_jira">
+                                <list editable="bottom" class="o_list_jira" string="Ajouter un paiement">
                                     <field name="amount"/>
                                     <field name="state" widget="badge"/>
                                     <field name="payment_date"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Dépouillement" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin,GesPro.group_tech,GesPro.group_fin"
+                            invisible="state != 'go'">
+                            <field name="depouillement_ids">
+                                <list editable="bottom" string="Ajouter un dépouillement">
+                                    <field name="ordre"/>
+                                    <field name="soumissionnaires" widget="many2many_tags"/>
+                                    <field name="lot_ids" widget="many2many_tags"/>
+                                    <field name="montant_min_ttc"/>
+                                    <field name="montant_max_ttc"/>
                                 </list>
                             </field>
                         </page>

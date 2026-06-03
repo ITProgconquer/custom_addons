@@ -45,6 +45,7 @@
     'views/personnel_line_views.xml',
     'views/material_line_views.xml',
     'views/payment_views.xml',
+    'views/depouillement_views.xml',
     'views/checklist_line_views.xml',
     'views/similar_contract_views.xml',
     'views/cv_personnel_views.xml',

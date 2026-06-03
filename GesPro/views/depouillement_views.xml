@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================ -->
+    <!-- VUE FORMULAIRE                               -->
+    <!-- ============================================ -->
+    <record id="view_depouillement_form" model="ir.ui.view">
+        <field name="name">gespro.depouillement.form</field>
+        <field name="model">gespro.depouillement</field>
+        <field name="arch" type="xml">
+            <form string="Dépouillement">
+                <sheet>
+                    <group>
+                        <field name="offre_id" invisible="1"/>
+                        <field name="ordre"/>
+                        <field name="soumissionnaires" widget="many2many_tags"/>
+                        <field name="lot_ids" widget="many2many_tags"/>
+                        <field name="montant_min_ttc"/>
+                        <field name="montant_max_ttc"/>
+                    </group>
+                    <group>
+                        <field name="observation"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ============================================ -->
+    <!-- VUE LISTE (pour l'onglet dans l'offre)       -->
+    <!-- ============================================ -->
+    <record id="view_depouillement_list" model="ir.ui.view">
+        <field name="name">gespro.depouillement.list</field>
+        <field name="model">gespro.depouillement</field>
+        <field name="arch" type="xml">
+            <list string="Dépouillements" editable="bottom">
+                <field name="ordre"/>
+                <field name="soumissionnaires" widget="many2many_tags"/>
+                <field name="lot_ids" widget="many2many_tags"/>
+                <field name="montant_min_ttc"/>
+                <field name="montant_max_ttc"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>
