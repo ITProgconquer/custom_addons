@@ -34,6 +34,11 @@
                   action="action_similar_contract"
                   sequence="30"/>
 
+        <menuitem id="menu_appel_offre"
+                    name="Appels d'offre"
+                    parent="menu_gestion_offres"
+                    action="action_appel_offre"
+                    sequence="15"/>
         <!-- ============================================ -->
         <!-- GROUPE 2 : SUIVI & ADMINISTRATION            -->
         <!-- ============================================ -->

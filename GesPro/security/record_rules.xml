@@ -13,16 +13,15 @@
         <record id="gespro_attachment_rule" model="ir.rule">
             <field name="name">Gespro Attachments Access</field>
             <field name="model_id" ref="base.model_ir_attachment"/>
-
             <field name="domain_force">
                 [('res_model', 'in', [
                     'gespro.payment',
                     'gespro.annonce',
                     'gespro.appel',
-                    'gespro.lot'
+                    'gespro.lot',
+                    'gespro.appel.offre'
                 ])]
             </field>
-
             <field name="groups" eval="[
                 (4, ref('group_ceo')),
                 (4, ref('group_pm')),
