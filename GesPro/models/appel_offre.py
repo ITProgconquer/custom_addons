@@ -58,11 +58,14 @@ class AppelOffre(models.Model):
         string="Paiements"
     )
 
-    depouillement_ids = fields.One2many(
-        'gespro.depouillement', 
-        'offre_id', 
-        string="Dépouillements"
+    
+
+    can_create_appel = fields.Boolean(
+        string="Peut créer un AC",
+        compute='_compute_can_create_appel'
     )
+
+    investigation_result = fields.Text(string="Résultat investigation (RESADMIN)")
 
     # ─── WORKFLOW (anciens états réintégrés) ────
     state = fields.Selection([
@@ -129,6 +132,15 @@ class AppelOffre(models.Model):
             raise AccessError("Seul le CEO peut ignorer l'appel d'offre.")
         self.state = 'ignore'
 
+    @api.depends('state', 'payment_ids.state')
+    def _compute_can_create_appel(self):
+        for record in self:
+            record.can_create_appel = (
+                record.state == 'go' and 
+                record.payment_ids and 
+                any(p.state == 'paid' for p in record.payment_ids)
+            )
+
     def action_create_payment(self):
         self.ensure_one()
         return {
@@ -155,4 +167,27 @@ class AppelOffre(models.Model):
                 'default_offre_id': self.id,
                 'default_annonce_id': self.annonce_id.id,
             },
+        }
+    
+    def open_appel_concurrence(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Appel à Concurrence',
+            'res_model': 'gespro.appel',
+            'view_mode': 'form',
+            'res_id': self.appel_concurrence_ids[0].id,
+            'target': 'current',
+        }
+    
+
+    def open_payment_list(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Paiements',
+            'res_model': 'gespro.payment',
+            'view_mode': 'list,form',
+            'domain': [('offre_id', '=', self.id)],
+            'target': 'current',
         }

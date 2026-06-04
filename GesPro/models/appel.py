@@ -79,6 +79,12 @@ class Appel(models.Model):
         required=True
     )
 
+    depouillement_ids = fields.One2many(
+        'gespro.depouillement', 
+        'appel_id', 
+        string="Dépouillements"
+    )
+
     lot_ids = fields.One2many('gespro.lot', 'appel_id', string="Lots")
     checklist_ids = fields.One2many('gespro.checklist.line', 'appel_id', string="Checklists")
 
@@ -110,16 +116,13 @@ class Appel(models.Model):
 
     # ─── WORKFLOW ───────────────────────────────
     state = fields.Selection([
-        ('nouveau', 'Nouveau'),
-        ('go', 'GO'),
-        ('no_go', 'NO GO'),
         ('en_preparation', 'En préparation'),
         ('pret', 'Prêt à soumettre'),
         ('soumis', 'Soumis'),
         ('gagne', 'Gagné'),
         ('perdu', 'Perdu'),
         ('annule', 'Annulé'),
-    ], string="Statut", default='nouveau', tracking=True)
+    ], string="Statut", default='en_preparation', tracking=True)
 
     active = fields.Boolean(string="Actif", default=True)
     color_kanban = fields.Integer(compute='_compute_color', store=True)
