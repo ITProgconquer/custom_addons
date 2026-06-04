@@ -341,6 +341,10 @@ html .o_menu_secondary .dropdown-item:hover {
 .o_list_table thead th:nth-child(4) {
     font-family: "FontAwesome", "Segoe UI", sans-serif !important;
 }
+.o_list_table tbody tr:has(.badge-success) { border-left: 4px solid #2e7d32 !important; }
+.o_list_table tbody tr:has(.badge-danger) { border-left: 4px solid #c62828 !important; }
+.o_list_table tbody tr:has(.badge-warning) { border-left: 4px solid #e65100 !important; }
+.o_list_table tbody tr:has(.badge-info) { border-left: 4px solid #0277bd !important; }
 
 // Pagination
 .o_pager {

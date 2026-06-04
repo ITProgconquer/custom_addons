@@ -11,10 +11,6 @@
             <field name="arch" type="xml">
                 <form string="Appel à Concurrence">
                     <header>
-                        <button name="action_generate_lots" string="Générer les Lots" type="object"
-                                class="btn-primary"
-                                groups="GesPro.group_pm"
-                                invisible="show_generate_lots == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_ceo"
@@ -63,22 +59,17 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Lots">
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <h4 class="mb-0">
-                                        <i class="fa fa-users text-primary me-2"></i>
-                                        Lots  
-                                    </h4>
-                                </div>
-                                <field name="lot_ids">
-                                    <list editable="bottom" class="o_list_jira">
-                                        <field name="lot_num" string="N°"/>
-                                        <field name="titre" string="Lot"/>
-                                        <field name="is_ready" string="✅ Prêt" widget="boolean_toggle"/>
-                                        <button name="action_open_lot" string="📋 Détails" type="object" 
-                                                class="btn btn-sm btn-primary"/>
+                             <page string="Dépouillement" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin,GesPro.group_tech,GesPro.group_fin"
+                                invisible="state != 'pret'">
+                                <field name="depouillement_ids">
+                                    <list editable="bottom" string="Ajouter un dépouillement">
+                                        <field name="ordre"/>
+                                        <field name="soumissionnaires" widget="many2many_tags"/>
+                                        <field name="lot_ids" widget="many2many_tags"/>
+                                        <field name="montant_min_ttc"/>
+                                        <field name="montant_max_ttc"/>
                                     </list>
-                                </field>               
+                                </field>
                             </page>
                             <page string="Checklists">
                                 <!-- Barres de progression (inchangées) -->

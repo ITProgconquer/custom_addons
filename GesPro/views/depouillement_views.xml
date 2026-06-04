@@ -11,7 +11,7 @@
             <form string="Dépouillement">
                 <sheet>
                     <group>
-                        <field name="offre_id" invisible="1"/>
+                        <field name="appel_id" invisible="1"/>
                         <field name="ordre"/>
                         <field name="soumissionnaires" widget="many2many_tags"/>
                         <field name="lot_ids" widget="many2many_tags"/>
