@@ -13,15 +13,14 @@ class Depouillement(models.Model):
     )
 
     ordre = fields.Integer(string="Ordre", default=1)
-    soumissionnaires = fields.Many2many(
-        'res.partner',
-        string="Soumissionnaires"
-    )
-    lot_ids = fields.Many2many(
+    soumissionnaires = fields.Char(string="Soumissionnaires")
+    lot_id = fields.Many2one(
         'gespro.lot',
-        string="Lots concernés",
+        string="Lot",
+        required=True,
         domain="[('appel_id', '=', appel_id)]"
     )
+    lot_num = fields.Integer(string="Lot N°", related='lot_id.lot_num', readonly=True)
     montant_min_ttc = fields.Float(string="Montant minimum TTC")
     montant_max_ttc = fields.Float(string="Montant maximum TTC")
     observation = fields.Text(string="Observation")

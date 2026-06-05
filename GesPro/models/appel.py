@@ -167,7 +167,7 @@ class Appel(models.Model):
             else:
                 record.color_kanban = 0
 
-    @api.depends('checklist_tech_ids.is_done', 'checklist_admin_ids.is_done', 'checklist_fin_ids.is_done')
+    @api.depends('checklist_tech_ids.state', 'checklist_admin_ids.state', 'checklist_fin_ids.state')
     def _compute_progression(self):
         for record in self:
             record.progression_tech = self._calc_pct(record.checklist_tech_ids)
@@ -177,11 +177,13 @@ class Appel(models.Model):
             non_zero = [p for p in categories if p > 0] or [0]
             record.progression_generale = sum(non_zero) / len(non_zero)
 
+            
+
     def _calc_pct(self, lines):
         total = len(lines)
         if total == 0:
             return 0
-        done = len(lines.filtered('is_done'))
+        done = len(lines.filtered(lambda l: l.state == 'done'))
         return (done / total) * 100
 
     @api.depends('checklist_ids')
@@ -253,21 +255,24 @@ class Appel(models.Model):
     def action_valider(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
+            from odoo.exceptions import AccessError
             raise AccessError("Seul le CEO peut valider.")
         all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
-        incomplete = all_checklists.filtered(lambda l: not l.is_done)
-        if incomplete:
-            raise UserError(f"Checklist incomplète : {len(incomplete)} tâche(s) non cochée(s).")
+        if not all(all_checklists.mapped(lambda l: l.state == 'done')):
+            from odoo.exceptions import UserError
+            raise UserError("Checklist incomplète. Toutes les tâches doivent être terminées.")
         self.state = 'pret'
         self.message_post(body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre")
 
     def action_soumettre(self):
         self.ensure_one()
         all_checklists = self.checklist_tech_ids | self.checklist_admin_ids | self.checklist_fin_ids
-        if not all(all_checklists.mapped('is_done')):
-            raise UserError("Checklist incomplète. Toutes les tâches doivent être cochées.")
+        if not all(all_checklists.mapped(lambda l: l.state == 'done')):
+            from odoo.exceptions import UserError
+            raise UserError("Checklist incomplète. Toutes les tâches doivent être terminées.")
         self.state = 'soumis'
         self.message_post(body="📦 Dossier soumis")
+
 
     def action_gagne(self):
         self.ensure_one()

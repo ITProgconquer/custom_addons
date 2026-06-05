@@ -14,10 +14,18 @@ class ChecklistLine(models.Model):
         ('fin', 'Financier'),
     ], string="Catégorie", required=True)
     libelle = fields.Char("Tâche", required=True)
-    is_done = fields.Boolean("Fait", default=False)
     responsible_id = fields.Many2one('res.users', string="Assigné à")
     note = fields.Text("Commentaire")
     sequence = fields.Integer("Ordre", default=10)
+
+
+    state = fields.Selection([
+        ('todo', 'À faire'),
+        ('in_progress', 'En cours'),
+        ('done', 'Terminé'),
+    ], string="État", default='todo', tracking=True)
+
+
     
     def write(self, vals):
         for line in self:

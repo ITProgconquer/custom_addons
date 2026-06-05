@@ -22,6 +22,7 @@ class AppelOffre(models.Model):
     date_butoire = fields.Date(string="Date butoire", required=True)
     garantie_soumission = fields.Float(string="Garantie de soumission")
     autorite_contractante = fields.Char(string="Autorité contractante")
+    lots_count = fields.Integer(string="Nombre de lots", default=1)
 
 
     capture_ids = fields.Many2many(
@@ -30,7 +31,8 @@ class AppelOffre(models.Model):
         'offre_id',
         'attachment_id',
         string="Captures d'écran",
-        help="Ajoutez des captures d'écran ou d'autres documents"
+        help="Ajoutez des captures d'écran ou d'autres documents",
+        domain="[('res_model', '=', 'gespro.appel.offre')]"
     )
 
     # ─── RELATIONS ──────────────────────────────
@@ -166,9 +168,16 @@ class AppelOffre(models.Model):
             'context': {
                 'default_offre_id': self.id,
                 'default_annonce_id': self.annonce_id.id,
+                'default_titre': self.titre,
+                'default_autorite_contractante': self.autorite_contractante,
+                'default_garantie_soumission': self.garantie_soumission,
+                'default_pm_id': self.pm_id.id,
+                'default_deadline': self.date_butoire,
+                'default_date_publication': fields.Date.today(),
             },
         }
     
+
     def open_appel_concurrence(self):
         self.ensure_one()
         return {

@@ -11,6 +11,10 @@
             <field name="arch" type="xml">
                 <form string="Appel à Concurrence">
                     <header>
+                        <button name="action_generate_lots" string="Générer les Lots" type="object"
+                                class="btn-primary"
+                                groups="GesPro.group_pm"
+                                invisible="show_generate_lots == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_ceo"
@@ -59,18 +63,20 @@
                             </group>
                         </group>
                         <notebook>
-                             <page string="Dépouillement" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin,GesPro.group_tech,GesPro.group_fin"
-                                invisible="state != 'pret'">
-                                <field name="depouillement_ids">
-                                    <list editable="bottom" string="Ajouter un dépouillement">
-                                        <field name="ordre"/>
-                                        <field name="soumissionnaires" widget="many2many_tags"/>
-                                        <field name="lot_ids" widget="many2many_tags"/>
-                                        <field name="montant_min_ttc"/>
-                                        <field name="montant_max_ttc"/>
+                            <page string="Dépouillement" groups="GesPro.group_ceo,GesPro.group_pm,GesPro.group_resadmin" invisible="state not in ['soumis', 'gagne', 'perdu']">
+                                 <p class="text-muted">Résultats du dépouillement et classement des soumissionnaires.</p>
+                                <field name="lot_ids">
+                                    <list>
+                                        <field name="lot_num" string="N°"/>
+                                        <field name="titre" string="Lot"/>
+                                        <button name="action_open_depouillement" 
+                                                string="📋 Dépouillement" 
+                                                type="object"
+                                                class="btn btn-sm btn-primary"/>
                                     </list>
                                 </field>
                             </page>
+
                             <page string="Checklists">
                                 <!-- Barres de progression (inchangées) -->
                                 <div class="row g-3 mb-4">
@@ -134,7 +140,11 @@
                                                     context="{'default_categorie': 'tech'}">
                                                     <list class="o_list_jira">
                                                         <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
-                                                        <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                                        <field name="state" string="État" widget="badge"
+                                                            decoration-info="state == 'todo'"
+                                                            decoration-warning="state == 'in_progress'"
+                                                            decoration-success="state == 'done'"/>
+                                                        
                                                         <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
                                                     </list>
                                                 </field>
@@ -158,7 +168,11 @@
                                                     context="{'default_categorie': 'admin'}">
                                                     <list class="o_list_jira">
                                                         <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
-                                                        <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                                        <field name="state" string="État" widget="badge"
+                                                               decoration-info="state == 'todo'"
+                                                               decoration-warning="state == 'in_progress'"
+                                                               decoration-success="state == 'done'"/>
+                                                        
                                                         <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
                                                     </list>
                                                 </field>
@@ -182,7 +196,10 @@
                                                     context="{'default_categorie': 'fin'}">
                                                     <list class="o_list_jira">
                                                         <field name="libelle" string="Tâche" placeholder="Nouvelle tâche..."/>
-                                                        <field name="is_done" string="✅" widget="boolean_toggle"/>
+                                                        <field name="state" string="État" widget="badge"
+                                                            decoration-info="state == 'todo'"
+                                                            decoration-warning="state == 'in_progress'"
+                                                            decoration-success="state == 'done'"/>
                                                         <field name="responsible_id" string="Assigné à" options="{'no_create': True}"/>
                                                     </list>
                                                 </field>

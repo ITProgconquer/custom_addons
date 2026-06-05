@@ -57,6 +57,7 @@ class Annonce(models.Model):
         compute='_compute_display_date',
         store=False
     )
+    active = fields.Boolean(string="Actif", default=True)
 
     # ─── MÉTHODES ───────────────────────────────
     @api.model_create_multi
