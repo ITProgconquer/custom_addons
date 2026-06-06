@@ -59,13 +59,29 @@ class Annonce(models.Model):
     )
 
     # ─── MÉTHODES ───────────────────────────────
+    def _get_all_gespro_emails(self):
+        """Retourne une chaîne d'emails de tous les utilisateurs appartenant aux groupes GESPRO."""
+        groups = [
+            self.env.ref('GesPro.group_ceo').id,
+            self.env.ref('GesPro.group_pm').id,
+            self.env.ref('GesPro.group_resadmin').id,
+            self.env.ref('GesPro.group_tech').id,
+            self.env.ref('GesPro.group_fin').id,
+        ]
+        users = self.env['res.users'].search([('groups_id', 'in', groups)])
+        return ','.join(users.mapped('email'))
+
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', 'Nouveau') == 'Nouveau':
-                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.annonce')
-        return super().create(vals_list)
-
+        records = super().create(vals_list)
+        template = self.env.ref('GesPro.mail_template_annonce_creation', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            if emails:
+                for record in records:
+                    template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
+        return records
+    
     def action_create_appel_offre(self):
         """Ouvre le formulaire de création d'un Appel d'offre lié à cette annonce"""
         self.ensure_one()

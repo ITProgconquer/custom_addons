@@ -31,13 +31,7 @@
             ]"/>
         </record>
 
-        <!-- PM : ne voit que ses propres annonces -->
-        <record id="rule_annonce_pm" model="ir.rule">
-            <field name="name">PM : ses annonces uniquement</field>
-            <field name="model_id" ref="model_gespro_annonce"/>
-            <field name="domain_force">[('user_id', '=', user.id)]</field>
-            <field name="groups" eval="[(4, ref('group_pm'))]"/>
-        </record>
+      
 
         <!-- TECH : lecture seule sur appels en préparation -->
         <record id="rule_appel_tech" model="ir.rule">

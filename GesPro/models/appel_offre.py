@@ -2,6 +2,8 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError
 
 
+
+
 class AppelOffre(models.Model):
     _name = "gespro.appel.offre"
     _description = "Appel d'offre"
@@ -85,6 +87,29 @@ class AppelOffre(models.Model):
         for vals in vals_list:
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
+        records = super().create(vals_list)
+        template = self.env.ref('GesPro.mail_template_offre_creation', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            if emails:
+                for record in records:
+                    template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
+        return records
+
+    def notify_users(self, partner_ids, body):
+        """Poste un message dans le chatter et envoie une notification aux partenaires."""
+        self.ensure_one()
+        self.message_post(
+            body=body,
+            message_type='notification',
+            partner_ids=partner_ids,
+        )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'Nouveau') == 'Nouveau':
+                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
         return super().create(vals_list)
 
     # --- Actions CEO ---
@@ -100,15 +125,40 @@ class AppelOffre(models.Model):
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut demander une investigation.")
         self.state = 'en_investigation'
-        self.message_post(body=f"🔍 Investigation demandée par {self.env.user.name}")
+        # Notification interne
+        partners = self.pm_id.partner_id | self.annonce_id.user_id.partner_id | self.env.user.partner_id
+        self.notify_users(
+            partner_ids=partners.ids,
+            body=f"🔍 Investigation demandée par {self.env.user.name} pour l'appel d'offre {self.name}."
+        )
+        # Email au RESADMIN
+        resadmin_users = self.env['res.users'].search([('groups_id', 'in', [self.env.ref('GesPro.group_resadmin').id])])
+        if resadmin_users:
+            template = self.env.ref('GesPro.mail_template_investigation', raise_if_not_found=False)
+            if template:
+                template.send_mail(
+                    self.id,
+                    force_send=True,
+                    email_values={'email_to': ','.join(resadmin_users.mapped('email'))}
+                )
 
     def action_go(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut donner le GO.")
         self.state = 'go'
-        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
-
+        # Notification interne
+        partners = self.pm_id.partner_id | self.annonce_id.user_id.partner_id | self.env.user.partner_id
+        self.notify_users(
+            partner_ids=partners.ids,
+            body=f"🟢 GO donné par {self.env.user.name} pour l'appel d'offre {self.name}."
+        )
+        # Email tout le monde
+        template = self.env.ref('GesPro.mail_template_offre_go', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
     def action_no_go(self):
         """CEO refuse l'appel d'offre en ouvrant le wizard de motif"""
@@ -125,7 +175,7 @@ class AppelOffre(models.Model):
                 'default_offre_id': self.id,
             },
         }
-
+    
     def action_ignore(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
