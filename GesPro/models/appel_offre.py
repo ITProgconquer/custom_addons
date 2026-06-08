@@ -18,12 +18,14 @@ class AppelOffre(models.Model):
     )
 
     # ─── INFORMATIONS ───────────────────────────
-    titre = fields.Char(string="Nom de l'offre", required=True)
+    titre = fields.Char(string="Objet", required=True)
     date_butoire = fields.Date(string="Date butoire", required=True)
-    garantie_soumission = fields.Float(string="Garantie de soumission")
-    autorite_contractante = fields.Char(string="Autorité contractante")
+    garantie_soumission = fields.Float(string="Montant de la garantie de soumission")
+    autorite_contractante = fields.Char(string="Nom de l'autorité contractante")
     lots_count = fields.Integer(string="Nombre de lots", default=1)
-
+    ligne_de_credit = fields.Integer(string="Ligne de crédit associée")
+    chiffre_affaire = fields.Char(string="Chiffre d'affaire sur tant d'année(s)")
+    visite_site = fields.Date(string="Visite de site requise",required=False)
 
     capture_ids = fields.Many2many(
         'ir.attachment',
@@ -60,6 +62,8 @@ class AppelOffre(models.Model):
         string="Paiements"
     )
 
+
+
     
 
     can_create_appel = fields.Boolean(
@@ -81,15 +85,24 @@ class AppelOffre(models.Model):
 
     active = fields.Boolean(string="Actif", default=True)
 
+    type_offre = fields.Selection([
+        ('DC', 'DC'),
+        ('DPX', 'DPX'),
+        ('AO', 'AO'),
+        ('CC', 'CC'),
+        ('MANIF', 'Manif'),
+    ], string="Type d'offre", required=True)
+
+    name = fields.Char(string="Référence", readonly=True, copy=False)
+
     # ─── MÉTHODES ───────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
-            if vals.get('name', 'Nouveau') == 'Nouveau':
-                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
-        records = super().create(vals_list)
-        records._sync_attachments()
-        return records
+            type_offre = vals.get('type_offre', 'AO')
+            seq_code = f'gespro.appel.offre.{type_offre}'
+            vals['name'] = self.env['ir.sequence'].next_by_code(seq_code)
+        return super().create(vals_list)
     
     # --- Actions CEO ---
     def action_mark_lu(self):

@@ -86,27 +86,16 @@ class Appel(models.Model):
     )
 
     lot_ids = fields.One2many('gespro.lot', 'appel_id', string="Lots")
-    checklist_ids = fields.One2many('gespro.checklist.line', 'appel_id', string="Checklists")
+    checklist_ids = fields.One2many('gespro.checklist.line','appel_id',string="Toutes les checklists")
+
 
     # ─── CHECKLISTS PAR CATÉGORIE (Many2many calculés) ────
-    checklist_tech_ids = fields.Many2many(
-        'gespro.checklist.line', string="Checklist Technique",
-        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
-        relation='gespro_appel_checklist_tech_rel', column1='appel_id', column2='line_id',
-        domain=[('categorie', '=', 'tech')]
-    )
-    checklist_admin_ids = fields.Many2many(
-        'gespro.checklist.line', string="Checklist Admin",
-        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
-        relation='gespro_appel_checklist_admin_rel', column1='appel_id', column2='line_id',
-        domain=[('categorie', '=', 'admin')]
-    )
-    checklist_fin_ids = fields.Many2many(
-        'gespro.checklist.line', string="Checklist Financier",
-        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
-        relation='gespro_appel_checklist_fin_rel', column1='appel_id', column2='line_id',
-        domain=[('categorie', '=', 'fin')]
-    )
+    checklist_tech_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'tech')], string="Checklist Technique")
+    checklist_admin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'admin')], string="Checklist Admin")
+    checklist_fin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'fin')], string="Checklist Financier")
 
     # ─── PROGRESSION ────────────────────────────
     progression_tech = fields.Float(compute='_compute_progression', store=True)
