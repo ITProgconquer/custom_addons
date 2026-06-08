@@ -192,5 +192,19 @@
             <field name="email_to" eval="''"/>
         </record>
 
+        <!-- Investigation : résultat transmis au CEO -->
+        <record id="mail_template_investigation_result" model="mail.template">
+            <field name="name">Résultat d'investigation</field>
+            <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="subject">[GESPRO] Résultat d'investigation : ${object.name}</field>
+            <field name="body_html" type="html">
+                <p>Bonjour,</p>
+                <p>Le RESADMIN a transmis le résultat de l'investigation pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
+                <p><strong>Résultat :</strong></p>
+                <blockquote><t t-out="object.investigation_result or 'Aucun commentaire'"/></blockquote>
+            </field>
+            <field name="email_to" eval="''"/>
+        </record>
+
     </data>
 </odoo>

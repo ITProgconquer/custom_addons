@@ -59,13 +59,23 @@ class Payment(models.Model):
         self.state = 'paid'
         if self.offre_id:
             self.offre_id.message_post(body=f"Le paiement de {self.amount} a été confirmé pour l'offre {self.offre_id.name}.")
-            # Destinataires : CEO et PM, sauf l'expéditeur et admin
-            ceo = self.offre_id.annonce_id.user_id
+            # Destinataires : tous les CEO (groupe) + le PM de l'offre
+            # On exclut l'expéditeur (RESADMIN) et l'admin système
+            ceo_users = self.env['res.users'].search([
+                ('groups_id', 'in', [self.env.ref('GesPro.group_ceo').id]),
+                ('id', '!=', self.env.user.id),
+                ('login', '!=', 'admin'),
+            ])
             pm = self.offre_id.pm_id
             recipients = []
-            for user in (ceo, pm):
-                if user and user.id != self.env.user.id and user.login != 'admin' and user.email:
-                    recipients.append(user.email)
+            # Ajouter les CEO
+            for ceo in ceo_users:
+                if ceo.email:
+                    recipients.append(ceo.email)
+            # Ajouter le PM, sauf si c'est l'expéditeur ou admin
+            if pm and pm.id != self.env.user.id and pm.login != 'admin' and pm.email:
+                recipients.append(pm.email)
+            # Envoyer l'email
             if recipients:
                 template = self.env.ref('GesPro.mail_template_payment_confirmed', raise_if_not_found=False)
                 if template:

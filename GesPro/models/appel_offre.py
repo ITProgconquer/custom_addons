@@ -163,6 +163,28 @@ class AppelOffre(models.Model):
                     email_values={'email_to': ','.join(resadmin_users.mapped('email'))}
                 )
 
+
+    def action_send_investigation_result(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_resadmin'):
+            raise AccessError("Seul le RESADMIN peut transmettre le résultat.")
+        # Rechercher les utilisateurs ayant le groupe CEO
+        ceo_users = self.env['res.users'].search([
+            ('groups_id', 'in', [self.env.ref('GesPro.group_ceo').id]),
+            ('id', '!=', self.env.user.id),
+            ('login', '!=', 'admin'),
+        ])
+        recipients = ','.join(ceo_users.mapped('email'))
+        if recipients:
+            template = self.env.ref('GesPro.mail_template_investigation_result', raise_if_not_found=False)
+            if template:
+                template.send_mail(
+                    self.id,
+                    force_send=True,
+                    email_values={'email_to': recipients}
+                )
+        self.message_post(body=f"📨 Résultat d'investigation transmis au CEO par {self.env.user.name}.")                
+
     def action_go(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
