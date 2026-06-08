@@ -36,7 +36,7 @@
                         <button name="action_create_appel_concurrence" string="Créer AC" type="object"
                                 class="btn-primary"
                                 groups="GesPro.group_pm"
-                                invisible="state != 'go'"/>
+                                invisible="state != 'go' or appel_concurrence_ids"/>
                         <button name="action_create_payment" string="Enregistrer paiement" type="object"
                                 class="btn-primary"
                                 groups="GesPro.group_resadmin"

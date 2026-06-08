@@ -42,7 +42,7 @@ access_cv_resadmin,cv.resadmin,model_gespro_cv_personnel,group_resadmin,1,1,1,1
 access_cv_tech,cv.tech,model_gespro_cv_personnel,group_tech,1,1,1,1
 access_appel_offre_ceo,appel.offre.ceo,model_gespro_appel_offre,group_ceo,1,1,1,1
 access_appel_offre_pm,appel.offre.pm,model_gespro_appel_offre,group_pm,1,1,1,1
-access_appel_offre_resadmin,appel.offre.resadmin,model_gespro_appel_offre,group_resadmin,1,0,0,0
+access_appel_offre_resadmin,appel.offre.resadmin,model_gespro_appel_offre,group_resadmin,1,1,1,1
 access_appel_offre_tech,appel.offre.tech,model_gespro_appel_offre,group_tech,1,0,0,0
 access_appel_offre_fin,appel.offre.fin,model_gespro_appel_offre,group_fin,1,0,0,0
 access_appel_offre_ignore_wizard_ceo,wizard.offre.ceo,model_gespro_appel_offre_ignore_wizard,group_ceo,1,1,1,1

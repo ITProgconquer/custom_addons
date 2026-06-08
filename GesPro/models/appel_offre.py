@@ -87,8 +87,10 @@ class AppelOffre(models.Model):
         for vals in vals_list:
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
-        return super().create(vals_list)
-
+        records = super().create(vals_list)
+        records._sync_attachments()
+        return records
+    
     # --- Actions CEO ---
     def action_mark_lu(self):
         self.ensure_one()
@@ -200,3 +202,17 @@ class AppelOffre(models.Model):
             'domain': [('offre_id', '=', self.id)],
             'target': 'current',
         }
+    
+    def _sync_attachments(self):
+        for record in self:
+            if record.capture_ids:
+                record.capture_ids.write({
+                    'res_model': 'gespro.appel.offre',
+                    'res_id': record.id,
+                })
+
+    
+    def write(self, vals):
+        res = super().write(vals)
+        self._sync_attachments()
+        return res
