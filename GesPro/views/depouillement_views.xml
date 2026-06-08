@@ -1,9 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!-- ============================================ -->
-    <!-- VUE FORMULAIRE                               -->
-    <!-- ============================================ -->
     <record id="view_depouillement_form" model="ir.ui.view">
         <field name="name">gespro.depouillement.form</field>
         <field name="model">gespro.depouillement</field>
@@ -12,13 +7,11 @@
                 <sheet>
                     <group>
                         <field name="appel_id" invisible="1"/>
+                        <field name="lot_id" widget="many2many_tags" invisible="1"/>
                         <field name="ordre"/>
-                        <field name="soumissionnaires" widget="many2many_tags"/>
-                        <field name="lot_ids" widget="many2many_tags"/>
+                        <field name="soumissionnaires"/>
                         <field name="montant_min_ttc"/>
                         <field name="montant_max_ttc"/>
-                    </group>
-                    <group>
                         <field name="observation"/>
                     </group>
                 </sheet>
@@ -26,21 +19,18 @@
         </field>
     </record>
 
-    <!-- ============================================ -->
-    <!-- VUE LISTE (pour l'onglet dans l'offre)       -->
-    <!-- ============================================ -->
     <record id="view_depouillement_list" model="ir.ui.view">
         <field name="name">gespro.depouillement.list</field>
         <field name="model">gespro.depouillement</field>
         <field name="arch" type="xml">
-            <list string="Dépouillements" editable="bottom">
+            <list string="Dépouillements">
                 <field name="ordre"/>
-                <field name="soumissionnaires" widget="many2many_tags"/>
-                <field name="lot_ids" widget="many2many_tags"/>
+                <field name="soumissionnaires"/>
                 <field name="montant_min_ttc"/>
                 <field name="montant_max_ttc"/>
+                <field name="observation"/>
+                <field name="lot_id" invisible="1"/>
             </list>
         </field>
     </record>
-
 </odoo>

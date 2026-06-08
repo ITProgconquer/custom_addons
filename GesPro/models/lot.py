@@ -41,6 +41,11 @@ class Lot(models.Model):
         compute='_compute_is_ready',
         store=True
     )
+    depouillement_ids = fields.One2many(
+        'gespro.depouillement',
+        'lot_id',
+        string="Dépouillements"
+    )
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -67,4 +72,19 @@ class Lot(models.Model):
             'view_mode': 'form',
             'res_id': self.id,
             'target': 'current',
+        }
+    
+    def action_open_depouillement(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': f'Dépouillement - {self.titre}',
+            'res_model': 'gespro.depouillement',
+            'view_mode': 'list,form',
+            'target': 'current',
+            'domain': [('lot_id', '=', self.id)],
+            'context': {
+                'default_lot_id': self.id,
+                'default_appel_id': self.appel_id.id,
+            },
         }
