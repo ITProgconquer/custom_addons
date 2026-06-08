@@ -58,6 +58,7 @@
                             <field name="chiffre_affaire"/>
                             <field name="date_butoire"/>
                             <field name="visite_site"/>
+                            <field name="type_offre" string="Type" required="1"/>
                         </group>
                     </group>
                     <notebook>
