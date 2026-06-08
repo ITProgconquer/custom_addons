@@ -30,7 +30,7 @@ class Depouillement(models.Model):
         # Pas de champ state actuel, on peut juste envoyer l'email
         template = self.env.ref('GesPro.mail_template_depouillement_termine', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 template.send_mail(
                     self.appel_id.id,

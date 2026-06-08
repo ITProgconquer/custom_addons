@@ -1,6 +1,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError
 from datetime import date
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class Appel(models.Model):
@@ -135,31 +138,28 @@ class Appel(models.Model):
     ], string="Filtre checklists", default='all')
 
     # ─── MÉTHODES ───────────────────────────────
+    
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel')
         records = super().create(vals_list)
-        for record in records:
+
+        # Envoi d’email de création – avec capture des erreurs
+        try:
             template = self.env.ref('GesPro.mail_template_appel_creation', raise_if_not_found=False)
             if template:
-                gespro_users = self.env['res.users'].search([
-                    ('groups_id', 'in', [
-                        self.env.ref('GesPro.group_ceo').id,
-                        self.env.ref('GesPro.group_pm').id,
-                        self.env.ref('GesPro.group_resadmin').id,
-                        self.env.ref('GesPro.group_tech').id,
-                        self.env.ref('GesPro.group_fin').id,
-                    ])
-                ])
-                emails = ','.join(gespro_users.mapped('email'))
+                emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
                 if emails:
-                    template.send_mail(
-                        record.id,
-                        force_send=True,
-                        email_values={'email_to': emails}
-                    )
+                    for record in records:
+                        template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
+        except Exception as e:
+            _logger.error("Erreur lors de l'envoi email création AC : %s", e)
+
+        return records
+
+
 
     def action_go(self):
         self.ensure_one()
@@ -293,7 +293,7 @@ class Appel(models.Model):
         # Email tout le monde
         template = self.env.ref('GesPro.mail_template_appel_valider', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
@@ -312,7 +312,7 @@ class Appel(models.Model):
         # Email tout le monde
         template = self.env.ref('GesPro.mail_template_appel_soumission', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
@@ -332,7 +332,7 @@ class Appel(models.Model):
         self.message_post(body="🎉 Félicitations ! Dossier gagné !", message_type='notification')
         template = self.env.ref('GesPro.mail_template_appel_gagne', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
@@ -342,7 +342,7 @@ class Appel(models.Model):
         self.message_post(body="Dossier non retenu", message_type='notification')
         template = self.env.ref('GesPro.mail_template_appel_perdu', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
@@ -397,14 +397,18 @@ class Appel(models.Model):
                 )
                 appel.write({'last_alert_sent': today})
 
+
     def write(self, vals):
         user = self.env.user
+        # Le CEO et le PM ne sont pas limités
+        if user.has_group('GesPro.group_ceo') or user.has_group('GesPro.group_pm'):
+            return super().write(vals)
         if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin'):
             allowed_fields = ['checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:
                     raise AccessError("Vous ne pouvez modifier que les checklists.")
-        if user.has_group('GesPro.group_resadmin'):
+        elif user.has_group('GesPro.group_resadmin'):
             allowed_fields = ['state', 'checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:

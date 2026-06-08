@@ -53,16 +53,28 @@ class Payment(models.Model):
     note = fields.Text(string="Commentaire")
 
 
+
     def action_confirm_paid(self):
         self.ensure_one()
         self.state = 'paid'
-        # Notification interne
         if self.offre_id:
-            partners = self.offre_id.pm_id.partner_id | self.offre_id.annonce_id.user_id.partner_id | self.env.user.partner_id
-            self.offre_id.notify_users(
-                partner_ids=partners.ids,
-                body=f"Le paiement de {self.amount} a été confirmé pour l'offre {self.offre_id.name}."
-            )
+            self.offre_id.message_post(body=f"Le paiement de {self.amount} a été confirmé pour l'offre {self.offre_id.name}.")
+            # Destinataires : CEO et PM, sauf l'expéditeur et admin
+            ceo = self.offre_id.annonce_id.user_id
+            pm = self.offre_id.pm_id
+            recipients = []
+            for user in (ceo, pm):
+                if user and user.id != self.env.user.id and user.login != 'admin' and user.email:
+                    recipients.append(user.email)
+            if recipients:
+                template = self.env.ref('GesPro.mail_template_payment_confirmed', raise_if_not_found=False)
+                if template:
+                    template.send_mail(
+                        self.offre_id.id,
+                        force_send=True,
+                        email_values={'email_to': ','.join(recipients)}
+                    )
+    
         # Email CEO + PM
         template = self.env.ref('GesPro.mail_template_payment_confirmed', raise_if_not_found=False)
         if template and self.offre_id:

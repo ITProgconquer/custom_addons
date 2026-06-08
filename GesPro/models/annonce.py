@@ -60,8 +60,9 @@ class Annonce(models.Model):
     active = fields.Boolean(string="Actif", default=True)
 
     # ─── MÉTHODES ───────────────────────────────
-    def _get_all_gespro_emails(self):
-        """Retourne une chaîne d'emails de tous les utilisateurs appartenant aux groupes GESPRO."""
+    def _get_all_gespro_emails(self, exclude_user=None):
+        """Retourne la liste des emails de tous les utilisateurs GESPRO,
+        en excluant l'expéditeur et l'utilisateur admin."""
         groups = [
             self.env.ref('GesPro.group_ceo').id,
             self.env.ref('GesPro.group_pm').id,
@@ -69,15 +70,21 @@ class Annonce(models.Model):
             self.env.ref('GesPro.group_tech').id,
             self.env.ref('GesPro.group_fin').id,
         ]
-        users = self.env['res.users'].search([('groups_id', 'in', groups)])
+        domain = [('groups_id', 'in', groups)]
+        if exclude_user:
+            domain.append(('id', '!=', exclude_user.id))
+        # Exclure l'utilisateur 'admin' par défaut
+        domain.append(('login', '!=', 'admin'))
+        users = self.env['res.users'].search(domain)
         return ','.join(users.mapped('email'))
+
 
     @api.model_create_multi
     def create(self, vals_list):
         records = super().create(vals_list)
         template = self.env.ref('GesPro.mail_template_annonce_creation', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 for record in records:
                     template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
