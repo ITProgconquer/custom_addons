@@ -1,0 +1,231 @@
+from odoo import models, fields, api
+from odoo.exceptions import UserError, AccessError
+
+
+class AppelOffre(models.Model):
+    _name = "gespro.appel.offre"
+    _description = "Appel d'offre"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _order = "date_butoire desc"
+
+    # ─── RÉFÉRENCE ──────────────────────────────
+    name = fields.Char(
+        string="Référence",
+        required=True,
+        copy=False,
+        readonly=True,
+        default="Nouveau"
+    )
+
+    # ─── INFORMATIONS ───────────────────────────
+    titre = fields.Char(string="Objet", required=True)
+    date_butoire = fields.Date(string="Date butoire", required=True)
+    garantie_soumission = fields.Float(string="Montant de la garantie de soumission")
+    autorite_contractante = fields.Char(string="Nom de l'autorité contractante")
+    lots_count = fields.Integer(string="Nombre de lots", default=1)
+    ligne_de_credit = fields.Integer(string="Ligne de crédit associée")
+    chiffre_affaire = fields.Char(string="Chiffre d'affaire sur tant d'année(s)")
+    visite_site = fields.Date(string="Visite de site requise",required=False)
+
+    capture_ids = fields.Many2many(
+        'ir.attachment',
+        'gespro_offre_ir_attachments_rel',
+        'offre_id',
+        'attachment_id',
+        string="Captures d'écran",
+        help="Ajoutez des captures d'écran ou d'autres documents",
+        domain="[('res_model', '=', 'gespro.appel.offre')]"
+    )
+
+    # ─── RELATIONS ──────────────────────────────
+    annonce_id = fields.Many2one(
+        'gespro.annonce',
+        string="Annonce source",
+        required=True,
+        ondelete='restrict'
+    )
+    pm_id = fields.Many2one(
+        'res.users',
+        string="PM Responsable",
+        default=lambda self: self.env.user,
+        required=True
+    )
+    appel_concurrence_ids = fields.One2many(
+        'gespro.appel',
+        'offre_id',
+        string="Appels à Concurrence"
+    )
+
+    payment_ids = fields.One2many(
+        'gespro.payment',
+        'offre_id',
+        string="Paiements"
+    )
+
+
+
+    
+
+    can_create_appel = fields.Boolean(
+        string="Peut créer un AC",
+        compute='_compute_can_create_appel'
+    )
+
+    investigation_result = fields.Text(string="Résultat investigation (RESADMIN)")
+
+    # ─── WORKFLOW (anciens états réintégrés) ────
+    state = fields.Selection([
+        ('nouveau', 'Nouveau'),
+        ('lu', 'Lu'),
+        ('en_investigation', 'En investigation'),
+        ('go', 'GO'),
+        ('no_go', 'NO GO'),
+        ('ignore', 'Ignoré'),
+    ], string="Statut", default='nouveau', tracking=True)
+
+    active = fields.Boolean(string="Actif", default=True)
+
+    type_offre = fields.Selection([
+        ('DC', 'DC'),
+        ('DPX', 'DPX'),
+        ('AO', 'AO'),
+        ('CC', 'CC'),
+        ('MANIF', 'Manif'),
+    ], string="Type d'offre", required=True)
+
+    name = fields.Char(string="Référence", readonly=True, copy=False)
+
+    # ─── MÉTHODES ───────────────────────────────
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            type_offre = vals.get('type_offre', 'AO')
+            seq_code = f'gespro.appel.offre.{type_offre}'
+            vals['name'] = self.env['ir.sequence'].next_by_code(seq_code)
+        return super().create(vals_list)
+    
+    # --- Actions CEO ---
+    def action_mark_lu(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut marquer comme lu.")
+        self.state = 'lu'
+        self.message_post(body=f"📖 Appel d'offre lu par {self.env.user.name}")
+
+    def action_investigation(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut demander une investigation.")
+        self.state = 'en_investigation'
+        self.message_post(body=f"🔍 Investigation demandée par {self.env.user.name}")
+
+    def action_go(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut donner le GO.")
+        self.state = 'go'
+        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
+
+
+    def action_no_go(self):
+        """CEO refuse l'appel d'offre en ouvrant le wizard de motif"""
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut donner le NO GO.")
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Motif du NO GO',
+            'res_model': 'gespro.appel.offre.ignore.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_offre_id': self.id,
+            },
+        }
+
+    def action_ignore(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut ignorer l'appel d'offre.")
+        self.state = 'ignore'
+
+    @api.depends('state', 'payment_ids.state')
+    def _compute_can_create_appel(self):
+        for record in self:
+            record.can_create_appel = (
+                record.state == 'go' and 
+                record.payment_ids and 
+                any(p.state == 'paid' for p in record.payment_ids)
+            )
+
+    def action_create_payment(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Enregistrer un paiement',
+            'res_model': 'gespro.payment',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_offre_id': self.id,
+            },
+        }
+
+    # --- Création d'un Appel à Concurrence (PM) ---
+    def action_create_appel_concurrence(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Créer un Appel à Concurrence',
+            'res_model': 'gespro.appel',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_offre_id': self.id,
+                'default_annonce_id': self.annonce_id.id,
+                'default_titre': self.titre,
+                'default_autorite_contractante': self.autorite_contractante,
+                'default_garantie_soumission': self.garantie_soumission,
+                'default_pm_id': self.pm_id.id,
+                'default_deadline': self.date_butoire,
+                'default_date_publication': fields.Date.today(),
+            },
+        }
+    
+
+    def open_appel_concurrence(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Appel à Concurrence',
+            'res_model': 'gespro.appel',
+            'view_mode': 'form',
+            'res_id': self.appel_concurrence_ids[0].id,
+            'target': 'current',
+        }
+    
+
+    def open_payment_list(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Paiements',
+            'res_model': 'gespro.payment',
+            'view_mode': 'list,form',
+            'domain': [('offre_id', '=', self.id)],
+            'target': 'current',
+        }
+    
+    def _sync_attachments(self):
+        for record in self:
+            if record.capture_ids:
+                record.capture_ids.write({
+                    'res_model': 'gespro.appel.offre',
+                    'res_id': record.id,
+                })
+
+    
+    def write(self, vals):
+        res = super().write(vals)
+        self._sync_attachments()
+        return res

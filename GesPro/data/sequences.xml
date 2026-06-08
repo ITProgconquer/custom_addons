@@ -11,6 +11,41 @@
             <field name="implementation">standard</field>
         </record>
 
+        <record id="seq_appel_offre_DC" model="ir.sequence">
+            <field name="name">Appel d'offre DC</field>
+            <field name="code">gespro.appel.offre.DC</field>
+            <field name="prefix">DC/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="seq_appel_offre_DPX" model="ir.sequence">
+            <field name="name">Appel d'offre DPX</field>
+            <field name="code">gespro.appel.offre.DPX</field>
+            <field name="prefix">DPX/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="seq_appel_offre_AO" model="ir.sequence">
+            <field name="name">Appel d'offre AO</field>
+            <field name="code">gespro.appel.offre.AO</field>
+            <field name="prefix">AO/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="seq_appel_offre_CC" model="ir.sequence">
+            <field name="name">Appel d'offre CC</field>
+            <field name="code">gespro.appel.offre.CC</field>
+            <field name="prefix">CC/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+
+        <record id="seq_appel_offre_MANIF" model="ir.sequence">
+            <field name="name">Appel d'offre MANIF</field>
+            <field name="code">gespro.appel.offre.MANIF</field>
+            <field name="prefix">MANIF/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+
         <!-- Séquence Appel à Concurrence : AC/2026/0001 -->
         <record id="seq_appel" model="ir.sequence">
             <field name="name">Séquence Appel à Concurrence</field>

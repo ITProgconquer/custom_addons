@@ -9,13 +9,12 @@
                     <sheet>
                         <group>
                             <field name="appel_id"/>
-                            <field name="template_id"/>
                             <field name="categorie"/>
                             <field name="libelle"/>
-                            <field name="is_done"/>
-                            <field name="is_mandatory"/>
+                            <field name="state"/>
                             <field name="responsible_id"/>
                             <field name="note"/>
+                            <field name="sequence"/>
                         </group>
                     </sheet>
                 </form>

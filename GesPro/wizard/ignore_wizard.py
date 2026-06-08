@@ -1,30 +1,23 @@
 from odoo import models, fields
 
 
-class AnnonceIgnoreWizard(models.TransientModel):
-    _name = "gespro.annonce.ignore.wizard"
-    _description = "Assistant de refus d'annonce (NO GO / Ignoré)"
+class AppelOffreIgnoreWizard(models.TransientModel):
+    _name = "gespro.appel.offre.ignore.wizard"
+    _description = "Assistant de refus d'un appel d'offre"
 
-    annonce_id = fields.Many2one(
-        'gespro.annonce',
-        string="Annonce",
-        required=True
+    offre_id = fields.Many2one(
+        'gespro.appel.offre',
+        string="Appel d'offre",
+        required=True,
+        readonly=True
     )
 
-    motif = fields.Text(
-        string="Motif",
-        required=True
-    )
+    motif = fields.Text(string="Motif du refus", required=True)
 
-    def action_confirm(self):
-        """Confirme le refus et met à jour l'annonce"""
+    def action_confirm_no_go(self):
         self.ensure_one()
-        self.annonce_id.write({
-            'state': 'no_go',
-            'ceo_decision_comment': self.motif,
-        })
-        self.annonce_id.message_post(
-            body=f"❌ NO GO — Motif : {self.motif}",
-            message_type='notification',
-            partner_ids=[self.annonce_id.user_id.partner_id.id]
+        self.offre_id.state = 'no_go'
+        self.offre_id.message_post(
+            body=f"🔴 NO GO donné par {self.env.user.name}\nMotif : {self.motif}"
         )
+        return {'type': 'ir.actions.act_window_close'}

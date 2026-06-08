@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import api, models, fields
 
 
 class Payment(models.Model):
@@ -6,9 +6,9 @@ class Payment(models.Model):
     _description = "Paiement des frais d'accès au dossier"
     _order = "payment_date desc"
 
-    annonce_id = fields.Many2one(
-        'gespro.annonce',
-        string="Annonce",
+    offre_id = fields.Many2one(
+        'gespro.appel.offre',
+        string="Appel d'offre",
         required=True,
         ondelete='cascade'
     )
@@ -39,7 +39,7 @@ class Payment(models.Model):
         ('pending', 'En attente'),
         ('paid', 'Payé'),
         ('rejected', 'Rejeté'),
-    ], string="Statut", default='pending', tracking=True)
+    ], string="Statut", default='pending')
 
     document_files = fields.Many2many(
         'ir.attachment',
@@ -51,6 +51,27 @@ class Payment(models.Model):
     )
 
     note = fields.Text(string="Commentaire")
+
+    def _sync_attachments(self):
+        for record in self:
+            if record.document_files:
+                record.document_files.write({
+                    'res_model': 'gespro.payment',
+                    'res_id': record.id,
+                })
+
+    
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        records = super().create(vals_list)
+        records._sync_attachments()
+        return records
+    
+    def write(self, vals):
+        res = super().write(vals)
+        self._sync_attachments()
+        return res
 
     def action_confirm_paid(self):
         self.ensure_one()
