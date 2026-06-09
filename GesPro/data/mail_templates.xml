@@ -6,6 +6,7 @@
         <record id="mail_template_annonce_creation" model="mail.template">
             <field name="name">Création Annonce</field>
             <field name="model_id" ref="model_gespro_annonce"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Nouvelle annonce : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -20,6 +21,7 @@
         <record id="mail_template_offre_creation" model="mail.template">
             <field name="name">Création Appel d'offre</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Nouvel Appel d'offre : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -34,6 +36,7 @@
         <record id="mail_template_investigation" model="mail.template">
             <field name="name">Demande Investigation</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Investigation demandée : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour <t t-out="object.pm_id.name"/>,</p>
@@ -47,6 +50,7 @@
         <record id="mail_template_offre_go" model="mail.template">
             <field name="name">GO Appel d'offre</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] GO donné : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -61,6 +65,7 @@
         <record id="mail_template_offre_nogo" model="mail.template">
             <field name="name">NO GO Appel d'offre</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] NO GO : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -75,6 +80,7 @@
         <record id="mail_template_payment_confirmed" model="mail.template">
             <field name="name">Paiement confirmé</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Paiement validé : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -88,6 +94,7 @@
         <record id="mail_template_appel_creation" model="mail.template">
             <field name="name">Création Appel à Concurrence</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Nouvel AC : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -102,6 +109,7 @@
         <record id="mail_template_appel_valider" model="mail.template">
             <field name="name">Validation dossier AC</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Dossier prêt : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -115,6 +123,7 @@
         <record id="mail_template_appel_soumission" model="mail.template">
             <field name="name">Soumission AC</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Soumission envoyée : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -129,6 +138,7 @@
         <record id="mail_template_appel_gagne" model="mail.template">
             <field name="name">AC Gagné</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Félicitations ! ${object.name} GAGNÉ</field>
             <field name="body_html" type="html">
                 <p>🎉 Bonjour,</p>
@@ -142,6 +152,7 @@
         <record id="mail_template_appel_perdu" model="mail.template">
             <field name="name">AC Perdu</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Résultat : ${object.name} perdu</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -155,6 +166,7 @@
         <record id="mail_template_alert_j5" model="mail.template">
             <field name="name">Alerte J-5</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[J-5] Deadline approche : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -169,6 +181,7 @@
         <record id="mail_template_alert_j2" model="mail.template">
             <field name="name">Alerte J-2</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[J-2] URGENT : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>⚠️ Attention,</p>
@@ -183,6 +196,7 @@
         <record id="mail_template_depouillement_termine" model="mail.template">
             <field name="name">Dépouillement terminé</field>
             <field name="model_id" ref="model_gespro_appel"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Dépouillement terminé : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
@@ -196,6 +210,7 @@
         <record id="mail_template_investigation_result" model="mail.template">
             <field name="name">Résultat d'investigation</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
+            <field name="email_from">salomon.zougmore@it-projet.com</field>
             <field name="subject">[GESPRO] Résultat d'investigation : ${object.name}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>

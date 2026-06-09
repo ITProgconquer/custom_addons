@@ -109,18 +109,15 @@ class AppelOffre(models.Model):
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
         records = super().create(vals_list)
+        records._sync_attachments()
         template = self.env.ref('GesPro.mail_template_offre_creation', raise_if_not_found=False)
-        _logger.info("Template création offre trouvé : %s", template)
         if template:
             emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
-            _logger.info("Destinataires création offre : %s", emails)
             if emails:
                 for record in records:
                     template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
-            else:
-                _logger.warning("Aucun email trouvé pour les utilisateurs GESPRO")
-        else:
-            _logger.warning("Template mail_template_offre_creation introuvable")
+        return records  
+       
 
     def notify_users(self, partner_ids, body):
         """Poste un message dans le chatter et envoie une notification aux partenaires."""
@@ -130,13 +127,6 @@ class AppelOffre(models.Model):
             message_type='notification',
             partner_ids=partner_ids,
         )
-
-    @api.model_create_multi
-    def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', 'Nouveau') == 'Nouveau':
-                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
-        return super().create(vals_list)
     
     # --- Actions CEO ---
     def action_mark_lu(self):
