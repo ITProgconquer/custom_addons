@@ -2,6 +2,8 @@
 <odoo>
     <data>
 
+        
+
         <!-- Menu racine avec icône du module -->
         <menuitem id="menu_gespro_root"
                   name="GESPRO"

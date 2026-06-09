@@ -60,13 +60,36 @@ class Annonce(models.Model):
     active = fields.Boolean(string="Actif", default=True)
 
     # ─── MÉTHODES ───────────────────────────────
+    def _get_all_gespro_emails(self, exclude_user=None):
+        """Retourne la liste des emails de tous les utilisateurs GESPRO,
+        en excluant l'expéditeur et l'utilisateur admin."""
+        groups = [
+            self.env.ref('GesPro.group_ceo').id,
+            self.env.ref('GesPro.group_pm').id,
+            self.env.ref('GesPro.group_resadmin').id,
+            self.env.ref('GesPro.group_tech').id,
+            self.env.ref('GesPro.group_fin').id,
+        ]
+        domain = [('groups_id', 'in', groups)]
+        if exclude_user:
+            domain.append(('id', '!=', exclude_user.id))
+        # Exclure l'utilisateur 'admin' par défaut
+        domain.append(('login', '!=', 'admin'))
+        users = self.env['res.users'].search(domain)
+        return ','.join(users.mapped('email'))
+
+
     @api.model_create_multi
     def create(self, vals_list):
-        for vals in vals_list:
-            if vals.get('name', 'Nouveau') == 'Nouveau':
-                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.annonce')
-        return super().create(vals_list)
-
+        records = super().create(vals_list)
+        template = self.env.ref('GesPro.mail_template_annonce_creation', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                for record in records:
+                    template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
+        return records
+    
     def action_create_appel_offre(self):
         """Ouvre le formulaire de création d'un Appel d'offre lié à cette annonce"""
         self.ensure_one()

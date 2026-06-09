@@ -41,6 +41,13 @@
                                 class="btn-primary"
                                 groups="GesPro.group_resadmin"
                                 invisible="state != 'go'"/>
+                                
+                        <button name="action_send_investigation_result" 
+                                string="Transmettre le résultat" 
+                                type="object" 
+                                class="btn-warning"
+                                invisible="state != 'en_investigation'"
+                                groups="GesPro.group_resadmin"/>        
                         <field name="state" widget="statusbar"/>
                     </header>
                 <sheet>

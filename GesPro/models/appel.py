@@ -1,6 +1,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError
 from datetime import date
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class Appel(models.Model):
@@ -124,19 +127,42 @@ class Appel(models.Model):
     ], string="Filtre checklists", default='all')
 
     # ─── MÉTHODES ───────────────────────────────
+    
     @api.model_create_multi
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel')
         records = super().create(vals_list)
-        for record in records:
-            # Template de notification de création (inchangé)
+
+        # Envoi d’email de création – avec capture des erreurs
+        try:
             template = self.env.ref('GesPro.mail_template_appel_creation', raise_if_not_found=False)
             if template:
-                # Le CC sera automatiquement le CEO auteur de l'annonce, via annonce_id.user_id.email
-                template.send_mail(record.id, force_send=True)
+                emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+                if emails:
+                    for record in records:
+                        template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
+        except Exception as e:
+            _logger.error("Erreur lors de l'envoi email création AC : %s", e)
+
         return records
+
+
+
+    def action_go(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut donner le GO.")
+        self.state = 'en_preparation'
+        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
+
+    def action_no_go(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut donner le NO GO.")
+        self.state = 'annule'
+        self.message_post(body=f"🔴 NO GO donné par {self.env.user.name}")
 
     @api.depends('deadline')
     def _compute_delai_restant(self):
@@ -241,6 +267,7 @@ class Appel(models.Model):
         self.message_post(body=f"🔴 NO GO donné par {self.env.user.name}")
 
     # --- Validation et soumission ---
+   
     def action_valider(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
@@ -252,6 +279,12 @@ class Appel(models.Model):
             raise UserError("Checklist incomplète. Toutes les tâches doivent être terminées.")
         self.state = 'pret'
         self.message_post(body=f"✅ Dossier validé par {self.env.user.name} — Prêt à soumettre")
+        # Email tout le monde
+        template = self.env.ref('GesPro.mail_template_appel_valider', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
     def action_soumettre(self):
         self.ensure_one()
@@ -260,18 +293,47 @@ class Appel(models.Model):
             from odoo.exceptions import UserError
             raise UserError("Checklist incomplète. Toutes les tâches doivent être terminées.")
         self.state = 'soumis'
-        self.message_post(body="📦 Dossier soumis")
+        partners = self.pm_id.partner_id | self.annonce_id.user_id.partner_id | self.env.user.partner_id
+        self.notify_users(
+            partner_ids=partners.ids,
+            body=f"📦 L'appel à concurrence {self.name} a été soumis."
+        )
+        # Email tout le monde
+        template = self.env.ref('GesPro.mail_template_appel_soumission', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
+
+    def notify_users(self, partner_ids, body):
+        """Poste un message dans le chatter et envoie une notification aux partenaires."""
+        self.ensure_one()
+        self.message_post(
+            body=body,
+            message_type='notification',
+            partner_ids=partner_ids,
+        )
 
 
     def action_gagne(self):
         self.ensure_one()
         self.state = 'gagne'
         self.message_post(body="🎉 Félicitations ! Dossier gagné !", message_type='notification')
+        template = self.env.ref('GesPro.mail_template_appel_gagne', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
     def action_perdu(self):
         self.ensure_one()
         self.state = 'perdu'
         self.message_post(body="Dossier non retenu", message_type='notification')
+        template = self.env.ref('GesPro.mail_template_appel_perdu', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
     def action_annuler(self):
         self.ensure_one()
@@ -297,10 +359,26 @@ class Appel(models.Model):
         for appel in appels:
             days_left = (appel.deadline - today).days
             if days_left in (5, 2, 1, 0) and appel.last_alert_sent != today:
-                template_xmlid = 'gespro.mail_template_alert_j5' if days_left > 2 else 'gespro.mail_template_alert_j2'
+                template_xmlid = 'GesPro.mail_template_alert_j5' if days_left > 2 else 'GesPro.mail_template_alert_j2'
                 template = self.env.ref(template_xmlid, raise_if_not_found=False)
                 if template:
-                    template.send_mail(appel.id, force_send=True)
+                    # Récupérer tous les utilisateurs des groupes GESPRO
+                    gespro_users = self.env['res.users'].search([
+                        ('groups_id', 'in', [
+                            self.env.ref('GesPro.group_ceo').id,
+                            self.env.ref('GesPro.group_pm').id,
+                            self.env.ref('GesPro.group_resadmin').id,
+                            self.env.ref('GesPro.group_tech').id,
+                            self.env.ref('GesPro.group_fin').id,
+                        ])
+                    ])
+                    emails = ','.join(gespro_users.mapped('email'))
+                    if emails:
+                        template.send_mail(
+                            appel.id,
+                            force_send=True,
+                            email_values={'email_to': emails}
+                        )
                 # Notification chatter en plus
                 appel.message_post(
                     body=f"⚠️ Alerte : {days_left} jours restants pour {appel.name}",
@@ -308,14 +386,18 @@ class Appel(models.Model):
                 )
                 appel.write({'last_alert_sent': today})
 
+
     def write(self, vals):
         user = self.env.user
+        # Le CEO et le PM ne sont pas limités
+        if user.has_group('GesPro.group_ceo') or user.has_group('GesPro.group_pm'):
+            return super().write(vals)
         if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin'):
             allowed_fields = ['checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:
                     raise AccessError("Vous ne pouvez modifier que les checklists.")
-        if user.has_group('GesPro.group_resadmin'):
+        elif user.has_group('GesPro.group_resadmin'):
             allowed_fields = ['state', 'checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
             for field in vals:
                 if field not in allowed_fields:
