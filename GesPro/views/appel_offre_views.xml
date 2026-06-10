@@ -36,7 +36,7 @@
                         <button name="action_create_appel_concurrence" string="Créer AC" type="object"
                                 class="btn-primary"
                                 groups="GesPro.group_pm"
-                                invisible="state != 'go' or appel_concurrence_ids"/>
+                                invisible="not show_create_ac"/>
                         <button name="action_create_payment" string="Enregistrer paiement" type="object"
                                 class="btn-primary"
                                 groups="GesPro.group_resadmin"
@@ -63,6 +63,8 @@
                             <field name="garantie_soumission"/>
                             <field name="ligne_de_credit"/>
                             <field name="chiffre_affaire"/>
+                        </group>
+                        <group>
                             <field name="date_butoire"/>
                             <field name="visite_site"/>
                             <field name="type_offre" string="Type" required="1"/>
@@ -110,7 +112,7 @@
                             </field>
                         </page>
                         <page string="Investigation" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'en_investigation'">
-                            <field name="investigation_result"/>
+                            <field name="investigation_result_ids" widget="many2many_binary"/>
                         </page>
                     </notebook>
                 </sheet>

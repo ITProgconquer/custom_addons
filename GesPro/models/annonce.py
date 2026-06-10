@@ -86,14 +86,6 @@ class Annonce(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.annonce')
         records = super().create(vals_list)
         
-        # Envoi email aux utilisateurs GESPRO
-        template = self.env.ref('GesPro.mail_template_annonce_creation', raise_if_not_found=False)
-        if template:
-            emails = self._get_all_gespro_emails(exclude_user=self.env.user)
-            if emails:
-                for record in records:
-                    template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
-        
         return records
     
     def action_create_appel_offre(self):

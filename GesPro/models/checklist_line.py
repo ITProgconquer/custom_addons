@@ -14,7 +14,7 @@ class ChecklistLine(models.Model):
         ('fin', 'Financier'),
     ], string="Catégorie", required=True)
     libelle = fields.Char("Tâche", required=True)
-    responsible_id = fields.Many2one('res.users', string="Assigné à")
+    responsible_id = fields.Char(string="Assigné à", required=True)
     note = fields.Text("Commentaire")
     sequence = fields.Integer("Ordre", default=10)
 

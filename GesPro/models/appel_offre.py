@@ -30,6 +30,8 @@ class AppelOffre(models.Model):
     ligne_de_credit = fields.Integer(string="Ligne de crédit associée")
     chiffre_affaire = fields.Char(string="Chiffre d'affaire sur tant d'année(s)")
     visite_site = fields.Date(string="Visite de site requise",required=False)
+    ceo_comment = fields.Text(string="Commentaire du CEO", readonly=True)
+    
 
     capture_ids = fields.Many2many(
         'ir.attachment',
@@ -68,14 +70,20 @@ class AppelOffre(models.Model):
 
 
 
-    
+    show_create_ac = fields.Boolean(compute='_compute_show_create_ac')
 
     can_create_appel = fields.Boolean(
         string="Peut créer un AC",
         compute='_compute_can_create_appel'
     )
 
-    investigation_result = fields.Text(string="Résultat investigation (RESADMIN)")
+    investigation_result_ids = fields.Many2many(
+        'ir.attachment',
+        'gespro_offre_investigation_attachments_rel',
+        'offre_id',
+        'attachment_id',
+        string="Résultats d'investigation"
+    )
 
     # ─── WORKFLOW (anciens états réintégrés) ────
     state = fields.Selection([
@@ -98,6 +106,16 @@ class AppelOffre(models.Model):
     ], string="Type d'offre", required=True)
 
     name = fields.Char(string="Référence", readonly=True, copy=False)
+
+    @api.depends('state', 'payment_ids.state')
+    def _compute_show_create_ac(self):
+        for record in self:
+            record.show_create_ac = (
+                record.state == 'go' and 
+                record.payment_ids and 
+                any(p.state == 'paid' for p in record.payment_ids) and
+                not record.appel_concurrence_ids
+            )
 
     # ─── MÉTHODES ───────────────────────────────
     @api.model_create_multi
@@ -159,17 +177,6 @@ class AppelOffre(models.Model):
                     email_values={'email_to': ','.join(resadmin_users.mapped('email'))}
                 )
 
-        # Email au RESADMIN
-        resadmin_users = self.env['res.users'].search([('groups_id', 'in', [self.env.ref('GesPro.group_resadmin').id])])
-        if resadmin_users:
-            template = self.env.ref('GesPro.mail_template_investigation', raise_if_not_found=False)
-            if template:
-                template.send_mail(
-                    self.id,
-                    force_send=True,
-                    email_values={'email_to': ','.join(resadmin_users.mapped('email'))}
-                )
-
 
     def action_send_investigation_result(self):
         self.ensure_one()
@@ -198,11 +205,11 @@ class AppelOffre(models.Model):
             raise AccessError("Seul le CEO peut donner le GO.")
         self.state = 'go'
         # Notification interne
-        partners = self.pm_id.partner_id | self.annonce_id.user_id.partner_id | self.env.user.partner_id
-        self.notify_users(
-            partner_ids=partners.ids,
-            body=f"🟢 GO donné par {self.env.user.name} pour l'appel d'offre {self.name}."
-        )
+        # partners = self.pm_id.partner_id | self.annonce_id.user_id.partner_id | self.env.user.partner_id
+        # self.notify_users(
+        #     partner_ids=partners.ids,
+        #     body=f"🟢 GO donné par {self.env.user.name} pour l'appel d'offre {self.name}."
+        # )
         # Email tout le monde
         template = self.env.ref('GesPro.mail_template_offre_go', raise_if_not_found=False)
         if template:
@@ -215,6 +222,14 @@ class AppelOffre(models.Model):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut donner le NO GO.")
+        
+        # template = self.env.ref('GesPro.mail_template_offre_nogo', raise_if_not_found=False)
+        # if template:
+        #     emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+        #     if emails:
+        #         template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
+
+
         return {
             'type': 'ir.actions.act_window',
             'name': 'Motif du NO GO',
@@ -272,6 +287,7 @@ class AppelOffre(models.Model):
                 'default_pm_id': self.pm_id.id,
                 'default_deadline': self.date_butoire,
                 'default_date_publication': fields.Date.today(),
+                'default_procedure': self.type_offre,
             },
         }
     
@@ -303,6 +319,12 @@ class AppelOffre(models.Model):
         for record in self:
             if record.capture_ids:
                 record.capture_ids.write({
+                    'res_model': 'gespro.appel.offre',
+                    'res_id': record.id,
+                })
+            
+            if record.investigation_result_ids:
+                record.investigation_result_ids.write({
                     'res_model': 'gespro.appel.offre',
                     'res_id': record.id,
                 })

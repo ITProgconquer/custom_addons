@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<templates>
+    <t t-name="gespro.CeoDashboard">
+        <div class="o_ceo_dashboard p-4">
+            <div class="row mb-4">
+                <div class="col-3">
+                    <div class="card bg-danger text-white rounded-4 shadow">
+                        <div class="card-body text-center p-4">
+                            <h1 class="display-4 fw-bold" t-esc="state.urgent_count"/>
+                            <span>🔴 Appels urgents</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4">
+                <div class="col-6">
+                    <div class="card rounded-4 shadow p-3">
+                        <h5>Répartition par statut</h5>
+                        <canvas id="statusChart" height="200"/>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="card rounded-4 shadow p-3">
+                        <h5>Appels par mois</h5>
+                        <canvas id="monthChart" height="200"/>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="card rounded-4 shadow p-3">
+                        <h5>Signaux en attente</h5>
+                        <table class="table">
+                            <thead><tr><th>Référence</th><th>Statut</th></tr></thead>
+                            <tbody>
+                                <tr t-foreach="state.pending" t-as="r" t-key="r.id">
+                                    <td t-esc="r.name"/>
+                                    <td><span class="badge" t-esc="r.state"/></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

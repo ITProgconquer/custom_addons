@@ -282,6 +282,31 @@
             </field>
         </record>
 
+
+        <record id="view_appel_pivot" model="ir.ui.view">
+            <field name="name">gespro.appel.pivot</field>
+            <field name="model">gespro.appel</field>
+            <field name="arch" type="xml">
+                <pivot string="Appels par statut">
+                    <field name="state" type="col"/>
+                    <field name="procedure" type="row"/>
+                    <field name="id" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+
+        <record id="view_appel_graph" model="ir.ui.view">
+            <field name="name">gespro.appel.graph</field>
+            <field name="model">gespro.appel</field>
+            <field name="arch" type="xml">
+                <graph string="Appels par mois" type="bar">
+                    <field name="date_publication" interval="month"/>
+                    <field name="id" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
         <!-- ============================================ -->
         <!-- ACTION                                       -->
         <!-- ============================================ -->

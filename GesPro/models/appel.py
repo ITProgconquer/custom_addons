@@ -32,10 +32,11 @@ class Appel(models.Model):
     lot_count = fields.Integer(string="Nombre de lots", default=1)
 
     procedure = fields.Selection([
-        ('ao', "Appel d'offres"),
-        ('cotation', 'Demande de cotation'),
-        ('consultation', 'Consultation'),
-        ('prix', 'Demande de prix'),
+        ('AO', "Appel d'offres"),
+        ('DC', 'Demande de cotation'),
+        ('CC', 'Consultation'),
+        ('DPX', 'Demande de prix'),
+        ('MANIF', 'Manifeste'),
         ('autre', 'Autres'),
     ], string="Procédure", required=True)
 
@@ -148,21 +149,6 @@ class Appel(models.Model):
 
         return records
 
-
-
-    def action_go(self):
-        self.ensure_one()
-        if not self.env.user.has_group('GesPro.group_ceo'):
-            raise AccessError("Seul le CEO peut donner le GO.")
-        self.state = 'en_preparation'
-        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
-
-    def action_no_go(self):
-        self.ensure_one()
-        if not self.env.user.has_group('GesPro.group_ceo'):
-            raise AccessError("Seul le CEO peut donner le NO GO.")
-        self.state = 'annule'
-        self.message_post(body=f"🔴 NO GO donné par {self.env.user.name}")
 
     @api.depends('deadline')
     def _compute_delai_restant(self):
@@ -409,3 +395,44 @@ class Appel(models.Model):
         for record in self:
             record.show_generate_lots = len(record.lot_ids) == 0
             record.show_generate_checklists = len(record.checklist_ids) == 0
+
+
+    
+    def _cron_update_delai(self):
+        """Mis à jour quotidienne des délais restants"""
+        appels = self.search([('state', 'in', ['en_preparation', 'pret'])])
+        for appel in appels:
+            appel._compute_delai_restant()
+
+
+    
+
+    # @api.model
+    # def get_ceo_dashboard_data(self):
+    #     urgent_count = self.search_count([
+    #         ('state', 'in', ['en_preparation', 'pret']),
+    #         ('delai_restant', '<=', 2)
+    #     ])
+        
+    #     pending = self.search([
+    #         ('state', '=', 'en_preparation')
+    #     ], limit=10)
+        
+    #     status_data = self.read_group(
+    #         [('state', 'not in', ['gagne', 'perdu', 'annule'])],
+    #         ['state'],
+    #         ['state']
+    #     )
+        
+    #     monthly_data = self.read_group(
+    #         [],
+    #         ['id:count'],
+    #         ['date_publication:month']
+    #     )
+        
+    #     return {
+    #         'urgent_count': urgent_count,
+    #         'pending': [{'id': r.id, 'name': r.name, 'state': r.state} for r in pending],
+    #         'status_data': status_data,
+    #         'monthly_data': monthly_data,
+    #     }
