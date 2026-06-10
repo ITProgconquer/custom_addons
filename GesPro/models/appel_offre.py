@@ -1,5 +1,9 @@
 from odoo import models, fields, api
 from odoo.exceptions import UserError, AccessError
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 
 class AppelOffre(models.Model):
@@ -26,6 +30,8 @@ class AppelOffre(models.Model):
     ligne_de_credit = fields.Integer(string="Ligne de crédit associée")
     chiffre_affaire = fields.Char(string="Chiffre d'affaire sur tant d'année(s)")
     visite_site = fields.Date(string="Visite de site requise",required=False)
+    ceo_comment = fields.Text(string="Commentaire du CEO", readonly=True)
+    
 
     capture_ids = fields.Many2many(
         'ir.attachment',
@@ -64,14 +70,20 @@ class AppelOffre(models.Model):
 
 
 
-    
+    show_create_ac = fields.Boolean(compute='_compute_show_create_ac')
 
     can_create_appel = fields.Boolean(
         string="Peut créer un AC",
         compute='_compute_can_create_appel'
     )
 
-    investigation_result = fields.Text(string="Résultat investigation (RESADMIN)")
+    investigation_result_ids = fields.Many2many(
+        'ir.attachment',
+        'gespro_offre_investigation_attachments_rel',
+        'offre_id',
+        'attachment_id',
+        string="Résultats d'investigation"
+    )
 
     # ─── WORKFLOW (anciens états réintégrés) ────
     state = fields.Selection([
@@ -95,6 +107,16 @@ class AppelOffre(models.Model):
 
     name = fields.Char(string="Référence", readonly=True, copy=False)
 
+    @api.depends('state', 'payment_ids.state')
+    def _compute_show_create_ac(self):
+        for record in self:
+            record.show_create_ac = (
+                record.state == 'go' and 
+                record.payment_ids and 
+                any(p.state == 'paid' for p in record.payment_ids) and
+                not record.appel_concurrence_ids
+            )
+
     # ─── MÉTHODES ───────────────────────────────
     @api.model_create_multi
     def create(self, vals_list):
@@ -102,7 +124,27 @@ class AppelOffre(models.Model):
             type_offre = vals.get('type_offre', 'AO')
             seq_code = f'gespro.appel.offre.{type_offre}'
             vals['name'] = self.env['ir.sequence'].next_by_code(seq_code)
-        return super().create(vals_list)
+            if vals.get('name', 'Nouveau') == 'Nouveau':
+                vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
+        records = super().create(vals_list)
+        records._sync_attachments()
+        template = self.env.ref('GesPro.mail_template_offre_creation', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                for record in records:
+                    template.send_mail(record.id, force_send=True, email_values={'email_to': emails})
+        return records  
+       
+
+    def notify_users(self, partner_ids, body):
+        """Poste un message dans le chatter et envoie une notification aux partenaires."""
+        self.ensure_one()
+        self.message_post(
+            body=body,
+            message_type='notification',
+            partner_ids=partner_ids,
+        )
     
     # --- Actions CEO ---
     def action_mark_lu(self):
@@ -112,26 +154,82 @@ class AppelOffre(models.Model):
         self.state = 'lu'
         self.message_post(body=f"📖 Appel d'offre lu par {self.env.user.name}")
 
+
     def action_investigation(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut demander une investigation.")
         self.state = 'en_investigation'
-        self.message_post(body=f"🔍 Investigation demandée par {self.env.user.name}")
+        self.message_post(body=f"🔍 Investigation demandée par {self.env.user.name} pour l'appel d'offre {self.name}.")
+        # Destinataires : uniquement les utilisateurs ayant le groupe RESADMIN,
+        # sauf l'expéditeur et l'admin
+        resadmin_users = self.env['res.users'].search([
+            ('groups_id', 'in', [self.env.ref('GesPro.group_resadmin').id]),
+            ('id', '!=', self.env.user.id),
+            ('login', '!=', 'admin'),
+        ])
+        if resadmin_users:
+            template = self.env.ref('GesPro.mail_template_investigation', raise_if_not_found=False)
+            if template:
+                template.send_mail(
+                    self.id,
+                    force_send=True,
+                    email_values={'email_to': ','.join(resadmin_users.mapped('email'))}
+                )
+
+
+    def action_send_investigation_result(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_resadmin'):
+            raise AccessError("Seul le RESADMIN peut transmettre le résultat.")
+        # Rechercher les utilisateurs ayant le groupe CEO
+        ceo_users = self.env['res.users'].search([
+            ('groups_id', 'in', [self.env.ref('GesPro.group_ceo').id]),
+            ('id', '!=', self.env.user.id),
+            ('login', '!=', 'admin'),
+        ])
+        recipients = ','.join(ceo_users.mapped('email'))
+        if recipients:
+            template = self.env.ref('GesPro.mail_template_investigation_result', raise_if_not_found=False)
+            if template:
+                template.send_mail(
+                    self.id,
+                    force_send=True,
+                    email_values={'email_to': recipients}
+                )
+        self.message_post(body=f"📨 Résultat d'investigation transmis au CEO par {self.env.user.name}.")                
 
     def action_go(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut donner le GO.")
         self.state = 'go'
-        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
-
+        # Notification interne
+        # partners = self.pm_id.partner_id | self.annonce_id.user_id.partner_id | self.env.user.partner_id
+        # self.notify_users(
+        #     partner_ids=partners.ids,
+        #     body=f"🟢 GO donné par {self.env.user.name} pour l'appel d'offre {self.name}."
+        # )
+        # Email tout le monde
+        template = self.env.ref('GesPro.mail_template_offre_go', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
     def action_no_go(self):
         """CEO refuse l'appel d'offre en ouvrant le wizard de motif"""
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut donner le NO GO.")
+        
+        # template = self.env.ref('GesPro.mail_template_offre_nogo', raise_if_not_found=False)
+        # if template:
+        #     emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+        #     if emails:
+        #         template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
+
+
         return {
             'type': 'ir.actions.act_window',
             'name': 'Motif du NO GO',
@@ -142,7 +240,7 @@ class AppelOffre(models.Model):
                 'default_offre_id': self.id,
             },
         }
-
+    
     def action_ignore(self):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
@@ -189,6 +287,7 @@ class AppelOffre(models.Model):
                 'default_pm_id': self.pm_id.id,
                 'default_deadline': self.date_butoire,
                 'default_date_publication': fields.Date.today(),
+                'default_procedure': self.type_offre,
             },
         }
     
@@ -220,6 +319,12 @@ class AppelOffre(models.Model):
         for record in self:
             if record.capture_ids:
                 record.capture_ids.write({
+                    'res_model': 'gespro.appel.offre',
+                    'res_id': record.id,
+                })
+            
+            if record.investigation_result_ids:
+                record.investigation_result_ids.write({
                     'res_model': 'gespro.appel.offre',
                     'res_id': record.id,
                 })

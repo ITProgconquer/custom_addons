@@ -23,6 +23,9 @@
         'web.assets_backend': [
             'GesPro/static/src/scss/gespro_theme.scss',
             'GesPro/static/src/js/checklist_filters.js',
+            # 'GesPro/static/lib/chartjs/chart.umd.min.js',
+            # 'GesPro/static/src/js/ceo_dashboard.js',
+            # 'GesPro/static/src/xml/ceo_dashboard.xml',
         ],
     },
    

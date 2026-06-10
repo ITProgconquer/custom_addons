@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <data>
 
-    <record id="view_appel_offre_ignore_wizard_form" model="ir.ui.view">
-        <field name="name">gespro.appel.offre.ignore.wizard.form</field>
-        <field name="model">gespro.appel.offre.ignore.wizard</field>
-        <field name="arch" type="xml">
-            <form string="Motif du NO GO">
-                <group>
-                    <field name="offre_id" invisible="1"/>
-                    <field name="motif" placeholder="Veuillez indiquer le motif du refus..."/>
-                </group>
-                <footer>
-                    <button name="action_confirm_no_go" string="Confirmer le NO GO" type="object" class="btn-danger"/>
-                    <button string="Annuler" class="btn-secondary" special="cancel"/>
-                </footer>
-            </form>
-        </field>
-    </record>
+        <record id="view_appel_offre_ignore_wizard_form" model="ir.ui.view">
+            <field name="name">gespro.appel.offre.ignore.wizard.form</field>
+            <field name="model">gespro.appel.offre.ignore.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Motif du refus">
+                    <sheet>
+                        <group>
+                            <p class="text-danger">
+                                Vous allez refuser cette annonce.
+                                Veuillez obligatoirement indiquer le motif.
+                            </p>
+                            <field name="offre_id" invisible="1"/>
+                            <field name="motif" required="1"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm_no_go" string="Confirmer le refus"
+                                type="object" class="btn-danger"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
 
+    </data>
 </odoo>
