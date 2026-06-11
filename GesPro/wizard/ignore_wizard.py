@@ -18,8 +18,9 @@ class AppelOffreIgnoreWizard(models.TransientModel):
         # Passage au statut NO GO et enregistrement du motif
         self.offre_id.write({
             'state': 'no_go',
-            'investigation_result': self.motif,
+            'ceo_comment': self.motif,
         })
+
         # Notification chatter
         partners = self.offre_id.pm_id.partner_id | self.offre_id.annonce_id.user_id.partner_id | self.env.user.partner_id
         self.offre_id.notify_users(
@@ -29,7 +30,7 @@ class AppelOffreIgnoreWizard(models.TransientModel):
         # Email à tout le monde
         template = self.env.ref('GesPro.mail_template_offre_nogo', raise_if_not_found=False)
         if template:
-            emails = self.env['gespro.annonce']._get_all_gespro_emails()
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
             if emails:
                 template.send_mail(
                     self.offre_id.id,

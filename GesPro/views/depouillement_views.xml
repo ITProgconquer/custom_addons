@@ -7,7 +7,7 @@
                 <sheet>
                     <group>
                         <field name="appel_id" invisible="1"/>
-                        <field name="lot_id" widget="many2many_tags" invisible="1"/>
+                        <field name="lot_id" widget="many2many_tags"/>
                         <field name="ordre"/>
                         <field name="soumissionnaires"/>
                         <field name="montant_min_ttc"/>
@@ -29,7 +29,7 @@
                 <field name="montant_min_ttc"/>
                 <field name="montant_max_ttc"/>
                 <field name="observation"/>
-                <field name="lot_id" invisible="1"/>
+                <field name="lot_id"/>
             </list>
         </field>
     </record>

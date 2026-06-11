@@ -32,10 +32,11 @@ class Appel(models.Model):
     lot_count = fields.Integer(string="Nombre de lots", default=1)
 
     procedure = fields.Selection([
-        ('ao', "Appel d'offres"),
-        ('cotation', 'Demande de cotation'),
-        ('consultation', 'Consultation'),
-        ('prix', 'Demande de prix'),
+        ('AO', "Appel d'offres"),
+        ('DC', 'Demande de cotation'),
+        ('CC', 'Consultation'),
+        ('DPX', 'Demande de prix'),
+        ('MANIF', 'Manifeste'),
         ('autre', 'Autres'),
     ], string="Procédure", required=True)
 
@@ -43,6 +44,9 @@ class Appel(models.Model):
 
     date_publication = fields.Date(string="Date de publication", required=True)
     deadline = fields.Date(string="Date limite", required=True)
+
+    resultat_capture = fields.Binary(string="Capture du résultat")
+    resultat_filename = fields.Char(string="Nom du fichier")
 
     delai_restant = fields.Integer(
         string="Délai restant (jours)",
@@ -89,27 +93,16 @@ class Appel(models.Model):
     )
 
     lot_ids = fields.One2many('gespro.lot', 'appel_id', string="Lots")
-    checklist_ids = fields.One2many('gespro.checklist.line', 'appel_id', string="Checklists")
+    checklist_ids = fields.One2many('gespro.checklist.line','appel_id',string="Toutes les checklists")
+
 
     # ─── CHECKLISTS PAR CATÉGORIE (Many2many calculés) ────
-    checklist_tech_ids = fields.Many2many(
-        'gespro.checklist.line', string="Checklist Technique",
-        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
-        relation='gespro_appel_checklist_tech_rel', column1='appel_id', column2='line_id',
-        domain=[('categorie', '=', 'tech')]
-    )
-    checklist_admin_ids = fields.Many2many(
-        'gespro.checklist.line', string="Checklist Admin",
-        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
-        relation='gespro_appel_checklist_admin_rel', column1='appel_id', column2='line_id',
-        domain=[('categorie', '=', 'admin')]
-    )
-    checklist_fin_ids = fields.Many2many(
-        'gespro.checklist.line', string="Checklist Financier",
-        compute='_compute_checklist_categories', inverse='_inverse_checklist_categories',
-        relation='gespro_appel_checklist_fin_rel', column1='appel_id', column2='line_id',
-        domain=[('categorie', '=', 'fin')]
-    )
+    checklist_tech_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'tech')], string="Checklist Technique")
+    checklist_admin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'admin')], string="Checklist Admin")
+    checklist_fin_ids = fields.One2many('gespro.checklist.line', 'appel_id', 
+        domain=[('categorie', '=', 'fin')], string="Checklist Financier")
 
     # ─── PROGRESSION ────────────────────────────
     progression_tech = fields.Float(compute='_compute_progression', store=True)
@@ -159,21 +152,6 @@ class Appel(models.Model):
 
         return records
 
-
-
-    def action_go(self):
-        self.ensure_one()
-        if not self.env.user.has_group('GesPro.group_ceo'):
-            raise AccessError("Seul le CEO peut donner le GO.")
-        self.state = 'en_preparation'
-        self.message_post(body=f"🟢 GO donné par {self.env.user.name}")
-
-    def action_no_go(self):
-        self.ensure_one()
-        if not self.env.user.has_group('GesPro.group_ceo'):
-            raise AccessError("Seul le CEO peut donner le NO GO.")
-        self.state = 'annule'
-        self.message_post(body=f"🔴 NO GO donné par {self.env.user.name}")
 
     @api.depends('deadline')
     def _compute_delai_restant(self):
@@ -420,3 +398,56 @@ class Appel(models.Model):
         for record in self:
             record.show_generate_lots = len(record.lot_ids) == 0
             record.show_generate_checklists = len(record.checklist_ids) == 0
+
+
+    
+    def _cron_update_delai(self):
+        """Mis à jour quotidienne des délais restants"""
+        appels = self.search([('state', 'in', ['en_preparation', 'pret'])])
+        for appel in appels:
+            appel._compute_delai_restant()
+
+    
+    def action_open_resultat(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Enregistrer le résultat',
+            'res_model': 'gespro.resultat.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_appel_id': self.id},
+        }
+
+
+    
+
+    # @api.model
+    # def get_ceo_dashboard_data(self):
+    #     urgent_count = self.search_count([
+    #         ('state', 'in', ['en_preparation', 'pret']),
+    #         ('delai_restant', '<=', 2)
+    #     ])
+        
+    #     pending = self.search([
+    #         ('state', '=', 'en_preparation')
+    #     ], limit=10)
+        
+    #     status_data = self.read_group(
+    #         [('state', 'not in', ['gagne', 'perdu', 'annule'])],
+    #         ['state'],
+    #         ['state']
+    #     )
+        
+    #     monthly_data = self.read_group(
+    #         [],
+    #         ['id:count'],
+    #         ['date_publication:month']
+    #     )
+        
+    #     return {
+    #         'urgent_count': urgent_count,
+    #         'pending': [{'id': r.id, 'name': r.name, 'state': r.state} for r in pending],
+    #         'status_data': status_data,
+    #         'monthly_data': monthly_data,
+    #     }

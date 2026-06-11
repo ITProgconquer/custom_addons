@@ -6,7 +6,11 @@
             <field name="res_model">gespro.appel</field>
             <field name="view_mode">kanban,list,pivot,graph</field>
             <field name="domain">[('state', 'not in', ['gagne', 'perdu', 'annule'])]</field>
-            <field name="context">{'search_default_filter_urgent': 1}</field>
+            <field name="context">{
+                'search_default_filter_urgent': 1,
+                'pivot_measures': ['__count__'],
+                'pivot_column_groupby': ['state'],
+            }</field>
         </record>
     </data>
 </odoo>

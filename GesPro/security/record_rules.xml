@@ -16,10 +16,11 @@
             <field name="domain_force">
                 [('res_model', 'in', [
                     'gespro.payment',
+                    'gespro.appel.offre',
                     'gespro.annonce',
                     'gespro.appel',
                     'gespro.lot',
-                    'gespro.appel.offre'
+                    
                 ])]
             </field>
             <field name="groups" eval="[

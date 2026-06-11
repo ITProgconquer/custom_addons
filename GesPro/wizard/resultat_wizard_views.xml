@@ -1,0 +1,24 @@
+<odoo>
+    <data>
+        <record id="view_resultat_wizard_form" model="ir.ui.view">
+            <field name="name">gespro.resultat.wizard.form</field>
+            <field name="model">gespro.resultat.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Résultat">
+                    <sheet>
+                        <group>
+                            <field name="appel_id" invisible="1"/>
+                            <field name="resultat"/>
+                            <field name="capture" widget="image" invisible="not capture"/>
+                            <field name="capture" widget="binary" filename="capture_filename"/>
+                        </group>
+                    </sheet>
+                    <footer>
+                        <button name="action_confirm" string="Confirmer" type="object" class="btn-primary"/>
+                        <button string="Annuler" special="cancel" class="btn-secondary"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>
