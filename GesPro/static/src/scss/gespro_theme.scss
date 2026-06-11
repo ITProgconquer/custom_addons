@@ -116,12 +116,9 @@ body {
   /* Cache le texte et affiche l'image en fond */
   font-size: 0 !important;               // supprime la taille du texte
   color: transparent !important;         // rend le texte invisible
-  background-image: url('/GesPro/static/src/img/logo.png') !important;
   background-size: contain;
   background-repeat: no-repeat;
-  background-position: center;
-  width: 140px;                          // ajuste selon la largeur de ton logo
-  height: 40px;                          // ajuste selon la hauteur de ton logo
+  background-position: center;                         // ajuste selon la hauteur de ton logo
 }
 .o_main_navbar .o_menu_brand:hover {
   background: var(--gespro-black) !important;

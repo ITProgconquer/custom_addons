@@ -32,10 +32,12 @@ class AppelOffre(models.Model):
     visite_site = fields.Date(string="Visite de site requise",required=False)
     ceo_comment = fields.Text(string="Commentaire du CEO", readonly=True)
     frais_des_doosiers = fields.Integer(string="Frais des dossiers", default=0)
+
+
     type_appel = fields.Selection([
         ('unique', 'Lot unique'),
         ('allotti', 'Alloti'),
-    ], string="Type", default='unique')
+    ], string="Type", required=True, default='unique')
 
 
     lot_ids = fields.One2many('gespro.lot', 'offre_id', string="Lots")
@@ -347,7 +349,7 @@ class AppelOffre(models.Model):
     
     def write(self, vals):
         res = super().write(vals)
-        self._sync_attachments()
+        # self._sync_attachments()
         return res
     
 
