@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="view_investigation_wizard_form" model="ir.ui.view">
+            <field name="name">gespro.investigation.wizard.form</field>
+            <field name="model">gespro.appel.offre.investigation.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Demande d'investigation">
+                    <group>
+                        <field name="instructions" placeholder="Saisissez vos consignes pour le RESADMIN..."/>
+                    </group>
+                    <footer>
+                        <button name="action_confirm_investigation" string="Envoyer" type="object" class="btn-primary"/>
+                        <button string="Annuler" class="btn-secondary" special="cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

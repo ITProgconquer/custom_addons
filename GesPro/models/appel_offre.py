@@ -30,7 +30,8 @@ class AppelOffre(models.Model):
     ligne_de_credit = fields.Integer(string="Ligne de crédit associée")
     chiffre_affaire = fields.Char(string="Chiffre d'affaire sur tant d'année(s)")
     visite_site = fields.Date(string="Visite de site requise",required=False)
-    ceo_comment = fields.Text(string="Commentaire du CEO", readonly=True)
+    ceo_comment = fields.Text(string="Commentaire du CEO (instructions investigation)")
+    #ceo_comment = fields.Text(string="Commentaire du CEO", readonly=True)
     
 
     capture_ids = fields.Many2many(
@@ -159,23 +160,16 @@ class AppelOffre(models.Model):
         self.ensure_one()
         if not self.env.user.has_group('GesPro.group_ceo'):
             raise AccessError("Seul le CEO peut demander une investigation.")
-        self.state = 'en_investigation'
-        self.message_post(body=f"🔍 Investigation demandée par {self.env.user.name} pour l'appel d'offre {self.name}.")
-        # Destinataires : uniquement les utilisateurs ayant le groupe RESADMIN,
-        # sauf l'expéditeur et l'admin
-        resadmin_users = self.env['res.users'].search([
-            ('groups_id', 'in', [self.env.ref('GesPro.group_resadmin').id]),
-            ('id', '!=', self.env.user.id),
-            ('login', '!=', 'admin'),
-        ])
-        if resadmin_users:
-            template = self.env.ref('GesPro.mail_template_investigation', raise_if_not_found=False)
-            if template:
-                template.send_mail(
-                    self.id,
-                    force_send=True,
-                    email_values={'email_to': ','.join(resadmin_users.mapped('email'))}
-                )
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Demander une investigation',
+            'res_model': 'gespro.appel.offre.investigation.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_offre_id': self.id,
+            },
+        }
 
 
     def action_send_investigation_result(self):
