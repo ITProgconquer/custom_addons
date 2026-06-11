@@ -81,7 +81,8 @@
                     <notebook>
                         <page string="Captures" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm, GesPro.group_tech, GesPro.group_fin" >
                              <p class="text-muted">Captures d'écran ou documents liés à l'appel d'offre.</p>
-                             <field name="capture" widget="image" class="oe_avatar"/>
+                             <field name="capture" widget="image" style="width:700px; height:700px; object-fit:contain;"/>
+                             
                         </page>
                        <page string="Appel à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm, GesPro.group_tech, GesPro.group_fin" invisible="can_create_appel == False">
                             <div class="text-center py-4">
