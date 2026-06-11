@@ -45,6 +45,9 @@ class Appel(models.Model):
     date_publication = fields.Date(string="Date de publication", required=True)
     deadline = fields.Date(string="Date limite", required=True)
 
+    resultat_capture = fields.Binary(string="Capture du résultat")
+    resultat_filename = fields.Char(string="Nom du fichier")
+
     delai_restant = fields.Integer(
         string="Délai restant (jours)",
         compute='_compute_delai_restant',
@@ -403,6 +406,18 @@ class Appel(models.Model):
         appels = self.search([('state', 'in', ['en_preparation', 'pret'])])
         for appel in appels:
             appel._compute_delai_restant()
+
+    
+    def action_open_resultat(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Enregistrer le résultat',
+            'res_model': 'gespro.resultat.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_appel_id': self.id},
+        }
 
 
     

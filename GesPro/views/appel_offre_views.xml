@@ -18,6 +18,11 @@
                                 class="btn-warning"
                                 groups="GesPro.group_ceo"
                                 invisible="state != 'lu'"/>
+                        <button name="action_generate_lots" string="Générer les Lots" type="object"
+                                class="btn-primary"
+                                groups="GesPro.group_pm"
+                                invisible="not show_generate_lots"/>
+
 
 <!-- GO visible si l'état est lu, en investigation, ou déjà no_go (pour revenir) -->
                         <button name="action_go" string="GO" type="object" class="btn-success"
@@ -63,8 +68,11 @@
                             <field name="garantie_soumission"/>
                             <field name="ligne_de_credit"/>
                             <field name="chiffre_affaire"/>
+                            <field name="frais_des_doosiers"/>
                         </group>
                         <group>
+                            <field name="type_appel"/>
+                            <field name="lot_count" invisible="type_appel != 'allotti'"/>
                             <field name="date_butoire"/>
                             <field name="visite_site"/>
                             <field name="type_offre" string="Type" required="1"/>
@@ -73,7 +81,7 @@
                     <notebook>
                         <page string="Captures" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm, GesPro.group_tech, GesPro.group_fin" >
                              <p class="text-muted">Captures d'écran ou documents liés à l'appel d'offre.</p>
-                            <field name="capture_ids" widget="many2many_binary"/>
+                             <field name="capture" widget="image" class="oe_avatar"/>
                         </page>
                        <page string="Appel à Concurrence" groups="GesPro.group_ceo,GesPro.group_resadmin,GesPro.group_pm, GesPro.group_tech, GesPro.group_fin" invisible="can_create_appel == False">
                             <div class="text-center py-4">
@@ -114,6 +122,16 @@
                         <page string="Investigation" groups="GesPro.group_ceo,GesPro.group_resadmin" invisible="state != 'en_investigation'">
                             <field name="investigation_result_ids" widget="many2many_binary"/>
                         </page>
+
+                        <page string="Lots" invisible="type_appel != 'allotti'">
+                            <field name="lot_ids">
+                                <list editable="bottom">
+                                    <field name="lot_num" string="N°"/>
+                                    <field name="titre" string="Titre du lot"/>
+                                </list>
+                            </field>
+                        </page>
+                        
                     </notebook>
                 </sheet>
                 <chatter/>

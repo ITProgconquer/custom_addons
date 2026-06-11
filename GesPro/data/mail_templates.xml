@@ -22,7 +22,7 @@
             <field name="name">Création Appel d'offre</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Nouvel Appel d'offre : ${object.name}</field>
+            <field name="subject">[GESPRO] Nouvel Appel d'offre : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>L'Appel d'offre <strong><t t-out="object.name"/></strong> a été créé.</p>
@@ -37,7 +37,7 @@
             <field name="name">Demande Investigation</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Investigation demandée : ${object.name}</field>
+            <field name="subject">[GESPRO] Investigation demandée : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour <t t-out="object.pm_id.name"/>,</p>
                 <p>Le CEO demande une investigation sur l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
@@ -51,7 +51,7 @@
             <field name="name">GO Appel d'offre</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] GO donné : ${object.name}</field>
+            <field name="subject">[GESPRO] GO donné : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Le CEO a donné son <strong>GO</strong> pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
@@ -66,7 +66,7 @@
             <field name="name">NO GO Appel d'offre</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] NO GO : ${object.name}</field>
+            <field name="subject">[GESPRO] NO GO : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Le CEO a refusé l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
@@ -80,7 +80,7 @@
             <field name="name">Paiement confirmé</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Paiement validé : ${object.name}</field>
+            <field name="subject">[GESPRO] Paiement validé : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Le paiement de <t t-out="object.payment_ids[-1].amount"/> <t t-out="object.payment_ids[-1].currency_id.name"/> pour l'Appel d'offre <strong><t t-out="object.name"/></strong> a été confirmé.</p>
@@ -94,7 +94,7 @@
             <field name="name">Création Appel à Concurrence</field>
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Nouvel AC : ${object.name}</field>
+            <field name="subject">[GESPRO] Nouvel AC : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Un nouvel Appel à Concurrence a été créé.</p>
@@ -109,7 +109,7 @@
             <field name="name">Validation dossier AC</field>
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Dossier prêt : ${object.name}</field>
+            <field name="subject">[GESPRO] Dossier prêt : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Le dossier <strong><t t-out="object.name"/></strong> a été validé par le CEO et est prêt à soumettre.</p>
@@ -123,7 +123,7 @@
             <field name="name">Soumission AC</field>
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Soumission envoyée : ${object.name}</field>
+            <field name="subject">[GESPRO] Soumission envoyée : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> a été soumis.</p>
@@ -138,7 +138,7 @@
             <field name="name">AC Gagné</field>
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Félicitations ! ${object.name} GAGNÉ</field>
+            <field name="subject">[GESPRO] Félicitations ! {{ object.name }} GAGNÉ</field>
             <field name="body_html" type="html">
                 <p>🎉 Bonjour,</p>
                 <p>Nous avons remporté l'Appel à Concurrence <strong><t t-out="object.name"/></strong> !</p>
@@ -152,7 +152,7 @@
             <field name="name">AC Perdu</field>
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="email_from">{{ user.email }}</field>
-            <field name="subject">[GESPRO] Résultat : ${object.name} perdu</field>
+            <field name="subject">[GESPRO] Résultat : {{ object.name }} perdu</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> n'a pas été retenu.</p>
@@ -165,7 +165,7 @@
         <record id="mail_template_alert_j5" model="mail.template">
             <field name="name">Alerte J-5</field>
             <field name="model_id" ref="model_gespro_appel"/>
-            <field name="subject">[J-5] Deadline approche : ${object.name}</field>
+            <field name="subject">[J-5] Deadline approche : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> arrive à échéance dans 5 jours.</p>
@@ -179,7 +179,7 @@
         <record id="mail_template_alert_j2" model="mail.template">
             <field name="name">Alerte J-2</field>
             <field name="model_id" ref="model_gespro_appel"/>
-            <field name="subject">[J-2] URGENT : ${object.name}</field>
+            <field name="subject">[J-2] URGENT : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>⚠️ Attention,</p>
                 <p>L'Appel <strong><t t-out="object.name"/></strong> expire dans 2 jours.</p>
@@ -193,7 +193,7 @@
         <record id="mail_template_depouillement_termine" model="mail.template">
             <field name="name">Dépouillement terminé</field>
             <field name="model_id" ref="model_gespro_appel"/>
-            <field name="subject">[GESPRO] Dépouillement terminé : ${object.name}</field>
+            <field name="subject">[GESPRO] Dépouillement terminé : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Le dépouillement de l'Appel à Concurrence <strong><t t-out="object.name"/></strong> est terminé.</p>
@@ -207,7 +207,7 @@
             <field name="name">Résultat d'investigation</field>
             <field name="email_from">{{ user.email }}</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
-            <field name="subject">[GESPRO] Résultat d'investigation : ${object.name}</field>
+            <field name="subject">[GESPRO] Résultat d'investigation : {{ object.name }}</field>
             <field name="body_html" type="html">
                 <p>Bonjour,</p>
                 <p>Le RESADMIN a transmis le résultat de l'investigation pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>

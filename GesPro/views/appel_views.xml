@@ -11,10 +11,6 @@
             <field name="arch" type="xml">
                 <form string="Appel à Concurrence">
                     <header>
-                        <button name="action_generate_lots" string="Générer les Lots" type="object"
-                                class="btn-primary"
-                                groups="GesPro.group_pm"
-                                invisible="show_generate_lots == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_ceo"
@@ -23,12 +19,8 @@
                                 class="btn-primary"
                                 groups="GesPro.group_pm,GesPro.group_resadmin"
                                 invisible="state != 'pret'"/>
-                        <button name="action_gagne" string="Gagné" type="object"
-                                class="btn-success"
-                                groups="GesPro.group_pm,GesPro.group_resadmin"
-                                invisible="state != 'soumis'"/>
-                        <button name="action_perdu" string="Perdu" type="object"
-                                class="btn-danger"
+                        <button name="action_open_resultat" string="📊 Résultat" type="object"
+                                class="btn-primary"
                                 groups="GesPro.group_pm,GesPro.group_resadmin"
                                 invisible="state != 'soumis'"/>
                         <button name="action_annuler" string="Annuler" type="object"
@@ -76,7 +68,15 @@
                                     </list>
                                 </field>
                             </page>
-
+                            <page string="Résultat" invisible="state not in ('gagne', 'perdu')">
+                                <group>
+                                    <field name="state" string="Statut final" widget="badge"
+                                        decoration-success="state == 'gagne'"
+                                        decoration-danger="state == 'perdu'"/>
+                                    <field name="resultat_capture" widget="image" class="oe_avatar"
+                                        invisible="not resultat_capture"/>
+                                </group>
+                            </page>
                             <page string="Checklists">
                                 <!-- Barres de progression (inchangées) -->
                                 <div class="row g-3 mb-4">

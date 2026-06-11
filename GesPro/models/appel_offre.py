@@ -23,25 +23,29 @@ class AppelOffre(models.Model):
 
     # ─── INFORMATIONS ───────────────────────────
     titre = fields.Char(string="Objet", required=True)
-    date_butoire = fields.Date(string="Date butoire", required=True)
+    date_butoire = fields.Date(string="Date limite de dépôt", required=True)
     garantie_soumission = fields.Float(string="Montant de la garantie de soumission")
     autorite_contractante = fields.Char(string="Nom de l'autorité contractante")
-    lots_count = fields.Integer(string="Nombre de lots", default=1)
+    lot_count = fields.Integer(string="Nombre de lots", default=1)
     ligne_de_credit = fields.Integer(string="Ligne de crédit associée")
     chiffre_affaire = fields.Char(string="Chiffre d'affaire sur tant d'année(s)")
     visite_site = fields.Date(string="Visite de site requise",required=False)
     ceo_comment = fields.Text(string="Commentaire du CEO", readonly=True)
+    frais_des_doosiers = fields.Integer(string="Frais des dossiers", default=0)
+    type_appel = fields.Selection([
+        ('unique', 'Lot unique'),
+        ('allotti', 'Alloti'),
+    ], string="Type", default='unique')
+
+
+    lot_ids = fields.One2many('gespro.lot', 'offre_id', string="Lots")
+
+    show_generate_lots = fields.Boolean(compute='_compute_show_generate_lots')
+
     
 
-    capture_ids = fields.Many2many(
-        'ir.attachment',
-        'gespro_offre_ir_attachments_rel',
-        'offre_id',
-        'attachment_id',
-        string="Captures d'écran",
-        help="Ajoutez des captures d'écran ou d'autres documents",
-        domain="[('res_model', '=', 'gespro.appel.offre')]"
-    )
+    capture = fields.Binary(string="Capture d'écran")
+    capture_filename = fields.Char(string="Ajoutez des captures d'écran ou d'autres documents")
 
     # ─── RELATIONS ──────────────────────────────
     annonce_id = fields.Many2one(
@@ -127,7 +131,6 @@ class AppelOffre(models.Model):
             if vals.get('name', 'Nouveau') == 'Nouveau':
                 vals['name'] = self.env['ir.sequence'].next_by_code('gespro.appel.offre')
         records = super().create(vals_list)
-        records._sync_attachments()
         template = self.env.ref('GesPro.mail_template_offre_creation', raise_if_not_found=False)
         if template:
             emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
@@ -272,23 +275,35 @@ class AppelOffre(models.Model):
     # --- Création d'un Appel à Concurrence (PM) ---
     def action_create_appel_concurrence(self):
         self.ensure_one()
+        
+        ac = self.env['gespro.appel'].create({
+            'offre_id': self.id,
+            'annonce_id': self.annonce_id.id,
+            'titre': self.titre,
+            'autorite_contractante': self.autorite_contractante,
+            'garantie_soumission': self.garantie_soumission,
+            'pm_id': self.pm_id.id,
+            'deadline': self.date_butoire,
+            'date_publication': fields.Date.today(),
+            'type_appel': self.type_appel,
+            'lot_count': self.lot_count,
+        })
+        
+        # Copier uniquement les lots
+        for offre_lot in self.lot_ids:
+            self.env['gespro.lot'].create({
+                'appel_id': ac.id,
+                'lot_num': offre_lot.lot_num,
+                'titre': offre_lot.titre,
+            })
+        
         return {
             'type': 'ir.actions.act_window',
-            'name': 'Créer un Appel à Concurrence',
+            'name': 'Appel à Concurrence',
             'res_model': 'gespro.appel',
             'view_mode': 'form',
+            'res_id': ac.id,
             'target': 'current',
-            'context': {
-                'default_offre_id': self.id,
-                'default_annonce_id': self.annonce_id.id,
-                'default_titre': self.titre,
-                'default_autorite_contractante': self.autorite_contractante,
-                'default_garantie_soumission': self.garantie_soumission,
-                'default_pm_id': self.pm_id.id,
-                'default_deadline': self.date_butoire,
-                'default_date_publication': fields.Date.today(),
-                'default_procedure': self.type_offre,
-            },
         }
     
 
@@ -334,3 +349,28 @@ class AppelOffre(models.Model):
         res = super().write(vals)
         self._sync_attachments()
         return res
+    
+
+    @api.depends('lot_ids')
+    def _compute_show_generate_lots(self):
+        for record in self:
+            record.show_generate_lots = not record.lot_ids
+
+
+    def action_generate_lots(self):
+        self.ensure_one()
+        self.lot_ids.unlink()
+        if self.type_appel == 'unique':
+            self.env['gespro.lot'].create({
+                'offre_id': self.id,
+                'lot_num': 1,
+                'titre': self.titre or 'Lot unique',
+            })
+        else:
+            for i in range(1, self.lot_count + 1):
+                self.env['gespro.lot'].create({
+                    'offre_id': self.id,
+                    'lot_num': i,
+                    'titre': f'Lot {i}',
+                })
+        self.message_post(body="✅ Lots générés avec succès.")
