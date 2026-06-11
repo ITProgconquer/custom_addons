@@ -39,9 +39,19 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Investigation demandée : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour <t t-out="object.pm_id.name"/>,</p>
-                <p>Le CEO demande une investigation sur l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
-                <p>Merci d'analyser le dossier.</p>
+                <t t-set="pm_name" t-value="object.pm_id.name if object.pm_id else 'Utilisateur'"/>
+                <t t-set="offer_name" t-value="object.name or 'N/A'"/>
+                <div>
+                    <p>Bonjour <t t-out="pm_name"/>,</p>
+                    <p>Le CEO demande une investigation sur l'Appel d'offre <strong><t t-out="offer_name"/></strong>.</p>
+                    <t t-if="object.ceo_comment">
+                        <p><strong>Instructions du CEO :</strong></p>
+                        <div style="white-space: pre-line;">
+                            <t t-esc="object.ceo_comment"/>
+                        </div>
+                    </t>
+                    <p>Merci d'analyser le dossier.</p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>

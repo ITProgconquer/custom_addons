@@ -55,3 +55,8 @@ access_depouillement_pm,depouillement.pm,model_gespro_depouillement,group_pm,1,1
 access_depouillement_resadmin,depouillement.resadmin,model_gespro_depouillement,group_resadmin,1,1,1,1
 access_depouillement_tech,depouillement.tech,model_gespro_depouillement,group_tech,1,0,0,0
 access_depouillement_fin,depouillement.fin,model_gespro_depouillement,group_fin,1,0,0,0
+access_investigation_wizard_ceo,wizard.investigation.ceo,model_gespro_appel_offre_investigation_wizard,group_ceo,1,1,1,1
+access_investigation_wizard_pm,wizard.investigation.pm,model_gespro_appel_offre_investigation_wizard,group_pm,1,0,0,0
+access_investigation_wizard_resadmin,wizard.investigation.resadmin,model_gespro_appel_offre_investigation_wizard,group_resadmin,1,0,0,0
+access_investigation_wizard_tech,wizard.investigation.tech,model_gespro_appel_offre_investigation_wizard,group_tech,1,0,0,0
+access_investigation_wizard_fin,wizard.investigation.fin,model_gespro_appel_offre_investigation_wizard,group_fin,1,0,0,0
