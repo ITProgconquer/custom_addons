@@ -106,42 +106,6 @@ body {
 }
 
 // --- Branding GESPRO (logo image) ---
-// .o_main_navbar .o_menu_brand {
-//   background: var(--gespro-black) !important;
-//   padding: 8px 20px !important;
-//   border-radius: 0 var(--gespro-radius) var(--gespro-radius) 0 !important;
-//   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
-//   transition: background 0.2s ease !important;
-//   margin-right: 8px;
-//   /* Cache le texte et affiche l'image en fond */
-//   font-size: 0 !important;               // supprime la taille du texte
-//   color: transparent !important; 
-//   background-image: url('/GesPro/static/src/img/pg_ogo.png') !important;        // rend le texte invisible
-//   background-size: contain;
-//   background-repeat: no-repeat;
-//   background-position: center;                         // ajuste selon la hauteur de ton logo
-// }
-
-
-// --- Branding GESPRO (logo image) ---
-// .o_main_navbar .o_menu_brand {
-//   background: var(--gespro-black) !important;
-//   padding: 8px 20px !important;
-//   border-radius: 0 var(--gespro-radius) var(--gespro-radius) 0 !important;
-//   box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
-//   transition: background 0.2s ease !important;
-//   margin-right: 8px;
-//   /* Cache le texte et affiche l'image en fond */
-//   font-size: 0 !important;               // supprime la taille du texte
-//   color: transparent !important;         // rend le texte invisible
-//   background-image: url('/GesPro/static/src/img/lol.png') !important;
-//   background-size: contain;
-//   background-repeat: no-repeat;
-//   background-position: center;
-//   width: 140px;                          // ajuste selon la largeur de ton logo
-//   height: 40px;                          // ajuste selon la hauteur de ton logo
-// }
-
 .o_main_navbar .o_menu_brand {
     width: 96px !important;
     height: 48px !important;
