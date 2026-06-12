@@ -19,3 +19,5 @@ class ResultatWizard(models.TransientModel):
             'resultat_capture': self.capture,
             'resultat_filename': self.capture_filename,
         })
+        self.appel_id.message_post(body=f"📊 Résultat : {'🎉 Gagné' if self.resultat == 'gagne' else '😞 Perdu'}")
+        return {'type': 'ir.actions.act_window_close'}

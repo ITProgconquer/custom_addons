@@ -7,7 +7,7 @@
                 <sheet>
                     <group>
                         <field name="appel_id" invisible="1"/>
-                        <field name="lot_id" widget="many2many_tags"/>
+                        <field name="lot_id"/>
                         <field name="ordre"/>
                         <field name="soumissionnaires"/>
                         <field name="montant_min_ttc"/>

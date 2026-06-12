@@ -45,8 +45,13 @@ class Appel(models.Model):
     date_publication = fields.Date(string="Date de publication", required=True)
     deadline = fields.Date(string="Date limite", required=True)
 
-    resultat_capture = fields.Binary(string="Capture du résultat")
-    resultat_filename = fields.Char(string="Nom du fichier")
+    resultat_attachment_ids = fields.Many2many(
+        'ir.attachment',
+        'gespro_appel_resultat_rel',
+        'appel_id',
+        'attachment_id',
+        string="Captures du résultat"
+    )
 
     delai_restant = fields.Integer(
         string="Délai restant (jours)",
@@ -376,10 +381,20 @@ class Appel(models.Model):
                 appel.write({'last_alert_sent': today})
 
 
+    def _sync_attachments(self):
+        for record in self:
+            if record.resultat_attachment_ids:
+                record.resultat_attachment_ids.write({
+                    'res_model': 'gespro.appel',
+                    'res_id': record.id,
+                })
+
+                
     def write(self, vals):
         user = self.env.user
         # Le CEO et le PM ne sont pas limités
         if user.has_group('GesPro.group_ceo') or user.has_group('GesPro.group_pm'):
+            self._sync_attachments()
             return super().write(vals)
         if user.has_group('GesPro.group_tech') or user.has_group('GesPro.group_fin'):
             allowed_fields = ['checklist_tech_ids', 'checklist_admin_ids', 'checklist_fin_ids']
@@ -391,7 +406,9 @@ class Appel(models.Model):
             for field in vals:
                 if field not in allowed_fields:
                     raise AccessError("Vous ne pouvez modifier que le statut et les checklists.")
-        return super().write(vals)
+        res = super().write(vals)
+        self._sync_attachments()
+        return res
 
     @api.depends('lot_ids', 'checklist_ids')
     def _compute_show_buttons(self):
@@ -407,18 +424,10 @@ class Appel(models.Model):
         for appel in appels:
             appel._compute_delai_restant()
 
-    
-    def action_open_resultat(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': 'Enregistrer le résultat',
-            'res_model': 'gespro.resultat.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {'default_appel_id': self.id},
-        }
 
+    
+    
+    
 
     
 

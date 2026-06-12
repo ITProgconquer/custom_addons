@@ -282,6 +282,7 @@ class AppelOffre(models.Model):
             'date_publication': fields.Date.today(),
             'type_appel': self.type_appel,
             'lot_count': self.lot_count,
+            'procedure': self.type_offre,  
         })
         
         # Copier uniquement les lots
