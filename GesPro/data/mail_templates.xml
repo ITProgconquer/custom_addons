@@ -28,6 +28,11 @@
                 <p>L'Appel d'offre <strong><t t-out="object.name"/></strong> a été créé.</p>
                 <p><strong>Titre :</strong> <t t-out="object.titre"/><br/><strong>Date butoir :</strong> <t t-out="object.date_butoire"/></p>
                 <p>PM responsable : <t t-out="object.pm_id.name"/></p>
+               <a t-att-href="object.get_base_url() + '/web#id=' + str(object.id) + '&amp;model=gespro.appel.offre&amp;view_type=form'"
+                    style="display: inline-block; padding: 12px 24px; background: #c62828; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                    🔗 Accéder à l'offre
+                </a>
+
             </field>
             <field name="email_to" eval="''"/>
         </record>

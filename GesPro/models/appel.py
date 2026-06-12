@@ -424,6 +424,11 @@ class Appel(models.Model):
         for appel in appels:
             appel._compute_delai_restant()
 
+    
+    def get_base_url(self):
+        """Retourne l'URL de base d'Odoo"""
+        return self.env['ir.config_parameter'].sudo().get_param('web.base.url')
+
 
     
     

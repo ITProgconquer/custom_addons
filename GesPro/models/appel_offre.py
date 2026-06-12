@@ -113,6 +113,8 @@ class AppelOffre(models.Model):
 
     name = fields.Char(string="Référence", readonly=True, copy=False)
 
+    # ─── COMPUTE ───────────────────────────────
+
     @api.depends('state', 'payment_ids.state')
     def _compute_show_create_ac(self):
         for record in self:
