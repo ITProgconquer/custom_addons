@@ -107,19 +107,36 @@ body {
 
 // --- Branding GESPRO (logo image) ---
 .o_main_navbar .o_menu_brand {
-  background: var(--gespro-black) !important;
-  padding: 8px 20px !important;
-  border-radius: 0 var(--gespro-radius) var(--gespro-radius) 0 !important;
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
-  transition: background 0.2s ease !important;
-  margin-right: 8px;
-  /* Cache le texte et affiche l'image en fond */
-  font-size: 0 !important;               // supprime la taille du texte
-  color: transparent !important;         // rend le texte invisible
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center;                         // ajuste selon la hauteur de ton logo
+    width: 96px !important;
+    height: 48px !important;
+    min-width: 120px !important;
+    max-width: 120px !important;
+
+    padding: 0 !important;
+    margin-right: 8px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+
+    background-color: var(--gespro-black) !important;
+    background-image: url('/GesPro/static/src/img/logo.png') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: 124px 48px !important;
+
+    border-radius: 0 var(--gespro-radius) var(--gespro-radius) 0 !important;
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08) !important;
+    transition: background 0.2s ease !important;
+
+    font-size: 0 !important;
+    color: transparent !important;
+    text-indent: -9999px !important;
+    white-space: nowrap !important;
 }
+
+
 .o_main_navbar .o_menu_brand:hover {
   background: var(--gespro-black) !important;
   opacity: 0.9;

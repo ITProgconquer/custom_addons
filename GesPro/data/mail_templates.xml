@@ -24,15 +24,19 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Nouvel Appel d'offre : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>L'Appel d'offre <strong><t t-out="object.name"/></strong> a été créé.</p>
-                <p><strong>Titre :</strong> <t t-out="object.titre"/><br/><strong>Date butoir :</strong> <t t-out="object.date_butoire"/></p>
-                <p>PM responsable : <t t-out="object.pm_id.name"/></p>
-               <a t-att-href="object.get_base_url() + '/web#id=' + str(object.id) + '&amp;model=gespro.appel.offre&amp;view_type=form'"
-                    style="display: inline-block; padding: 12px 24px; background: #c62828; color: white; text-decoration: none; border-radius: 8px; font-weight: bold;">
-                    🔗 Accéder à l'offre
-                </a>
-
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel.offre&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>L'Appel d'offre <strong><t t-out="object.name"/></strong> a été créé.</p>
+                    <p><strong>Titre :</strong> <t t-out="object.titre"/><br/><strong>Date butoir :</strong> <t t-out="object.date_butoire"/></p>
+                    <p>PM responsable : <t t-out="object.pm_id.name"/></p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel d'offre
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -46,6 +50,8 @@
             <field name="body_html" type="html">
                 <t t-set="pm_name" t-value="object.pm_id.name if object.pm_id else 'Utilisateur'"/>
                 <t t-set="offer_name" t-value="object.name or 'N/A'"/>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel.offre&amp;view_type=form' % object.id"/>
                 <div>
                     <p>Bonjour <t t-out="pm_name"/>,</p>
                     <p>Le CEO demande une investigation sur l'Appel d'offre <strong><t t-out="offer_name"/></strong>.</p>
@@ -56,6 +62,11 @@
                         </div>
                     </t>
                     <p>Merci d'analyser le dossier.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Accéder à l'Appel d'offre
+                        </a>
+                    </p>
                 </div>
             </field>
             <field name="email_to" eval="''"/>
@@ -68,10 +79,19 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] GO donné : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Le CEO a donné son <strong>GO</strong> pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
-                <p>PM : <t t-out="object.pm_id.name"/><br/>Date butoir : <t t-out="object.date_butoire"/></p>
-                <p>Vous pouvez désormais préparer les Appels à Concurrence.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel.offre&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Le CEO a donné son <strong>GO</strong> pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
+                    <p>PM : <t t-out="object.pm_id.name"/><br/>Date butoir : <t t-out="object.date_butoire"/></p>
+                    <p>Vous pouvez désormais préparer les Appels à Concurrence.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Accéder à l'Appel d'offre
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -83,23 +103,41 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] NO GO : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Le CEO a refusé l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
-                <p>Statut : NO GO.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel.offre&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Le CEO a refusé l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
+                    <p>Statut : NO GO.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel d'offre
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
 
-        <!-- 6 - Paiement confirmé (sur le modèle offre pour accéder au paiement) -->
+        <!-- 6 - Paiement confirmé -->
         <record id="mail_template_payment_confirmed" model="mail.template">
             <field name="name">Paiement confirmé</field>
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Paiement validé : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Le paiement de <t t-out="object.payment_ids[-1].amount"/> <t t-out="object.payment_ids[-1].currency_id.name"/> pour l'Appel d'offre <strong><t t-out="object.name"/></strong> a été confirmé.</p>
-                <p>Vous pouvez maintenant créer les Appels à Concurrence.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel.offre&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Le paiement de <t t-out="object.payment_ids[-1].amount"/> <t t-out="object.payment_ids[-1].currency_id.name"/> pour l'Appel d'offre <strong><t t-out="object.name"/></strong> a été confirmé.</p>
+                    <p>Vous pouvez maintenant créer les Appels à Concurrence.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel d'offre
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -111,10 +149,19 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Nouvel AC : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Un nouvel Appel à Concurrence a été créé.</p>
-                <p><strong>Référence :</strong> <t t-out="object.name"/><br/><strong>Titre :</strong> <t t-out="object.titre"/><br/><strong>Date limite :</strong> <t t-out="object.deadline"/></p>
-                <p>Procédure : <t t-out="object.procedure"/></p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Un nouvel Appel à Concurrence a été créé.</p>
+                    <p><strong>Référence :</strong> <t t-out="object.name"/><br/><strong>Titre :</strong> <t t-out="object.titre"/><br/><strong>Date limite :</strong> <t t-out="object.deadline"/></p>
+                    <p>Procédure : <t t-out="object.procedure"/></p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -126,9 +173,18 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Dossier prêt : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Le dossier <strong><t t-out="object.name"/></strong> a été validé par le CEO et est prêt à soumettre.</p>
-                <p>Progression : <t t-out="object.progression_generale"/>%</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Le dossier <strong><t t-out="object.name"/></strong> a été validé par le CEO et est prêt à soumettre.</p>
+                    <p>Progression : <t t-out="object.progression_generale"/>%</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -140,10 +196,19 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Soumission envoyée : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> a été soumis.</p>
-                <p>Date limite : <t t-out="object.deadline"/></p>
-                <p>Nous attendons le résultat.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> a été soumis.</p>
+                    <p>Date limite : <t t-out="object.deadline"/></p>
+                    <p>Nous attendons le résultat.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -155,9 +220,18 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Félicitations ! {{ object.name }} GAGNÉ</field>
             <field name="body_html" type="html">
-                <p>🎉 Bonjour,</p>
-                <p>Nous avons remporté l'Appel à Concurrence <strong><t t-out="object.name"/></strong> !</p>
-                <p>Félicitations à toute l'équipe.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>🎉 Bonjour,</p>
+                    <p>Nous avons remporté l'Appel à Concurrence <strong><t t-out="object.name"/></strong> !</p>
+                    <p>Félicitations à toute l'équipe.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -169,9 +243,18 @@
             <field name="email_from">{{ user.email }}</field>
             <field name="subject">[GESPRO] Résultat : {{ object.name }} perdu</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> n'a pas été retenu.</p>
-                <p>Merci pour votre travail.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> n'a pas été retenu.</p>
+                    <p>Merci pour votre travail.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -182,10 +265,19 @@
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="subject">[J-5] Deadline approche : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> arrive à échéance dans 5 jours.</p>
-                <p>Date limite : <t t-out="object.deadline"/></p>
-                <p>Merci de finaliser le dossier.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>L'Appel à Concurrence <strong><t t-out="object.name"/></strong> arrive à échéance dans 5 jours.</p>
+                    <p>Date limite : <t t-out="object.deadline"/></p>
+                    <p>Merci de finaliser le dossier.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -196,10 +288,19 @@
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="subject">[J-2] URGENT : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>⚠️ Attention,</p>
-                <p>L'Appel <strong><t t-out="object.name"/></strong> expire dans 2 jours.</p>
-                <p>Date limite : <t t-out="object.deadline"/></p>
-                <p>Validation CEO obligatoire.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>⚠️ Attention,</p>
+                    <p>L'Appel <strong><t t-out="object.name"/></strong> expire dans 2 jours.</p>
+                    <p>Date limite : <t t-out="object.deadline"/></p>
+                    <p>Validation CEO obligatoire.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -210,9 +311,18 @@
             <field name="model_id" ref="model_gespro_appel"/>
             <field name="subject">[GESPRO] Dépouillement terminé : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Le dépouillement de l'Appel à Concurrence <strong><t t-out="object.name"/></strong> est terminé.</p>
-                <p>Consultez les résultats.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Le dépouillement de l'Appel à Concurrence <strong><t t-out="object.name"/></strong> est terminé.</p>
+                    <p>Consultez les résultats.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'Appel à Concurrence
+                        </a>
+                    </p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
@@ -224,9 +334,18 @@
             <field name="model_id" ref="model_gespro_appel_offre"/>
             <field name="subject">[GESPRO] Résultat d'investigation : {{ object.name }}</field>
             <field name="body_html" type="html">
-                <p>Bonjour,</p>
-                <p>Le RESADMIN a transmis le résultat de l'investigation pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
-                <p>Consultez les documents joints dans GESPRO.</p>
+                <t t-set="base_url" t-value="object.get_base_url()"/>
+                <t t-set="record_url" t-value="base_url + '/web#id=%s&amp;model=gespro.appel.offre&amp;view_type=form' % object.id"/>
+                <div>
+                    <p>Bonjour,</p>
+                    <p>Le RESADMIN a transmis le résultat de l'investigation pour l'Appel d'offre <strong><t t-out="object.name"/></strong>.</p>
+                    <p>
+                        <a t-att-href="record_url" style="color: #c62828; font-weight: bold;">
+                            Voir l'investigation
+                        </a>
+                    </p>
+                    <p>Consultez également les documents joints dans GESPRO.</p>
+                </div>
             </field>
             <field name="email_to" eval="''"/>
         </record>
