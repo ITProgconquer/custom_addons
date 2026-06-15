@@ -11,10 +11,6 @@
             <field name="arch" type="xml">
                 <form string="Appel à Concurrence">
                     <header>
-                        <button name="action_generate_lots" string="Générer les Lots" type="object"
-                                class="btn-primary"
-                                groups="GesPro.group_pm"
-                                invisible="show_generate_lots == False"/>
                         <button name="action_valider" string="Valider (Final)" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_ceo"
@@ -23,7 +19,7 @@
                                 class="btn-primary"
                                 groups="GesPro.group_pm,GesPro.group_resadmin"
                                 invisible="state != 'pret'"/>
-                        <button name="action_gagne" string="Gagné" type="object"
+                         <button name="action_gagne" string="Gagné" type="object"
                                 class="btn-success"
                                 groups="GesPro.group_pm,GesPro.group_resadmin"
                                 invisible="state != 'soumis'"/>
@@ -75,6 +71,15 @@
                                                 class="btn btn-sm btn-primary"/>
                                     </list>
                                 </field>
+                            </page>
+                            
+                            <page string="Résultat" invisible="state not in ('gagne', 'perdu')">
+                                <group>
+                                    <field name="state" string="Statut final" widget="badge"
+                                        decoration-success="state == 'gagne'"
+                                        decoration-danger="state == 'perdu'"/>
+                                    <field name="resultat_attachment_ids" widget="many2many_binary" string="Captures"/>
+                                </group>
                             </page>
 
                             <page string="Checklists">

@@ -16,9 +16,9 @@ class Lot(models.Model):
     appel_id = fields.Many2one(
         'gespro.appel',
         string="Appel à Concurrence",
-        required=True,
         ondelete='cascade'
     )
+    offre_id = fields.Many2one('gespro.appel.offre', string="Appel d'offre", ondelete='cascade')
 
     lot_num = fields.Integer(string="N° du lot", required=True)
 
