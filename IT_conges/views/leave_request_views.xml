@@ -1,0 +1,110 @@
+<odoo>
+    <data>
+        <record id="view_leave_request_form" model="ir.ui.view">
+            <field name="name">hr.leave.request.form</field>
+            <field name="model">hr.leave.request</field>
+            <field name="arch" type="xml">
+                <form string="Demande de Congé">
+                    <header>
+                        <button name="action_submit" string="Soumettre" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_manager_approve" string="Approuver (Manager)" type="object" class="btn-success" groups="hr.group_hr_manager" invisible="state != 'manager'"/>
+                        <button name="action_hr_approve" string="Approuver (RH)" type="object" class="btn-success" groups="hr.group_hr_manager" invisible="state != 'hr'"/>
+                        <button name="action_refuse" string="Refuser" type="object" class="btn-danger" groups="hr.group_hr_manager" invisible="state not in ('manager', 'hr')"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <field name="employee_id" required="1"/>
+                            <field name="type_conge" required="1"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="imputation" widget="radio"/>
+                            <field name="days_requested" readonly="1"/>
+                        </group>
+                        <group string="Solde">
+                            <field name="remaining_days" widget="badge" 
+                                decoration-danger="solde_color == 'danger'"
+                                decoration-warning="solde_color == 'warning'"
+                                decoration-success="solde_color == 'success'"/>
+                        </group>
+                        <field name="note"/>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_leave_request_calendar" model="ir.ui.view">
+            <field name="name">hr.leave.request.calendar</field>
+            <field name="model">hr.leave.request</field>
+            <field name="arch" type="xml">
+                <calendar string="Congés" date_start="date_from" date_stop="date_to" color="employee_id">
+                    <field name="employee_id"/>
+                    <field name="type_conge"/>
+                </calendar>
+            </field>
+        </record>
+
+        <record id="view_leave_request_tree" model="ir.ui.view">
+            <field name="name">hr.leave.request.tree</field>
+            <field name="model">hr.leave.request</field>
+           <field name="arch" type="xml">
+            <list string="Demandes de Congés">
+                <field name="employee_id"/>
+                <field name="type_conge" widget="badge"/>
+                <field name="note"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="days_requested"/>
+                <!-- <field name="remaining_days" widget="badge"
+                    decoration-danger="remaining_days &lt;= 5"
+                    decoration-warning="remaining_days &lt;= 10 and remaining_days &gt; 5"
+                    decoration-success="remaining_days &gt; 10"/> -->
+                <field name="state" widget="badge"/>
+            </list>
+        </field>
+        </record>
+
+        <record id="view_leave_request_kanban" model="ir.ui.view">
+            <field name="name">hr.leave.request.kanban</field>
+            <field name="model">hr.leave.request</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content">
+                                    <h3><field name="employee_id"/></h3>
+                                    <div><field name="date_from"/> → <field name="date_to"/></div>
+                                    <div><field name="days_requested"/> jour(s)</div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <record id="view_leave_request_search" model="ir.ui.view">
+            <field name="name">hr.leave.request.search</field>
+            <field name="model">hr.leave.request</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="employee_id"/>
+                    <field name="type_conge"/>
+                    <filter name="group_employee" string="Par Employé" context="{'group_by': 'employee_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_leave_request" model="ir.actions.act_window">
+            <field name="name">Demandes de Congés</field>
+            <field name="res_model">hr.leave.request</field>
+            <field name="view_mode">list,form,calendar</field>
+            <field name="context">{'search_default_group_employee': 1}</field>
+        </record>
+    </data>
+</odoo>

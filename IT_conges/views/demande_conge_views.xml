@@ -1,0 +1,53 @@
+<odoo>
+    <data>
+        <record id="view_demande_conge_form" model="ir.ui.view">
+            <field name="name">gespro.demande.conge.form</field>
+            <field name="model">gespro.demande.conge</field>
+            <field name="arch" type="xml">
+                <form string="Demande de Congé">
+                    <header>
+                        <button name="action_soumettre" string="Soumettre" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                        <button name="action_approuver" string="Approuver" type="object" class="btn-success" groups="IT_conges.group_conge_manager" invisible="state != 'soumis'"/>
+                        <button name="action_refuser" string="Refuser" type="object" class="btn-danger" groups="IT_conges.group_conge_manager" invisible="state != 'soumis'"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="date_demande" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="nb_jours" readonly="1"/>
+                        </group>
+                        <field name="motif"/>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_demande_conge_list" model="ir.ui.view">
+            <field name="name">gespro.demande.conge.list</field>
+            <field name="model">gespro.demande.conge</field>
+            <field name="arch" type="xml">
+                <list string="Demandes de Congés">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="date_debut"/>
+                    <field name="date_fin"/>
+                    <field name="nb_jours"/>
+                    <field name="state" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_demande_conge" model="ir.actions.act_window">
+            <field name="name">Demandes de Congés</field>
+            <field name="res_model">gespro.demande.conge</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>

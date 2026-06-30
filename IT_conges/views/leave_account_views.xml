@@ -1,0 +1,122 @@
+<odoo>
+    <data>
+        <record id="view_leave_account_form" model="ir.ui.view">
+            <field name="name">hr.leave.account.form</field>
+            <field name="model">hr.leave.account</field>
+            <field name="arch" type="xml">
+                <form string="Compte Congés">
+                    <sheet>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="year"/>
+                            <field name="policy_id"/>
+                            <field name="status"/>
+                        </group>
+                        <group string="Soldes">
+                            <field name="annual_quota"/>
+                            <field name="carried_forward"/>
+                            <field name="acquired_days"/>
+                            <field name="used_days"/>
+                            <field name="remaining_days" widget="badge"
+                                decoration-danger="remaining_days &lt;= 5"
+                                decoration-warning="remaining_days &lt;= 10"
+                                decoration-success="remaining_days&lt;=  30"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_leave_account_tree" model="ir.ui.view">
+            <field name="name">hr.leave.account.tree</field>
+            <field name="model">hr.leave.account</field>
+            <field name="arch" type="xml">
+                <list string="Comptes Congés">
+                    <field name="employee_id"/>
+                    <field name="year"/>
+                    <field name="annual_quota"/>
+                    <field name="used_days"/>
+                    <field name="remaining_days"/>
+                    <field name="status" widget="badge"/>
+                    <field name="absence_quota"/>
+                    <field name="absence_used"/>
+                    <field name="absence_remaining" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="view_leave_account_kanban" model="ir.ui.view">
+                <field name="name">hr.leave.account.kanban</field>
+                <field name="model">hr.leave.account</field>
+                <field name="arch" type="xml">
+                    <kanban class="o_kanban_mobile">
+                        <field name="employee_id"/>
+                        <field name="remaining_days"/>
+                        <field name="used_days"/>
+                        <field name="annual_quota"/>
+                        <field name="nb_demandes"/>
+                        <field name="nb_annuel"/>
+                        <field name="nb_maladie"/>
+                        <field name="status_employe"/>
+                        <templates>
+                            <t t-name="kanban-box">
+                                <div class="oe_kanban_card">
+                                    <div class="oe_kanban_content p-3">
+                                        <h4><field name="employee_id"/></h4>
+                                        <field name="status_employe" widget="badge"
+                                            decoration-success="status_employe == 'en_conge'"
+                                            decoration-danger="status_employe == 'absence'"
+                                            decoration-info="status_employe == 'actif'"/>
+                                        
+                                        <div class="d-flex justify-content-around text-center my-3">
+                                            <div class="flex-fill">
+                                                <h3 t-att-class="'fw-bold fs-3 ' + (record.remaining_days.raw_value &lt;= 5 ? 'text-danger' : record.remaining_days.raw_value &lt;= 10 ? 'text-warning' : 'text-success')">
+                                                    <field name="remaining_days"/>
+                                                </h3>
+                                                <small class="text-muted">Jours restants</small>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <h3 t-att-class="'fw-bold fs-3 ' + (record.used_days.raw_value >= 20 ? 'text-danger' : record.used_days.raw_value >= 10 ? 'text-warning' : 'text-primary')">
+                                                    <field name="used_days"/>
+                                                </h3>
+                                                <small class="text-muted">Jours utilisés</small>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <h3 class="fw-bold fs-3 text-success">
+                                                    <field name="annual_quota"/>
+                                                </h3>
+                                                <small class="text-muted">Quota annuel</small>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex justify-content-around text-center my-2">
+                                            <div class="flex-fill">
+                                                <h4 class="fw-bold text-muted"><field name="absence_remaining"/></h4>
+                                                <small>Abs. restantes</small>
+                                            </div>
+                                            <div class="flex-fill">
+                                                <h4 class="fw-bold text-muted"><field name="absence_used"/></h4>
+                                                <small>Abs. utilisées</small>
+                                            </div>
+                                        </div>
+
+                                        
+                                        <div class="d-flex justify-content-between text-muted small border-top pt-2">
+                                            <span>📊 <field name="nb_demandes"/> demandes</span>
+                                            <span>🏖️ <field name="nb_annuel"/> annuel</span>
+                                            <span>🤒 <field name="nb_maladie"/> maladie</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </t>
+                        </templates>
+                    </kanban>
+                </field>
+            </record>
+
+        <record id="action_leave_account" model="ir.actions.act_window">
+            <field name="name">Comptes Congés</field>
+            <field name="res_model">hr.leave.account</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+    </data>
+</odoo>

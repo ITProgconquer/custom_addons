@@ -1,0 +1,10 @@
+<odoo>
+    <data>
+        <record id="seq_leave_request" model="ir.sequence">
+            <field name="name">Demande Congé</field>
+            <field name="code">hr.leave.request</field>
+            <field name="prefix">LEAVE/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+    </data>
+</odoo>

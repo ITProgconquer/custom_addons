@@ -1,0 +1,11 @@
+<odoo>
+    <data>
+        <menuitem id="menu_hr_leave_root" name="Congés RH" sequence="80" web_icon="IT_conges,static/description/icon.png"/>
+
+        <menuitem id="menu_leave_request" name="Demandes de Congés" parent="menu_hr_leave_root" action="action_leave_request" sequence="20"/>
+
+        <menuitem id="menu_leave_account" name="Comptes Congés" parent="menu_hr_leave_root" action="action_leave_account" sequence="10"/>
+
+        <menuitem id="menu_leave_policy" name="Politiques" parent="menu_hr_leave_root" action="action_leave_policy" sequence="30"/>
+    </data>
+</odoo>

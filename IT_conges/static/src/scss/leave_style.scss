@@ -1,0 +1,15 @@
+// Kanban Demandes de Congés
+.o_kanban_view .oe_kanban_card {
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
+    transition: transform 0.2s ease !important;
+}
+
+.o_kanban_view .oe_kanban_card:hover {
+    transform: translateY(-2px) !important;
+}
+
+// Badges colorés
+.o_kanban_view .badge-danger { background: #ffebee !important; color: #c62828 !important; font-weight: 600 !important; }
+.o_kanban_view .badge-warning { background: #fff3e0 !important; color: #e65100 !important; font-weight: 600 !important; }
+.o_kanban_view .badge-success { background: #e8f5e9 !important; color: #2e7d32 !important; font-weight: 600 !important; }

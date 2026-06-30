@@ -1,0 +1,23 @@
+<odoo>
+    <data>
+        <record id="cron_annual_leave" model="ir.cron">
+            <field name="name">HR Leave : Allocation annuelle</field>
+            <field name="model_id" ref="model_hr_leave_account"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_allocate_annual()</field>
+            <field name="interval_number">365</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+
+        <record id="cron_update_status" model="ir.cron">
+            <field name="name">HR Leave : Mise à jour quotidienne des statuts</field>
+            <field name="model_id" ref="model_hr_leave_account"/>
+            <field name="state">code</field>
+            <field name="code">model.cron_update_leave_status()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">days</field>
+            <field name="active" eval="True"/>
+        </record>
+    </data>
+</odoo>

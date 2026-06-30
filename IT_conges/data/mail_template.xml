@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="mail_leave_submitted" model="mail.template">
+            <field name="name">Congé soumis</field>
+            <field name="model_id" ref="model_hr_leave_request"/>
+            <field name="subject">[Congés] Demande soumise : ${object.name}</field>
+            <field name="body_html" type="html">
+                <p>Bonjour,</p>
+                <p>La demande de congé <strong>${object.name}</strong> a été soumise.</p>
+                <p>Employé : ${object.employee_id.name}</p>
+                <p>Dates : ${object.date_from} → ${object.date_to}</p>
+            </field>
+        </record>
+
+        <record id="mail_leave_approved" model="mail.template">
+            <field name="name">Congé approuvé</field>
+            <field name="model_id" ref="model_hr_leave_request"/>
+            <field name="subject">[Congés] Demande approuvée : ${object.name}</field>
+            <field name="body_html" type="html">
+                <p>Bonjour ${object.employee_id.name},</p>
+                <p>Votre demande de congé a été approuvée.</p>
+                <p>Dates : ${object.date_from} → ${object.date_to}</p>
+            </field>
+        </record>
+    </data>
+</odoo>

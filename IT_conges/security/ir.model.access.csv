@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_leave_policy_rh,policy.rh,model_hr_leave_policy,group_conge_rh,1,1,1,1
+access_leave_account_employe,account.emp,model_hr_leave_account,group_conge_employe,1,0,0,0
+access_leave_account_rh,account.rh,model_hr_leave_account,group_conge_rh,1,1,1,1
+access_leave_request_employe,req.emp,model_hr_leave_request,group_conge_employe,1,1,1,0
+access_leave_request_manager,req.mgr,model_hr_leave_request,group_conge_manager,1,1,1,0
+access_leave_request_rh,req.rh,model_hr_leave_request,group_conge_rh,1,1,1,1

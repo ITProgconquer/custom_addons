@@ -1,0 +1,35 @@
+<odoo>
+    <data>
+        <record id="view_quota_conge_form" model="ir.ui.view">
+            <field name="name">gespro.quota.conge.form</field>
+            <field name="model">gespro.quota.conge</field>
+            <field name="arch" type="xml">
+                <form string="Quota de Congés">
+                    <sheet>
+                        <group>
+                            <field name="annee"/>
+                            <field name="nb_jours_total"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="view_quota_conge_list" model="ir.ui.view">
+            <field name="name">gespro.quota.conge.list</field>
+            <field name="model">gespro.quota.conge</field>
+            <field name="arch" type="xml">
+                <list string="Quotas de Congés">
+                    <field name="annee"/>
+                    <field name="nb_jours_total"/>
+                </list>
+            </field>
+        </record>
+
+        <record id="action_quota_conge" model="ir.actions.act_window">
+            <field name="name">Quotas de Congés</field>
+            <field name="res_model">gespro.quota.conge</field>
+            <field name="view_mode">list,form</field>
+        </record>
+    </data>
+</odoo>
