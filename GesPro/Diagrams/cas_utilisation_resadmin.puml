@@ -1,0 +1,24 @@
+@startuml
+left to right direction
+actor RESADMIN
+
+usecase "Enregistrer un paiement" as UC_Enregistrer_Paiement
+usecase "Ajouter un dépouillement" as UC_Ajouter_Depouillement
+usecase "Remplir checklists admin" as UC_Checklist_Admin
+usecase "Soumettre un AC" as UC_Soumettre_AC
+usecase "Marquer AC gagné/perdu" as UC_Resultat_AC
+usecase "Consulter les dashboards" as UC_Dashboard
+
+usecase "Vérifier que l'offre est en GO" as UC_Verifier_GO
+usecase "Vérifier checklists complètes" as UC_Verifier_Checklists
+
+RESADMIN --> UC_Enregistrer_Paiement
+RESADMIN --> UC_Ajouter_Depouillement
+RESADMIN --> UC_Checklist_Admin
+RESADMIN --> UC_Soumettre_AC
+RESADMIN --> UC_Resultat_AC
+RESADMIN --> UC_Dashboard
+
+UC_Ajouter_Depouillement ..> UC_Verifier_GO : <<include>>
+UC_Soumettre_AC ..> UC_Verifier_Checklists : <<include>>
+@enduml

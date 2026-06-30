@@ -70,6 +70,7 @@
     # Wizard
     'wizard/ignore_wizard_views.xml',
     'wizard/investigation_wizard_views.xml',
+    'wizard/annuler_appel_wizard_views.xml',
 
     # Rapports
     'reports/ao_report.xml',

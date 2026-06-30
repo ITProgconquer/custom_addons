@@ -1,0 +1,43 @@
+@startuml
+title Diagramme de déploiement - Architecture technique de GESPRO
+
+actor "Utilisateur\n(CEO, PM, TECH, FIN, RESADMIN)" as User
+
+node "Poste de travail (WSL2 Ubuntu)" {
+  node "Navigateur Web" as Browser {
+    component "Interface Odoo\n(HTML, SCSS, JavaScript Owl)" as Frontend
+  }
+}
+
+node "Serveur Odoo 18 Community" {
+  component "Serveur HTTP (Werkzeug)" as HTTP
+  component "Module GESPRO" as GESPRO {
+    component "Modèles Python\n(annonce, appel_offre, appel, ...)" as Models
+    component "Vues XML\n(formulaires, listes, dashboards)" as Views
+    component "Sécurité\n(Groupes, ACL, Record Rules)" as Security
+    component "Notifications\n(Chatter, Email)" as Notifications
+  }
+  component "Cron d'alertes\n(J-5, J-2)" as Cron
+}
+
+node "Serveur PostgreSQL 16" {
+  database "Base de données\n(dbmoussa)" as DB
+}
+
+node "Serveur SMTP\n(Gmail / Mailtrap)" as SMTP
+
+User --> Browser : Accès via HTTP
+Browser --> HTTP : Requêtes HTTP
+HTTP --> GESPRO : Routage Odoo
+GESPRO --> DB : ORM (lecture/écriture)
+Cron --> DB : Vérification périodique\n des deadlines
+Notifications --> SMTP : Envoi d'emails
+
+note right of GESPRO
+  Technologies :
+  - Python 3.11
+  - XML, SCSS
+  - JavaScript (Owl)
+end note
+
+@enduml

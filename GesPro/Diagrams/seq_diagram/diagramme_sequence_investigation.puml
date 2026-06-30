@@ -1,0 +1,23 @@
+@startuml
+title Diagramme de séquence – Investigation (CEO demande investigation)
+
+actor CEO
+participant "GESPRO" as System
+participant "RESADMIN" as RESADMIN_actor
+
+CEO -> System : Clique sur "Demander Investigation"
+activate System
+System --> CEO : Affiche le wizard d'investigation
+deactivate System
+
+CEO -> System : Remplit les instructions et valide
+activate System
+System -> System : Sauvegarde temporaire de l'instruction dans ceo_comment
+System -> System : Passage de l'état à "En investigation"
+System -> RESADMIN_actor : Envoi email avec instructions (via template)
+System -> System : Efface le champ ceo_comment
+System -> System : Poste un message dans le chatter (audit)
+System --> CEO : Confirmation visuelle
+deactivate System
+
+@enduml

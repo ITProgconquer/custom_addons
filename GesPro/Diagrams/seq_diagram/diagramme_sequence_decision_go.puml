@@ -1,0 +1,62 @@
+@startuml
+title Processus de décision stratégique (GO / NO GO)\npar le CEO sur un Appel d'offre
+
+actor CEO
+participant "GESPRO" as System
+participant "PM" as PM_actor
+
+== 1. Consultation de l'Appel d'offre ==
+
+CEO -> System : Consulte la liste des appels d'offre
+activate System
+System --> CEO : Affiche les appels d'offre (état "Nouveau")
+deactivate System
+
+CEO -> System : Ouvre l'Appel d'offre
+activate System
+System -> System : Passage automatique de l'état "Nouveau" à "Lu"
+System --> CEO : Affiche le détail de l'offre
+deactivate System
+
+== 2. Investigation (optionnelle) ==
+
+alt Investigation nécessaire
+    CEO -> System : Clique sur "Demander Investigation"
+    activate System
+    System -> System : Passage à l'état "En investigation"
+    System -> PM_actor : Notification cloche + email
+    deactivate System
+    PM_actor -> System : Ajoute des commentaires (chatter)
+end
+
+== 3. Décision du CEO ==
+
+alt GO direct ou après investigation
+    CEO -> System : Clique sur "GO"
+    activate System
+    System -> System : Passage à l'état "GO"
+    System -> System : Enregistre l'action dans le chatter
+    System -> PM_actor : Notification cloche + email
+    System --> CEO : Confirmation visuelle
+    deactivate System
+
+else NO GO (refus)
+    CEO -> System : Clique sur "NO GO"
+    activate System
+    System --> CEO : Affiche le wizard de motif
+    CEO -> System : Saisit le motif et valide
+    System -> System : Passage à l'état "NO GO"
+    System -> System : Enregistre le motif dans le chatter
+    System -> PM_actor : Notification cloche + email
+    System --> CEO : Confirmation visuelle
+    deactivate System
+
+else Ignorer
+    CEO -> System : Clique sur "Ignorer"
+    activate System
+    System -> System : Passage à l'état "Ignoré"
+    System --> CEO : Confirmation visuelle
+    deactivate System
+end
+
+@enduml

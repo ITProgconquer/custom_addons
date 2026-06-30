@@ -1,0 +1,40 @@
+@startuml
+left to right direction
+actor CEO
+actor PM
+actor RESADMIN
+actor TECH
+actor FIN
+
+rectangle "GESPRO" {
+  usecase "Gérer les annonces" as UC_Annonce
+  usecase "Gérer les appels d'offre" as UC_Offre
+  usecase "Gérer les appels à concurrence" as UC_AC
+  usecase "Gérer les checklists" as UC_Checklist
+  usecase "Consulter les dashboards" as UC_Dashboard
+}
+
+CEO --> UC_Annonce
+CEO --> UC_Offre
+CEO --> UC_AC
+CEO --> UC_Checklist
+CEO --> UC_Dashboard
+
+PM --> UC_Annonce
+PM --> UC_Offre
+PM --> UC_AC
+PM --> UC_Checklist
+PM --> UC_Dashboard
+
+RESADMIN --> UC_Annonce
+RESADMIN --> UC_Offre
+RESADMIN --> UC_AC
+RESADMIN --> UC_Checklist
+RESADMIN --> UC_Dashboard
+
+TECH --> UC_Checklist
+TECH --> UC_Dashboard
+
+FIN --> UC_Checklist
+FIN --> UC_Dashboard
+@enduml

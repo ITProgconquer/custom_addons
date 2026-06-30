@@ -1,0 +1,67 @@
+@startuml
+title Diagramme d'état - Cycle de vie d'un Appel d'offre (gespro.appel.offre)
+
+[*] --> Nouveau : Création par le PM
+
+state Nouveau {
+  [*] --> EnAttente
+  EnAttente : L'offre est créée, en attente de lecture
+}
+
+Nouveau --> Lu : CEO ouvre l'offre\n(action_mark_lu)
+Nouveau --> Ignoré : CEO ignore l'offre\n(action_ignore)
+
+state Lu {
+  [*] --> PretPourDecision
+  PretPourDecision : Le CEO a pris connaissance
+}
+
+Lu --> EnInvestigation : CEO demande investigation\n(action_investigation)
+Lu --> GO : CEO donne son GO\n(action_go)
+Lu --> NOGO : CEO refuse (NO GO)\n(action_no_go)
+Lu --> Ignoré : CEO ignore l'offre\n(action_ignore)
+
+state EnInvestigation {
+  [*] --> AnalyseEnCours
+  AnalyseEnCours : RESADMIN analyse et commente
+}
+
+EnInvestigation --> GO : CEO donne son GO après analyse\n(action_go)
+EnInvestigation --> NOGO : CEO refuse après analyse\n(action_no_go)
+
+state GO {
+  [*] --> PretPourAC
+  PretPourAC : Le PM peut créer un AC\nLe RESADMIN peut enregistrer un paiement
+}
+
+GO --> [*] : Suite du processus\n(création AC, paiement, dépouillement)
+
+state NOGO {
+  [*] --> MotifEnregistre
+  MotifEnregistre : Un motif est saisi via le wizard\nNotification envoyée au PM
+}
+
+state Ignoré {
+  [*] --> Archive
+  Archive : L'offre est écartée définitivement
+}
+
+note right of GO
+  Notifications envoyées :
+  - Cloche Odoo (PM + CEO)
+  - Email (si SMTP configuré)
+end note
+
+note right of NOGO
+  Notifications envoyées :
+  - Cloche Odoo (PM + CEO)
+  - Email (si SMTP configuré)
+end note
+
+note right of EnInvestigation
+  Notifications envoyées :
+  - Cloche Odoo (PM + CEO)
+  - Email (si SMTP configuré)
+end note
+
+@enduml

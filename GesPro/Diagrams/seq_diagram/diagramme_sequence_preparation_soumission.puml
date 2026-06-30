@@ -1,0 +1,73 @@
+@startuml
+title Processus de préparation et soumission d'un Appel à Concurrence
+
+actor PM
+actor TECH
+actor FIN
+actor RESADMIN
+actor CEO
+participant "GESPRO" as System
+
+== 1. Création de l'Appel à Concurrence ==
+PM -> System : Ouvre l'Appel d'offre (état "GO")
+activate System
+System --> PM : Affiche le bouton "Créer AC"
+deactivate System
+
+PM -> System : Clique sur "Créer AC"
+activate System
+System --> PM : Affiche le formulaire de création
+PM -> System : Remplit les champs et enregistre
+System -> System : Création de l'AC (état "Nouveau")
+System -> System : Envoi email de notification (PM + CEO)
+deactivate System
+
+== 2. Décision du CEO sur l'AC ==
+CEO -> System : Consulte l'AC
+activate System
+CEO -> System : Clique sur "GO"
+System -> System : Passage de l'état "Nouveau" à "GO"
+System -> System : Passage automatique à "En préparation"
+System -> PM : Notification cloche + email
+deactivate System
+
+== 3. Préparation de l'offre ==
+PM -> System : Génère les lots
+PM -> System : Génère les checklists
+
+par Travail collaboratif
+    TECH -> System : Remplit les checklists techniques
+    FIN -> System : Remplit les checklists financières
+    RESADMIN -> System : Remplit les checklists administratives
+end
+
+System -> System : Mise à jour des barres de progression
+
+== 4. Alerte deadline ==
+System -> System : Cron horaire vérifie les deadlines
+alt J-5 ou J-2
+    System -> PM : Envoi alerte email
+    System -> CEO : Envoi alerte email
+end
+
+== 5. Validation finale ==
+CEO -> System : Vérifie les checklists
+CEO -> System : Clique sur "Valider (Final)"
+System -> System : Passage à l'état "Prêt à soumettre"
+System -> PM : Notification cloche + email
+
+== 6. Soumission et résultat ==
+RESADMIN -> System : Clique sur "Soumettre"
+System -> System : Passage à l'état "Soumis"
+System -> CEO : Notification cloche + email
+
+RESADMIN -> System : Réception des résultats
+alt Dossier gagné
+    RESADMIN -> System : Clique sur "Gagné"
+    System -> System : Passage à l'état "Gagné"
+else Dossier perdu
+    RESADMIN -> System : Clique sur "Perdu"
+    System -> System : Passage à l'état "Perdu"
+end
+
+@enduml

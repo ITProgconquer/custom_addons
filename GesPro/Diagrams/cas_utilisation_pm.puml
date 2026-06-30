@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+actor PM
+
+usecase "Créer une annonce" as UC_Creer_Annonce
+usecase "Créer un appel d'offre" as UC_Creer_Offre
+usecase "Modifier un appel d'offre" as UC_Modifier_Offre
+usecase "Créer un AC" as UC_Creer_AC
+usecase "Générer les lots" as UC_Generer_Lots
+usecase "Générer les checklists" as UC_Generer_Checklists
+usecase "Soumettre un AC" as UC_Soumettre_AC
+usecase "Marquer AC gagné/perdu" as UC_Resultat_AC
+usecase "Consulter les dashboards" as UC_Dashboard
+
+usecase "Vérifier paiement effectué" as UC_Verifier_Paiement
+usecase "Vérifier checklists complètes" as UC_Verifier_Checklists
+
+PM --> UC_Creer_Annonce
+PM --> UC_Creer_Offre
+PM --> UC_Modifier_Offre
+PM --> UC_Creer_AC
+PM --> UC_Generer_Lots
+PM --> UC_Generer_Checklists
+PM --> UC_Soumettre_AC
+PM --> UC_Resultat_AC
+PM --> UC_Dashboard
+
+UC_Creer_AC ..> UC_Verifier_Paiement : <<include>>
+UC_Soumettre_AC ..> UC_Verifier_Checklists : <<include>>
+@enduml

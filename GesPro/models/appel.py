@@ -6,11 +6,16 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
+
+
+
+
 class Appel(models.Model):
     _name = "gespro.appel"
     _description = "Appel à Concurrence"
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = "date_publication desc"
+    motif_annulation = fields.Text(string="Motif d'annulation")
 
     # ─── RÉFÉRENCE ──────────────────────────────
     name = fields.Char(
@@ -126,6 +131,7 @@ class Appel(models.Model):
     ], string="Statut", default='en_preparation', tracking=True)
 
     active = fields.Boolean(string="Actif", default=True)
+    motif_annulation = fields.Text(string="Motif d'annulation")
     color_kanban = fields.Integer(compute='_compute_color', store=True)
     show_generate_lots = fields.Boolean(compute='_compute_show_buttons')
     show_generate_checklists = fields.Boolean(compute='_compute_show_buttons')
@@ -329,9 +335,36 @@ class Appel(models.Model):
             if emails:
                 template.send_mail(self.id, force_send=True, email_values={'email_to': emails})
 
+    # --- Annulation (CEO) ---
     def action_annuler(self):
         self.ensure_one()
-        self.state = 'annule'
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut annuler un Appel à Concurrence.")
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Annuler l\'Appel à Concurrence',
+            'res_model': 'gespro.appel.annuler.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_appel_id': self.id,
+            },
+        }
+
+    # --- Reprise (CEO) ---
+    def action_reouvrir(self):
+        self.ensure_one()
+        if not self.env.user.has_group('GesPro.group_ceo'):
+            raise AccessError("Seul le CEO peut rouvrir un dossier.")
+        self.state = 'en_preparation'
+        # Message chatter
+        self.message_post(body=f"🔄 Appel à Concurrence repris par {self.env.user.name}.")
+        # Email à tout le monde
+        template = self.env.ref('GesPro.mail_template_appel_reprise', raise_if_not_found=False)
+        if template:
+            emails = self.env['gespro.annonce']._get_all_gespro_emails(exclude_user=self.env.user)
+            if emails:
+                template.send_mail(self.id, force_send=True, email_values={'email_to': emails})               
 
     def action_reouvrir(self):
         self.ensure_one()

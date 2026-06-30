@@ -1,0 +1,35 @@
+@startuml
+left to right direction
+actor CEO
+
+' --- Cas d'utilisation ---
+usecase "Consulter les annonces" as UC_Consulter_Annonces
+usecase "Créer une annonce" as UC_Creer_Annonce
+usecase "Consulter les appels d'offre" as UC_Consulter_Offres
+usecase "Valider un appel d'offre (GO)" as UC_GO
+usecase "Refuser un appel d'offre (NO GO)" as UC_NOGO
+usecase "Demander investigation" as UC_Investigation
+usecase "Ignorer un appel d'offre" as UC_Ignorer
+usecase "Valider un AC (prêt)" as UC_Valider_AC
+usecase "Consulter les dashboards" as UC_Dashboard
+
+' Cas inclus
+usecase "Notifier les acteurs" as UC_Notifier
+usecase "Vérifier checklists complètes" as UC_Verifier_Checklists
+
+' --- Relations ---
+CEO --> UC_Consulter_Annonces
+CEO --> UC_Creer_Annonce
+CEO --> UC_Consulter_Offres
+CEO --> UC_GO
+CEO --> UC_NOGO
+CEO --> UC_Investigation
+CEO --> UC_Ignorer
+CEO --> UC_Valider_AC
+CEO --> UC_Dashboard
+
+UC_GO ..> UC_Notifier : <<include>>
+UC_NOGO ..> UC_Notifier : <<include>>
+UC_Investigation ..> UC_Notifier : <<include>>
+UC_Valider_AC ..> UC_Verifier_Checklists : <<include>>
+@enduml

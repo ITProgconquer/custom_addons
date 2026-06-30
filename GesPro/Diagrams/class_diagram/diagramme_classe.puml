@@ -1,0 +1,166 @@
+@startuml
+scale 0.7
+
+' ========================
+' CLASSES PRINCIPALES
+' ========================
+
+class Annonce {
+  + name : Char
+  + description : Text
+  + date_envoi : Datetime
+  + user_id : Many2one (res.users)
+  + source_file : Binary
+  + source_filename : Char
+  --
+  + payment_ids : One2many (Payment)
+  + appel_offre_ids : One2many (AppelOffre)
+}
+
+class AppelOffre {
+  + name : Char
+  + titre : Char
+  + date_butoire : Date
+  + garantie_soumission : Float
+  + autorite_contractante : Char
+  + state : Selection
+  + annonce_id : Many2one (Annonce)
+  + pm_id : Many2one (res.users)
+  + capture_attachment : Many2one (ir.attachment)
+  --
+  + appel_concurrence_ids : One2many (Appel)
+  + payment_ids : One2many (Payment)
+  + depouillement_ids : One2many (Depouillement)
+}
+
+class Appel {
+  + name : Char
+  + titre : Char
+  + type_appel : Selection
+  + procedure : Selection
+  + date_publication : Date
+  + deadline : Date
+  + delai_restant : Integer
+  + state : Selection
+  + offre_id : Many2one (AppelOffre)
+  + annonce_id : Many2one (Annonce)
+  + pm_id : Many2one (res.users)
+  --
+  + lot_ids : One2many (Lot)
+  + checklist_ids : One2many (ChecklistLine)
+  + progression_tech : Float
+  + progression_admin : Float
+  + progression_fin : Float
+  + progression_generale : Float
+}
+
+class Lot {
+  + lot_num : Integer
+  + titre : Char
+  + is_ready : Boolean
+  + appel_id : Many2one (Appel)
+  --
+  + personnel_line_ids : One2many (PersonnelLine)
+  + material_line_ids : One2many (MaterialLine)
+}
+
+class Payment {
+  + amount : Float
+  + currency_id : Many2one (res.currency)
+  + payment_date : Date
+  + state : Selection
+  + proof : Binary
+  + offre_id : Many2one (AppelOffre)
+}
+
+class Depouillement {
+  + ordre : Integer
+  + montant_min_ttc : Float
+  + montant_max_ttc : Float
+  + observation : Text
+  + offre_id : Many2one (AppelOffre)
+  --
+  + soumissionnaires : Many2many (res.partner)
+  + lot_ids : Many2many (Lot)
+}
+
+class ChecklistLine {
+  + libelle : Char
+  + categorie : Selection
+  + is_done : Boolean
+  + sequence : Integer
+  + is_mandatory : Boolean
+  + appel_id : Many2one (Appel)
+  + template_id : Many2one (ChecklistTemplate)
+}
+
+class ChecklistTemplate {
+  + name : Char
+  + category : Selection
+  + sequence : Integer
+  + is_mandatory : Boolean
+  + active : Boolean
+}
+
+class PersonnelLine {
+  + role : Char
+  + qualification_min : Char
+  + nb_exige : Integer
+  + experience_years : Integer
+  + is_satisfied : Boolean
+  + lot_id : Many2one (Lot)
+}
+
+class MaterialLine {
+  + designation : Char
+  + specifications : Text
+  + qty_required : Integer
+  + qty_provided : Integer
+  + is_satisfied : Boolean
+  + lot_id : Many2one (Lot)
+}
+
+class SimilarContract {
+  + name : Char
+  + titre : Char
+  + date_attribution : Date
+  + montant : Float
+}
+
+class CVPersonnel {
+  + matricule : Char
+  + nom : Char
+  + prenom : Char
+  + qualification : Char
+  + experience_years : Integer
+}
+
+' ========================
+' HÉRITAGES
+' ========================
+
+Annonce --|> mail.thread
+AppelOffre --|> mail.thread
+Appel --|> mail.thread
+Payment --|> mail.thread
+Depouillement --|> mail.thread
+Lot --|> mail.thread
+
+' ========================
+' RELATIONS
+' ========================
+
+Annonce "1" -- "0..*" AppelOffre : annonce_id
+AppelOffre "1" -- "0..*" Appel : offre_id
+AppelOffre "1" -- "0..*" Payment : offre_id
+AppelOffre "1" -- "0..*" Depouillement : offre_id
+Appel "1" -- "0..*" Lot : appel_id
+Appel "1" -- "0..*" ChecklistLine : appel_id
+Lot "1" -- "0..*" PersonnelLine : lot_id
+Lot "1" -- "0..*" MaterialLine : lot_id
+ChecklistTemplate "1" -- "0..*" ChecklistLine : template_id
+AppelOffre "1" -- "0..1" ir.attachment : capture_attachment
+Depouillement "0..*" -- "0..*" res.partner : soumissionnaires
+Depouillement "0..*" -- "0..*" Lot : lot_ids
+
+@enduml

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+    <t t-name="GesPro.SessionLockOverlay" owl="1">
+        <div t-if="state.locked" class="o_session_lock_overlay" role="dialog" aria-modal="true">
+            <div class="o_session_lock_modal">
+                <h3>Session verrouillée</h3>
+                <p>Veuillez saisir votre mot de passe pour continuer.</p>
+
+                <input
+                    type="password"
+                    t-ref="passwordInput"
+                    t-model="state.password"
+                    placeholder="Mot de passe"
+                    class="o_input"
+                    autocomplete="current-password"
+                />
+
+                <t t-if="state.error">
+                    <p class="text-danger">
+                        <t t-esc="state.error"/>
+                    </p>
+                </t>
+
+                <t t-if="state.attempts">
+                    <p class="o_session_lock_attempts">
+                        <t t-esc="remainingAttempts"/> essai(s) restant(s)
+                    </p>
+                </t>
+
+                <div class="o_session_lock_buttons">
+                    <button
+                        type="button"
+                        class="btn btn-primary"
+                        t-on-click="unlock"
+                        t-att-disabled="!state.password"
+                    >
+                        Déverrouiller
+                    </button>
+                    <button
+                        type="button"
+                        class="btn btn-secondary"
+                        t-on-click="logout"
+                    >
+                        Se déconnecter
+                    </button>
+                </div>
+            </div>
+        </div>
+    </t>
+</templates>

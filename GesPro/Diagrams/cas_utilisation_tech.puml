@@ -1,0 +1,16 @@
+@startuml
+left to right direction
+actor TECH
+
+usecase "Remplir checklists techniques" as UC_Checklist_Tech
+usecase "Consulter les AC assignés" as UC_Consulter_AC
+usecase "Consulter les dashboards" as UC_Dashboard
+
+usecase "Filtrer checklists par catégorie" as UC_Filtrer_Checklists
+
+TECH --> UC_Checklist_Tech
+TECH --> UC_Consulter_AC
+TECH --> UC_Dashboard
+
+UC_Checklist_Tech ..> UC_Filtrer_Checklists : <<extend>>
+@enduml

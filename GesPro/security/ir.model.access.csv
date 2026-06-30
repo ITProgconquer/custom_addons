@@ -63,3 +63,8 @@ access_investigation_wizard_fin,wizard.investigation.fin,model_gespro_appel_offr
 access_resultat_wizard_ceo,wizard.ceo,model_gespro_resultat_wizard,group_ceo,1,1,1,1
 access_resultat_wizard_pm,wizard.pm,model_gespro_resultat_wizard,group_pm,1,1,1,1
 access_resultat_wizard_resadmin,wizard.resadmin,model_gespro_resultat_wizard,group_resadmin,1,1,1,1
+access_annuler_appel_wizard_ceo,wizard.annuler.appel.ceo,model_gespro_appel_annuler_wizard,group_ceo,1,1,1,1
+access_annuler_appel_wizard_pm,wizard.annuler.appel.pm,model_gespro_appel_annuler_wizard,group_pm,1,0,0,0
+access_annuler_appel_wizard_resadmin,wizard.annuler.appel.resadmin,model_gespro_appel_annuler_wizard,group_resadmin,1,0,0,0
+access_annuler_appel_wizard_tech,wizard.annuler.appel.tech,model_gespro_appel_annuler_wizard,group_tech,1,0,0,0
+access_annuler_appel_wizard_fin,wizard.annuler.appel.fin,model_gespro_appel_annuler_wizard,group_fin,1,0,0,0

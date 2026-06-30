@@ -27,10 +27,12 @@
                                 class="btn-danger"
                                 groups="GesPro.group_pm,GesPro.group_resadmin"
                                 invisible="state != 'soumis'"/>
-                        <button name="action_annuler" string="Annuler" type="object"
-                                class="btn-secondary"
+                        <button name="action_annuler" 
+                                string="Annuler" 
+                                type="object" 
+                                class="btn-danger"
                                 groups="GesPro.group_ceo"
-                                invisible="state in ['gagne', 'perdu', 'annule']"/>
+                                invisible="state in ['gagne', 'perdu', 'annule']"/>        
                         <button name="action_reouvrir" string="Reprendre" type="object"
                                 class="btn-warning"
                                 groups="GesPro.group_ceo"
