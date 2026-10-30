@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="seq_hr_contract" model="ir.sequence">
+            <field name="name">Contrat</field>
+            <field name="code">hr.contract.custom</field>
+            <field name="prefix">CTR/%(year)s/</field>
+            <field name="padding">4</field>
+        </record>
+    </data>
+</odoo>

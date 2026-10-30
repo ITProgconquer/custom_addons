@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <menuitem id="menu_contrat_root"
+                  name="Contrats"
+                  sequence="60"
+                  web_icon="IT_contrats,static/description/icon.png"/>
+
+        <menuitem id="menu_contrat_all"
+                  name="Tous les contrats"
+                  parent="menu_contrat_root"
+                  action="action_hr_contract"
+                  sequence="10"/>
+    </data>
+</odoo>

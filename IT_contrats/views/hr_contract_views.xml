@@ -1,0 +1,119 @@
+<odoo>
+    <data>
+
+        <!-- FORMULAIRE -->
+        <record id="view_hr_contract_form" model="ir.ui.view">
+            <field name="name">hr.contract.custom.form</field>
+            <field name="model">hr.contract.custom</field>
+            <field name="arch" type="xml">
+                <form string="Contrat">
+                    <header>
+                        <button name="action_terminer" string="Terminer" type="object"
+                                class="btn-danger"
+                                groups="IT_contrats.group_contrat_rh"
+                                invisible="state != 'actif'"
+                                confirm="Confirmer la fin du contrat ?"/>
+                        <button name="action_reactiver" string="Réactiver" type="object"
+                                class="btn-success"
+                                groups="IT_contrats.group_contrat_rh"
+                                invisible="state != 'termine'"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div class="oe_title">
+                            <h1><field name="name" readonly="1"/></h1>
+                        </div>
+                        <group>
+                            <group string="Informations">
+                                <field name="employee_id"/>
+                                <field name="contract_type"/>
+                            </group>
+                            <group string="Dates">
+                                <field name="date_start"/>
+                                <field name="date_end"/>
+                            </group>
+                        </group>
+                        <group string="Quotas">
+                            <group>
+                                <field name="annual_quota"/>
+                                <field name="absence_quota"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Notes">
+                                <field name="note"/>
+                            </page>
+                            
+                        </notebook>
+                    </sheet>
+                    <chatter/>
+                </form>
+            </field>
+        </record>
+
+        <!-- LISTE -->
+        <record id="view_hr_contract_list" model="ir.ui.view">
+            <field name="name">hr.contract.custom.list</field>
+            <field name="model">hr.contract.custom</field>
+            <field name="arch" type="xml">
+                <list string="Contrats">
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <field name="contract_type" widget="badge"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="annual_quota"/>
+                    <field name="state" widget="badge"/>
+                </list>
+            </field>
+        </record>
+
+        <!-- SEARCH -->
+        <record id="view_hr_contract_search" model="ir.ui.view">
+            <field name="name">hr.contract.custom.search</field>
+            <field name="model">hr.contract.custom</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="name"/>
+                    <field name="employee_id"/>
+                    <filter string="Actifs" name="filter_actif" domain="[('state', '=', 'actif')]"/>
+                    <filter string="Terminés" name="filter_termine" domain="[('state', '=', 'termine')]"/>
+                    <separator/>
+                    <filter string="Mes contrats" name="filter_my" domain="[('employee_id.user_id', '=', uid)]"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- KANBAN -->
+        <record id="view_hr_contract_kanban" model="ir.ui.view">
+            <field name="name">hr.contract.custom.kanban</field>
+            <field name="model">hr.contract.custom</field>
+            <field name="arch" type="xml">
+                <kanban default_group_by="state">
+                    <templates>
+                        <t t-name="kanban-box">
+                            <div class="oe_kanban_card">
+                                <div class="oe_kanban_content p-3">
+                                    <h3><field name="employee_id"/></h3>
+                                    <div><field name="name"/></div>
+                                    <div class="text-muted">
+                                        <field name="date_start"/> → <field name="date_end"/>
+                                    </div>
+                                    <div><field name="contract_type" widget="badge"/></div>
+                                </div>
+                            </div>
+                        </t>
+                    </templates>
+                </kanban>
+            </field>
+        </record>
+
+        <!-- ACTION -->
+        <record id="action_hr_contract" model="ir.actions.act_window">
+            <field name="name">Contrats</field>
+            <field name="res_model">hr.contract.custom</field>
+            <field name="view_mode">kanban,list,form</field>
+        </record>
+
+    </data>
+</odoo>

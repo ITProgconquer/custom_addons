@@ -5,13 +5,33 @@
             <field name="model">hr.leave.account</field>
             <field name="arch" type="xml">
                 <form string="Compte Congés">
+                    <header>
+                        <button name="action_pause" string="⏸️ Mettre en pause" type="object"
+                                class="btn-warning"
+                                groups="IT_conges.group_conge_rh"
+                                invisible="is_paused == True or status_employe != 'en_conge'"/>
+                        <button name="action_resume" string="▶️ Reprendre" type="object"
+                                class="btn-success"
+                                groups="IT_conges.group_conge_rh"
+                                invisible="is_paused == False"/>
+                        <field name="is_paused" widget="boolean_toggle" readonly="1"/>
+                    </header>
                     <sheet>
+                        <!-- Bandeau pause -->
+                        <div class="alert alert-warning" invisible="is_paused == False" role="alert">
+                            <strong>⏸️ Compte en pause</strong>
+                            <div invisible="not pause_reason">Motif : <field name="pause_reason" readonly="1"/></div>
+                            <div invisible="not pause_date">Date : <field name="pause_date" readonly="1"/></div>
+                        </div>
+                        
                         <group>
                             <field name="employee_id"/>
                             <field name="year"/>
+                            <field name="contract_id"/>
                             <field name="policy_id"/>
-                            <field name="status"/>
+                            <field name="status_employe"/>
                         </group>
+
                         <group string="Soldes">
                             <field name="annual_quota"/>
                             <field name="carried_forward"/>
@@ -20,7 +40,18 @@
                             <field name="remaining_days" widget="badge"
                                 decoration-danger="remaining_days &lt;= 5"
                                 decoration-warning="remaining_days &lt;= 10"
-                                decoration-success="remaining_days&lt;=  30"/>
+                                decoration-success="remaining_days &gt; 10"/>
+                        </group>
+                        
+                        <group string="Absences">
+                            <field name="absence_quota"/>
+                            <field name="absence_used"/>
+                            <field name="absence_remaining" widget="badge"/>
+                        </group>
+                        
+                        <group string="Motif de la pause" invisible="is_paused == False">
+                            <field name="pause_reason"/>
+                            <field name="pause_date" readonly="1"/>
                         </group>
                     </sheet>
                 </form>
@@ -49,10 +80,11 @@
                 <field name="name">hr.leave.account.kanban</field>
                 <field name="model">hr.leave.account</field>
                 <field name="arch" type="xml">
-                    <kanban class="o_kanban_mobile">
+                    <kanban class="o_kanban_mobile" default_group_by="employee_id">
                         <field name="employee_id"/>
                         <field name="remaining_days"/>
                         <field name="used_days"/>
+                        <field name="year"/>
                         <field name="annual_quota"/>
                         <field name="nb_demandes"/>
                         <field name="nb_annuel"/>
@@ -62,7 +94,10 @@
                             <t t-name="kanban-box">
                                 <div class="oe_kanban_card">
                                     <div class="oe_kanban_content p-3">
-                                        <h4><field name="employee_id"/></h4>
+                                        <h4>
+                                            <field name="employee_id"/>
+                                            <span class="badge bg-secondary ms-2"><field name="year"/></span>
+                                        </h4>
                                         <field name="status_employe" widget="badge"
                                             decoration-success="status_employe == 'en_conge'"
                                             decoration-danger="status_employe == 'absence'"

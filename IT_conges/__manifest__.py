@@ -2,7 +2,7 @@
     'name': 'Gestion des Congés',
     'version': '1.0',
     'category': 'Human Resources',
-    'depends': ['base', 'mail', 'hr'],
+    'depends': ['base', 'mail', 'hr','IT_contrats'],
 
     'assets': {
         'web.assets_backend': [

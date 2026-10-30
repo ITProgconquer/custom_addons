@@ -3,6 +3,7 @@ from odoo import models, fields, api
 class LeaveAccount(models.Model):
     _name = "hr.leave.account"
     _description = "Compte congés employé"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     employee_id = fields.Many2one('hr.employee', string="Employé", required=True)
     year = fields.Integer(string="Année", required=True, default=lambda self: fields.Date.today().year)
@@ -23,6 +24,10 @@ class LeaveAccount(models.Model):
     absence_remaining = fields.Float(string="Absences restantes", compute='_compute_absence_remaining', store=True)
 
 
+    is_paused = fields.Boolean(string="En pause", default=False, tracking=True)
+    pause_date = fields.Date(string="Date de mise en pause", readonly=True)
+    pause_reason = fields.Text(string="Motif de la pause")
+
     status = fields.Selection([
         ('active', 'Actif'),
         ('blocked', 'Bloqué'),
@@ -34,6 +39,13 @@ class LeaveAccount(models.Model):
         ('absence', 'Absent'),
     ], string="État",default='actif')
 
+
+    contract_id = fields.Many2one(
+        'hr.contract.custom',
+        string="Contrat",
+        ondelete='set null',
+        help="Contrat lié à ce compte de congés"
+    )
 
 
     @api.depends('employee_id')
@@ -60,13 +72,55 @@ class LeaveAccount(models.Model):
             acc.remaining_days = acc.annual_quota + acc.carried_forward + acc.acquired_days - acc.used_days
 
     
-    def _cron_allocate_annual(self):
-        year = fields.Date.today().year
+    @api.model
+    def _cron_allocate_annual(self, target_year=None):
+        """Crée les comptes de la nouvelle année avec report automatique"""
+        if target_year is None:
+            target_year = fields.Date.today().year
+        
+        new_year = target_year
+        
         employees = self.env['hr.employee'].search([])
         for emp in employees:
-            if not self.search([('employee_id', '=', emp.id), ('year', '=', year)]):
-                self.create({'employee_id': emp.id, 'year': year, 'annual_quota': 30, 'absence_quota': 10})
+            existing = self.search([
+                ('employee_id', '=', emp.id),
+                ('year', '=', new_year),
+            ], limit=1)
+            if existing:
+                continue
+            
+            old_account = self.search([
+                ('employee_id', '=', emp.id),
+                ('year', '=', new_year - 1),
+            ], limit=1)
+            
+            carried = 0
+            if old_account:
+                if old_account.is_paused:
+                    continue
+                carried = old_account.remaining_days
+            
+            contract = self.env['hr.contract.custom'].search([
+                ('employee_id', '=', emp.id),
+                ('state', '=', 'actif'),
+            ], limit=1)
+            
+            if not contract:
+                continue
+            
+            contract_model = self.env['hr.contract.custom']
+            annual_quota = contract_model._compute_quota_for_year(emp, new_year)
+            
+            self.create({
+                'employee_id': emp.id,
+                'year': new_year,
+                'annual_quota': annual_quota,
+                'absence_quota': contract.absence_quota,
+                'carried_forward': carried,
+                'contract_id': contract.id,
+            })
 
+            
     
     @api.depends('employee_id')
     def _compute_stats(self):
@@ -124,7 +178,7 @@ class LeaveAccount(models.Model):
     @api.depends('absence_used', 'absence_quota')
     def _compute_absence_remaining(self):
         for acc in self:
-            acc.absence_remaining = acc.absence_quota - acc.absence_used 
+            acc.absence_remaining = acc.absence_quota + acc.carried_forward - acc.absence_used 
 
 
     
@@ -132,7 +186,7 @@ class LeaveAccount(models.Model):
     @api.model
     def cron_update_leave_status(self):
         today = fields.Date.today()
-        accounts = self.search([])
+        accounts = self.search([('is_paused', '=', False)])
         for account in accounts:
             leave = self.env['hr.leave.request'].search([
                 ('employee_id', '=', account.employee_id.id),
@@ -143,3 +197,17 @@ class LeaveAccount(models.Model):
             account.status_employe = 'en_conge' if leave else 'actif'
             account._compute_used()
             account._compute_absence_used()
+
+
+
+    def action_pause(self):
+        self.ensure_one()
+        self.is_paused = True
+        self.pause_date = fields.Date.today()
+        self.message_post(body=f"⏸️ Compte mis en pause par {self.env.user.name}")
+
+    def action_resume(self):
+        self.ensure_one()
+        self.is_paused = False
+        self.pause_date = False
+        self.message_post(body=f"▶️ Compte repris par {self.env.user.name}")
